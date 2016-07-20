@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="60dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/list_margin_screen"
+        android:paddingRight="@dimen/list_margin_screen"
+        android:layout_marginTop="@dimen/item_margin_vertical">
+        <TextView
+            android:id="@+id/ref_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/themeColor"
+            android:textSize="@dimen/text_size_large"
+            android:gravity="center_horizontal"/>
+        <TextView
+            android:id="@+id/item_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:text="Item"
+            android:textColor="@color/themeColor"
+            android:textSize="@dimen/text_size_large"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"/>
+
+        <EditText
+            android:id="@+id/close_out_edittext"
+            style="@style/general_edittext"
+            android:layout_weight="1"
+            android:textColor="@color/themeColor"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"
+            android:gravity="center"/>
+
+        <ImageView
+            android:id="@+id/yes_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:src="@mipmap/chkbox_unselected"/>
+
+        <ImageView
+            android:id="@+id/no_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@mipmap/chkbox_unselected"/>
+
+        <!--<RadioGroup-->
+            <!--android:id="@+id/radiogroup"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_weight="2"-->
+            <!--android:gravity="center"-->
+            <!--android:orientation="horizontal">-->
+            <!--<RadioButton-->
+                <!--android:id="@+id/yes_btn"-->
+                <!--android:layout_width="0dp"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:layout_weight="1"-->
+                <!--android:gravity="center"-->
+                <!--android:background="@android:color/transparent"-->
+                <!--android:button="@null"-->
+                <!--android:drawableTop="@drawable/custom_radiobutton"/>-->
+            <!--<RadioButton-->
+                <!--android:id="@+id/no_btn"-->
+                <!--android:layout_width="0dp"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:layout_weight="1"-->
+                <!--android:background="@android:color/transparent"-->
+                <!--android:button="@null"-->
+                <!--android:drawableTop="@drawable/custom_radiobutton"/>-->
+        <!--</RadioGroup>-->
+
+        <ImageView
+            android:id="@+id/na_ornot_obs"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@mipmap/chkbox_unselected"/>
+
+        <!--<CheckBox-->
+            <!--android:id="@+id/na_ornot_obs"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_weight="1"-->
+            <!--android:button="@null"-->
+            <!--android:background="@android:color/transparent"-->
+            <!--android:drawableTop ="@drawable/custom_radiobutton"-->
+            <!--android:gravity="center"/>-->
+
+        <EditText
+            android:id="@+id/remark_editext"
+            style="@style/general_edittext"
+            android:layout_weight="1"
+            android:textColor="@color/themeColor"
+            android:textSize="@dimen/text_size_large"
+            android:textStyle="bold"
+            android:gravity="center"/>
+
+        <ImageView
+            android:id="@+id/takephoto_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@mipmap/btn_photo"
+            android:scaleType="centerInside"
+            android:padding="5dp"
+            android:gravity="center_horizontal"/>
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        style="@style/title_bar"
+        android:text="CONTRACT" />
+
+
+    <android.support.percent.PercentRelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/replace"></LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_widthPercent="50%"
+            android:gravity="center_vertical"
+            android:layout_centerInParent="true"
+            android:orientation="horizontal"
+            android:id="@+id/check">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Contract Number:"
+                android:textColor="@color/themeColor"
+                android:textSize="@dimen/text_size_large" />
+
+            <android.support.v7.widget.AppCompatSpinner
+                android:id="@+id/contract_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_marginLeft="@dimen/item_margin_horizontal"
+                android:background="@drawable/shape_common"
+                android:entries="@array/contract_numbers"
+                android:spinnerMode="dropdown"></android.support.v7.widget.AppCompatSpinner>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/bottom_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/item_margin_vertical"
+            android:orientation="vertical"
+            app:layout_widthPercent="50%">
+
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/confirm_btn"
+                style="@style/common_button_match_horizontal"
+                android:layout_marginTop="10dp"
+                android:text="CONFIRM"
+                android:layout_marginBottom="@dimen/button_bottom_margin"/>
+
+        </LinearLayout>
+    </android.support.percent.PercentRelativeLayout>
+
+
+
+</LinearLayout>

@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">MottMacDonald</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="request_fail">Request Error</string>
+    <string name="loading">Loading...</string>
+    <string name="sync">Syncing...</string>
+
+    <!-- Report-->
+    <string name="report_intro">Expansion of Hong Kong International Airport into a Three-Runway System\nContract 3101 Environmental Team Services \n SITE INSPECTION CHECKLIST</string>
+
+
+
+</resources>

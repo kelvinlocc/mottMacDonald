@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RadioButton xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/temp_radiobutton"
+    style="@style/common_radiobutton"
+    android:layout_marginLeft="16dp"
+    android:text="Sunny"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:nestedScrollingEnabled="false"
+    android:paddingRight="16dp" />

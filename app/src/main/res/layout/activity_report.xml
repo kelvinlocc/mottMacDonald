@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        style="@style/title_bar"
+        android:text="REPORT" />
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:focusableInTouchMode="true"
+            android:orientation="vertical">
+
+            <android.support.percent.PercentRelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/intro_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/item_margin_vertical"
+                    android:gravity="center_horizontal"
+                    android:text="@string/report_intro"
+                    android:textColor="@color/themeColor"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_widthPercent="70%" />
+
+
+            </android.support.percent.PercentRelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/left_form"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="@dimen/item_margin_vertical"
+                    android:layout_marginTop="@dimen/item_margin_vertical"
+                    android:layout_weight="6"
+                    android:orientation="vertical"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:paddingTop="10dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            style="@style/report_sub_title"
+                            android:text="Inspection Date:" />
+
+                        <TextView
+                            android:id="@+id/date_select"
+                            style="@style/report_edittext" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp">
+
+                        <TextView
+                            style="@style/report_sub_title"
+                            android:text="Time:" />
+
+                        <TextView
+                            android:id="@+id/time_select"
+                            style="@style/report_edittext" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/report_sub_title"
+                            android:text="Environmental Permit No:" />
+
+                        <EditText
+                            android:id="@+id/environmental_permit_no"
+                            style="@style/report_edittext"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp">
+
+                        <TextView
+                            style="@style/report_sub_title"
+                            android:text="Site Location:" />
+
+                        <EditText
+                            android:id="@+id/sit_location"
+                            style="@style/report_edittext"
+                            android:layout_height="100dp"
+                            android:gravity="top"
+                            android:singleLine="false" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/right_form"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignBottom="@id/left_form"
+                    android:layout_alignTop="@id/left_form"
+                    android:layout_toRightOf="@id/left_form"
+                    android:layout_weight="4"
+                    android:orientation="horizontal"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:paddingTop="10dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="3"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="25dp"
+                            android:gravity="center_vertical"
+                            android:text="Inspected By:"
+                            android:textColor="@color/themeColor"
+                            android:textSize="@dimen/text_size_medium" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="15dp"
+                        android:layout_weight="5"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_marginTop="25dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                style="@style/report_sub_title2"
+                                android:text="PM:" />
+
+                            <EditText
+                                android:id="@+id/pm"
+                                style="@style/report_edittext2"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                style="@style/report_sub_title2"
+                                android:text="ET:" />
+
+                            <EditText
+                                android:id="@+id/et"
+                                style="@style/report_edittext2"/>
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                style="@style/report_sub_title2"
+                                android:text="Contractor:" />
+
+                            <EditText
+                                android:id="@+id/contractor"
+                                style="@style/report_edittext2" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                style="@style/report_sub_title2"
+                                android:text="IEC:" />
+
+                            <EditText
+                                android:id="@+id/iec"
+                                style="@style/report_edittext2" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                style="@style/report_sub_title2"
+                                android:text="Other:" />
+
+                            <EditText
+                                android:id="@+id/other"
+                                style="@style/report_edittext2" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <android.support.percent.PercentRelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="42dp">
+                <LinearLayout
+                    android:id="@+id/bottom_layout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="@dimen/button_bottom_margin"
+                    android:layout_marginTop="@dimen/item_margin_vertical"
+                    android:orientation="vertical"
+                    app:layout_widthPercent="50%">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Contract Number:"
+                            android:textColor="@color/themeColor"
+                            android:textSize="@dimen/text_size_medium" />
+
+                        <android.support.v7.widget.AppCompatSpinner
+                            android:id="@+id/contract_spinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/item_margin_horizontal"
+                            android:background="@drawable/shape_common"
+                            android:entries="@array/contract_numbers"></android.support.v7.widget.AppCompatSpinner>
+                    </LinearLayout>
+
+                    <android.support.v7.widget.AppCompatButton
+                        android:id="@+id/start_btn"
+                        style="@style/common_button_match_horizontal"
+                        android:layout_marginTop="10dp"
+                        android:text="START" />
+                </LinearLayout>
+            </android.support.percent.PercentRelativeLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+
+</LinearLayout>
