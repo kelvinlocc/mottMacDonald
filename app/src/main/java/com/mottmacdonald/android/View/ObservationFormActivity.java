@@ -2,6 +2,7 @@ package com.mottmacdonald.android.View;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -58,20 +59,20 @@ public class ObservationFormActivity extends BaseActivity {
 
     private ArrayList<obs_form_DataModel> arrayList_dataModel;
 
+    public static final String PREFS_NAME = "DataModel";
+
+
     public static void start(Context context, ItemData itemData) {
         Intent intent = new Intent(context, ObservationFormActivity.class);
         intent.putExtra(ITEM_DATA, itemData);
         context.startActivity(intent);
-        Log.i(TAG, "@1" + " update");
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "@2");
-
-
         super.onCreate(savedInstanceState);
-//        setResult(RESULT_OK);
+
+        SharedPreferences obs_form_dataModel = getSharedPreferences(PREFS_NAME,0);
 
         setContentView(R.layout.activity_obs_form);
         ListView form_LV = (ListView) findViewById(R.id.obs_form_lv);
