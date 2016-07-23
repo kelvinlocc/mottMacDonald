@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="itemNo"
+        android:id="@+id/item_no"
+        android:layout_weight="1" />
+
+    <EditText
+        android:inputType="date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:imeOptions="actionDone"
+        android:id="@+id/edit_txt_obervation"
+        android:layout_weight="1" />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="1">
+
+        <ImageButton
+            android:id="@+id/add_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/btn_photo"
+            android:padding="2dp"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+    <EditText
+        android:inputType="text"
+        android:layout_width="0dp"
+        android:imeOptions="actionDone"
+        android:layout_height="wrap_content"
+        android:id="@+id/to_be_remediated_before"
+        android:layout_weight="1" />
+
+    <EditText
+        android:inputType="text"
+        android:imeOptions="actionDone"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/follow_up_action"
+        android:layout_weight="1" />
+
+</LinearLayout>
