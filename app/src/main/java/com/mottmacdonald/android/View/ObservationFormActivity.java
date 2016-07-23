@@ -69,7 +69,10 @@ public class ObservationFormActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "@2");
 
+
         super.onCreate(savedInstanceState);
+//        setResult(RESULT_OK);
+
         setContentView(R.layout.activity_obs_form);
         ListView form_LV = (ListView) findViewById(R.id.obs_form_lv);
 
@@ -79,7 +82,6 @@ public class ObservationFormActivity extends BaseActivity {
 
         lv_adapter = new obs_form_lv_adapter(this, arrayList_dataModel);
         form_LV.setAdapter(lv_adapter);
-        Log.i(TAG, "update");
 
         myButton = (ImageButton) findViewById(R.id.addphoto);
 //        editText_Observation = (EditText) findViewById(R.id.edit_txt_obervation);
@@ -125,83 +127,61 @@ public class ObservationFormActivity extends BaseActivity {
     }
 
     public void init() {
-        Log.i(TAG, "@6");
+
 //        TableLayout form = (TableLayout) findViewById(R.id.table_layout);
         //we don;t use table layout
-        for (int i = 0; i < 0; i++) {
+//        for (int i = 0; i < 0; i++) {
+//
+//            TableRow row = new TableRow(this);
+////            TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
+//            TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT);
+//            Log.i(TAG, "update03");
+//
+//            Log.i(TAG, "TableRow.LayoutParams: " + lp);
+//            row.setLayoutParams(lp);
+//            item_no = new TextView(this);
+//            item_no.setText("temp");
+//            addphoto = new ImageButton(this);
+//            obs_image = new ImageView(this);
+//            recommendation = new EditText(this);
+//            recommendation.setInputType(InputType.TYPE_CLASS_TEXT);
+//            date = new EditText(this);
+//            date.setInputType(InputType.TYPE_CLASS_DATETIME);
+//            followup = new EditText(this);
+//            followup.setInputType(InputType.TYPE_CLASS_TEXT);
+//            row.addView(item_no);
+//            row.addView(addphoto);
+//            row.addView(obs_image);
+//            row.addView(recommendation);
+//            row.addView(date);
+//            row.addView(followup);
+//            form.addView(row, i);
+//        }
 
-            TableRow row = new TableRow(this);
-//            TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
-            TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT);
-            Log.i(TAG, "update03");
-
-            Log.i(TAG, "TableRow.LayoutParams: " + lp);
-            row.setLayoutParams(lp);
-            item_no = new TextView(this);
-            item_no.setText("temp");
-            addphoto = new ImageButton(this);
-            obs_image = new ImageView(this);
-            recommendation = new EditText(this);
-            recommendation.setInputType(InputType.TYPE_CLASS_TEXT);
-            date = new EditText(this);
-            date.setInputType(InputType.TYPE_CLASS_DATETIME);
-            followup = new EditText(this);
-            followup.setInputType(InputType.TYPE_CLASS_TEXT);
-            row.addView(item_no);
-            row.addView(addphoto);
-            row.addView(obs_image);
-            row.addView(recommendation);
-            row.addView(date);
-            row.addView(followup);
-            form.addView(row, i);
-        }
     }
 
     private void initViews() {
         mAQuery.id(R.id.back_btn).clicked(clickListener);
         mAQuery.id(R.id.addphoto).clicked(clickListener);
-        Log.i(TAG, "@3");
 
     }
 
     private void takePhoto() {
-        obs_form_DataModel newData = new obs_form_DataModel();
-        newData.setItemNo(arrayList_dataModel.size() + 1);
 
-        arrayList_dataModel.add(newData);
-        lv_adapter.notifyDataSetChanged();
-        Log.i(TAG, "@4");
-//
-//        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//        File file = new File(FileUtil.getFileRoot(mContext) + "/mottCacheImage.jpg");
-////        File file = new File(FileUtil.getFileRoot(mContext) + "/mott_" + DeviceUtils.getCurrentTime("yyyyMMddHHmmssSSSS") + "jpg");
-//        Uri imageUri = Uri.fromFile(file);
-//        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-//        ((BaseActivity) mContext).startActivityForResult(intent, TAKE_PHOTO);
+
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        File file = new File(FileUtil.getFileRoot(mContext) + "/mottCacheImage.jpg");
+//        File file = new File(FileUtil.getFileRoot(mContext) + "/mott_" + DeviceUtils.getCurrentTime("yyyyMMddHHmmssSSSS") + "jpg");
+        Uri imageUri = Uri.fromFile(file);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        ((BaseActivity) mContext).startActivityForResult(intent, TAKE_PHOTO);
 
 
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-
-//        Log.i(TAG, "onActivityResult called !"+"at position "+position);
         super.onActivityResult(requestCode, resultCode, data);
-        // testing date!
-
-        // hey, I am coding at 1623
-
-//        int position = data.getIntExtra("position", 0);
-//        if (data.hasExtra("position")) {
-//                    Log.i(TAG, " has intent");
-//        }
-//        else {
-//            Log.i(TAG, " NO intent");
-//
-//        }
-//        String string = data.getExtras().getString("position");
-//        Log.i(TAG, "onActivityResult called !" + "string " + string);
 
         if (resultCode == RESULT_OK) {
             if (requestCode == TAKE_PHOTO) {
@@ -211,10 +191,20 @@ public class ObservationFormActivity extends BaseActivity {
                 PhotoReSize photoReSize = new PhotoReSize(mContext);
                 photoReSize.reSize(file, DeviceUtils.getDisplayWidth(), saveFile);
                 mAQuery.id(R.id.obs_image).image(saveFile.getAbsolutePath());
+                obs_form_DataModel newData = new obs_form_DataModel();
+                newData.setItemNo(arrayList_dataModel.size() + 1);
+                newData.setPhotoCache(saveFile);
+
+
+                arrayList_dataModel.add(newData);
+                lv_adapter.notifyDataSetChanged();
             }
             init();
         }
+
     }
+
+
 
     private View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
@@ -224,7 +214,7 @@ public class ObservationFormActivity extends BaseActivity {
                     finish();
                     break;
                 case R.id.addphoto:
-                    Log.i(TAG, " add phot button is clicked");
+                    Log.i(TAG, " add photo button is clicked");
                     PopupMenu myPopup = new PopupMenu(mContext, myButton);
                     myPopup.getMenuInflater().inflate(R.menu.popup_menu, myPopup.getMenu());
                     myPopup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {

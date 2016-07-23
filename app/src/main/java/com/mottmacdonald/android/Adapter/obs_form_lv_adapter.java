@@ -3,6 +3,8 @@ package com.mottmacdonald.android.Adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -17,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mottmacdonald.android.Models.obs_form_DataModel;
 import com.mottmacdonald.android.R;
@@ -92,6 +95,7 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
         EditText toBeRemediated;
         EditText followUpAction;
         ImageButton btn_takePhoto;
+        ImageView obs_photo;
 
     }
 
@@ -167,9 +171,17 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
             @Override
             public void onClick(View v) {
                 Log.i(TAG,"take photo!");
-                takePhoto(position);
+//                takePhoto(position);
             }
         });
+
+        holder.obs_photo = (ImageView) view.findViewById(R.id.obs_photo);
+
+        //
+        Bitmap bitmap = BitmapFactory.decodeFile(myData.getPhotoCache().getAbsolutePath());
+        holder.obs_photo.setImageBitmap(bitmap);
+
+
 
 
 //        holder.tv=(TextView) view.findViewById(R.id.shop_name);
@@ -180,27 +192,28 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
 
         return view;
     }
-    int temp =0;
-    private void takePhoto(final int position) {
-        obs_form_DataModel newData = new obs_form_DataModel();
-//        newData.setItemNo(arrayList_dataModel.size()+1);
+//    private void takePhoto(final int position) {
+//        obs_form_DataModel newData = new obs_form_DataModel();
+////        newData.setItemNo(arrayList_dataModel.size()+1);
+////
+////        arrayList_dataModel.add(newData);
+////        lv_adapter.notifyDataSetChanged();
+//        Log.i(TAG, "@4");
 //
-//        arrayList_dataModel.add(newData);
-//        lv_adapter.notifyDataSetChanged();
-        Log.i(TAG, "@4");
-
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        File file = new File(FileUtil.getFileRoot(context) + "/mottCacheImage.jpg");
-//        File file = new File(FileUtil.getFileRoot(context) + "/mott_" + DeviceUtils.getCurrentTime("yyyyMMddHHmmssSSSS") + "jpg");
-        Uri imageUri = Uri.fromFile(file);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        intent.putExtra("position","test");
-        ((Activity) context).startActivityForResult(intent, TAKE_PHOTO);
-
+//        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        File file = new File(FileUtil.getFileRoot(context) + "/mottCacheImage.jpg");
+////        File file = new File(FileUtil.getFileRoot(context) + "/mott_" + DeviceUtils.getCurrentTime("yyyyMMddHHmmssSSSS") + "jpg");
+//        Uri imageUri = Uri.fromFile(file);
+//        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+//
+//        Log.i("checking","startActivityForResult @adapter");
+//        ((Activity) context).startActivityForResult(intent, TAKE_PHOTO);
+////        Intent intent1 = new Intent()
+//    }
 
 
 
-    }
+
 
 
 

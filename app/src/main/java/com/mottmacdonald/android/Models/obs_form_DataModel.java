@@ -15,6 +15,7 @@ public class obs_form_DataModel {
     private String followUpAction;
 
     private File photoCache;
+
     private double[] shop_coordinate = new double[2];
     private int user_shop_distance;
     private Boolean[] reactList = new Boolean[3];
