@@ -189,13 +189,13 @@ public class ObservationFormActivity extends BaseActivity {
 //        Log.i(TAG, "onActivityResult called !"+"at position "+position);
         super.onActivityResult(requestCode, resultCode, data);
 //        int position = data.getIntExtra("position", 0);
-        if (data.hasExtra("position")) {
-                    Log.i(TAG, " has intent");
-        }
-        else {
-            Log.i(TAG, " NO intent");
-
-        }
+//        if (data.hasExtra("position")) {
+//                    Log.i(TAG, " has intent");
+//        }
+//        else {
+//            Log.i(TAG, " NO intent");
+//
+//        }
 //        String string = data.getExtras().getString("position");
 //        Log.i(TAG, "onActivityResult called !" + "string " + string);
 
