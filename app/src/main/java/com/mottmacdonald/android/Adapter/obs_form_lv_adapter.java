@@ -206,7 +206,6 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
 //        Uri imageUri = Uri.fromFile(file);
 //        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
 //
-//        Log.i("checking","startActivityForResult @adapter");
 //        ((Activity) context).startActivityForResult(intent, TAKE_PHOTO);
 ////        Intent intent1 = new Intent()
 //    }
