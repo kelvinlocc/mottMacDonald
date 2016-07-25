@@ -9,6 +9,7 @@ import android.graphics.Path;
 import android.os.Environment;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -52,6 +53,7 @@ public class DrawView extends View {
         super(context);
         viewWidth = w;
         viewHeight = h;
+        Log.i("checking","w: "+w + "h: "+h);
         mBitmap = Bitmap.createBitmap(viewWidth, viewHeight, Bitmap.Config.ARGB_8888);
 // 保存一次一次绘制出来的图形
         mCanvas = new Canvas(mBitmap);

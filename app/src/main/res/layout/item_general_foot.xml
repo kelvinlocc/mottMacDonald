@@ -82,7 +82,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:id="@+id/check">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
@@ -97,17 +98,17 @@
                 <TextView
                     android:id="@+id/contractor_title"
                     style="@style/general_sign_title"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:text="Contractor’s \nRepresentative "/>
                 <TextView
                     android:id="@+id/et_title"
                     style="@style/general_sign_title"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:text="ET Leader / \nET’s Representative"/>
                 <TextView
                     android:id="@+id/iec_title"
                     style="@style/general_sign_title"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:text="IEC / \nIEC’s Representative"/>
             </LinearLayout>
 
@@ -115,8 +116,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginTop="10dp"
-                android:id="@+id/check">
+                android:layout_marginTop="10dp">
 
                 <LinearLayout
                     android:orientation="horizontal"
@@ -127,7 +127,7 @@
                         android:id="@+id/pm_sign"
                         style="@style/sign_box"
                         android:layout_weight="1"
-                        android:visibility="visible">
+                        android:visibility="gone">
                         <View
                             style="@style/line_horizontal"
                             android:layout_marginTop="120dp"/>
@@ -139,7 +139,7 @@
                     <RelativeLayout
                         android:id="@+id/contractor_sign"
                         style="@style/sign_box"
-                        android:visibility="visible"
+                        android:visibility="gone"
                         android:layout_weight="1">
                         <View
                             style="@style/line_horizontal"
@@ -152,7 +152,7 @@
                     <RelativeLayout
                         android:id="@+id/et_sign"
                         style="@style/sign_box"
-                        android:visibility="visible"
+                        android:visibility="gone"
                         android:layout_weight="1">
                         <View
                             style="@style/line_horizontal"
@@ -165,7 +165,7 @@
                     <RelativeLayout
                         android:id="@+id/iec_sign"
                         style="@style/sign_box"
-                        android:visibility="visible"
+                        android:visibility="gone"
                         android:layout_weight="1">
                         <View
                             style="@style/line_horizontal"
@@ -190,7 +190,7 @@
                         <EditText
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:id="@+id/editText"
+                            android:id="@+id/pm"
                             android:background="@null" />
 
                     </RelativeLayout>
@@ -202,7 +202,7 @@
                         <EditText
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:id="@+id/editText2"
+                            android:id="@+id/et"
                             android:background="@null" />
                     </RelativeLayout>
                     <RelativeLayout
@@ -213,7 +213,7 @@
                         <EditText
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:id="@+id/editText3"
+                            android:id="@+id/contractor"
                             android:background="@null" />
                     </RelativeLayout>
                     <RelativeLayout
@@ -224,7 +224,7 @@
                         <EditText
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:id="@+id/editText4"
+                            android:id="@+id/iec"
                             android:background="@null" />
                     </RelativeLayout>
 
@@ -244,7 +244,7 @@
                         <EditText
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:id="@+id/editText5"
+                            android:id="@+id/date"
                             android:background="@null" />
                     </RelativeLayout>
 
@@ -257,7 +257,7 @@
                         <EditText
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:id="@+id/editText6"
+                            android:id="@+id/data_01"
                             android:background="@null" />
                     </RelativeLayout>
 
@@ -270,7 +270,7 @@
                         <EditText
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:id="@+id/editText7"
+                            android:id="@+id/date_03"
                             android:background="@null" />
                     </RelativeLayout>
 
@@ -283,7 +283,7 @@
                         <EditText
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:id="@+id/editText9"
+                            android:id="@+id/date_04"
                             android:background="@null" />
                     </RelativeLayout>
 

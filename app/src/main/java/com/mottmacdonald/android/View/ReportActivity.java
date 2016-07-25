@@ -2,12 +2,14 @@ package com.mottmacdonald.android.View;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 
 import com.alibaba.fastjson.JSON;
 import com.androidquery.callback.AjaxStatus;
@@ -44,6 +46,7 @@ public class ReportActivity extends BaseActivity implements DatePickerDialog.OnD
 
     private static final String CONTRACT_ID = "contract_id";
     private static final String CONTRACT_NUMBER = "contract_number";
+    private static final String PREF_NAME = "myNameList";
     private Calendar currentCalendar;
     private DatePickerDialog datePickerDialog;
     private TimePickerDialog timePickerDialog;
@@ -217,6 +220,18 @@ public class ReportActivity extends BaseActivity implements DatePickerDialog.OnD
         String contractor = mAQuery.id(R.id.contractor).getText().toString();
         String iec = mAQuery.id(R.id.iec).getText().toString();
         String others = mAQuery.id(R.id.other).getText().toString();
+
+        //ignore the others,
+        SharedPreferences prefs = this.getSharedPreferences(PREF_NAME,MODE_PRIVATE);
+        SharedPreferences.Editor prefsEditor = prefs.edit();
+        prefsEditor.putString("pm",pm);
+        prefsEditor.putString("et",et);
+        prefsEditor.putString("contractor",contractor);
+        prefsEditor.putString("iec",iec);
+        prefsEditor.putString("date",sendDate);
+        prefsEditor.commit();
+
+
 
         Report report = new Report();
         report.setInspectionDate(sendDate);

@@ -1,8 +1,19 @@
 
 7-25 (Monday): x240
+ObservationFormActivity:
 improve obs_form layout,
 select photo from album, fixed
 bus: outofMemory in obs_form listView, fixed
+
+get name auto,
+Inspected By,
+Pm,
+ET,
+Constractor,
+IEC
+
+fix, disable the view of the signature
+
 
 
 7-20 (Wednesday):

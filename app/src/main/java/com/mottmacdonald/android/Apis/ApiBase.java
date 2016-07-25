@@ -6,7 +6,7 @@ package com.mottmacdonald.android.Apis;
  * 创建日期：2016/4/12 22:48
  * 备注：
  */
-public class ApiBase {
+public class  ApiBase {
 
     public static final String API_HOST = "http://mott.accordhkdev.com/api/v1/api/api.php?p=mapi/";
 
