@@ -55,7 +55,7 @@ import de.greenrobot.dao.query.QueryBuilder;
  * 备注：
  */
 public class GeneralSiteActivity extends BaseActivity {
-    private static final String TAG = "GeneralSiteActivity14";
+    private static final String TAG = "GeneralSiteActivity16";
     private static final String PREF_NAME = "myNameList";
 
 
@@ -94,6 +94,7 @@ public class GeneralSiteActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.actvity_general_site);
+
         initDatas();
         initViews();
         Log.i(TAG,"searchData ");
@@ -179,6 +180,9 @@ public class GeneralSiteActivity extends BaseActivity {
         //>>
         listView.addHeaderView(headView);
         listView.addFooterView(footView);
+
+
+
     }
 
 
@@ -201,18 +205,12 @@ public class GeneralSiteActivity extends BaseActivity {
     }
 
     private void setSignShow(Report report) {
-        Log.i(TAG,"setSignShow");
+        pmSign.setVisibility(View.GONE);
+
+        Confirmation_layout.invalidate();
 
         if (!TextUtils.isEmpty(report.getPm())) {
-            GeneralSiteActivity.this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Log.i(TAG,"set Visbility");
-                    pm_layout.setVisibility(View.VISIBLE);
-                    pmSign.setVisibility(View.VISIBLE);
-                    pmTitle.setVisibility(View.VISIBLE);
-                }
-            });
+
 
 
             pm_layout.setVisibility(View.VISIBLE);
@@ -224,19 +222,48 @@ public class GeneralSiteActivity extends BaseActivity {
             pmSign.getViewTreeObserver();
             Log.i(TAG, "pmSign.getWidth(): " + pmSign.getWidth() + " pmSign.getHeight(): " + pmSign.getHeight());
 
-            pmView = getDrawView(100, 100);
+            pmView = getDrawView(300, 300);
 //            Log.i(TAG, "pmSign.getWidth(): " + pmSign.getWidth() + " pmSign.getHeight(): " + pmSign.getHeight());
             pmSign.addView(pmView);
 
 //            ViewTreeObserver vto1 = pmSign.getViewTreeObserver();
-            ViewTreeObserver vto1 = Confirmation_layout.getViewTreeObserver();
+            ViewTreeObserver vto1 = pmSign.getViewTreeObserver();
             vto1.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
+
+                    Log.i(TAG,"onGlobalLayout ");
                     pmSign.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                     pmView = getDrawView(pmSign.getWidth(), pmSign.getHeight());
                     Log.i(TAG, "pmSign.getWidth(): " + pmSign.getWidth() + " pmSign.getHeight(): " + pmSign.getHeight());
                     pmSign.addView(pmView);
+                    GeneralSiteActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.i(TAG, "pmSign.getWidth(): " + pmSign.getWidth() + " pmSign.getHeight(): " + pmSign.getHeight());
+                            pmSign.invalidate();
+                        }
+                    });
+                }
+            });
+            pmSign.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i(TAG, "onclick" );
+
+                    Log.i(TAG, "pmSign.getWidth(): " + pmSign.getWidth() + " pmSign.getHeight(): " + pmSign.getHeight());
+
+                }
+            });
+            GeneralSiteActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.i(TAG,"set Visibility");
+                    Confirmation_layout.invalidate();
+                    Confirmation_layout.setVisibility(View.VISIBLE);
+                    pm_layout.setVisibility(View.VISIBLE);
+                    pmSign.setVisibility(View.VISIBLE);
+                    pmTitle.setVisibility(View.VISIBLE);
                 }
             });
         }
@@ -302,6 +329,9 @@ public class GeneralSiteActivity extends BaseActivity {
             signLeftTitleLayout.setVisibility(View.VISIBLE);
             Confirmation_layout.setVisibility(View.VISIBLE);
         }
+
+
+
     }
 
     private void searchData() {
