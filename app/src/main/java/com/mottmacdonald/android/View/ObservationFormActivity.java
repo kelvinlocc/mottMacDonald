@@ -77,9 +77,8 @@ public class ObservationFormActivity extends BaseActivity {
     public static final String PREFS_NAME = "DataModel";
 
     // method of list 02:
-    Type listOfObjects;
-//    = new TypeToken<ArrayList<obs_form_DataModel>>() {
-//    }.getType();
+    Type listOfObjects = new TypeToken<ArrayList<obs_form_DataModel>>() {
+    }.getType();
 
     public static void start(Context context, ItemData itemData) {
         Intent intent = new Intent(context, ObservationFormActivity.class);
@@ -98,7 +97,7 @@ public class ObservationFormActivity extends BaseActivity {
         arrayList_dataModel = new ArrayList<obs_form_DataModel>();
         itemNo = new ArrayList<Integer>(Arrays.asList(tempList));
 
-
+        Log.i("checking","clean up");
         SharedPreferences mPrefs = getSharedPreferences("myP", MODE_PRIVATE);// use JSOnM format to store the object (obs_form)
         // check whether a data model store in shared preference:
         String string = mPrefs.getString("myTest", "");
@@ -110,17 +109,18 @@ public class ObservationFormActivity extends BaseActivity {
         if (!json.isEmpty()) {
             Log.i("checking", "json !null");
             Log.i("checking", "json " + json.toString());
-            listOfObjects = new TypeToken<ArrayList<obs_form_DataModel>>() {}.getType();
+//            listOfObjects = new TypeToken<ArrayList<obs_form_DataModel>>() {
+//            }.getType();
 
-            ArrayList<obs_form_DataModel> list2 = gson.fromJson(json, listOfObjects);
+            ArrayList<obs_form_DataModel> obsFormDataModelArrayList = gson.fromJson(json, listOfObjects);
             obs_form_DataModel data = new obs_form_DataModel();
-            if (!list2.isEmpty()) {
-                arrayList_dataModel=list2;
-                data = list2.get(0);
-                Log.i("checking", "list2 is !empty");
+            if (!obsFormDataModelArrayList.isEmpty()) {
+                arrayList_dataModel = obsFormDataModelArrayList;
+                data = obsFormDataModelArrayList.get(0);
+                Log.i("checking", "obsFormDataModelArrayList is !empty");
                 Log.i("checking", "data.getItemNo()" + data.getItemNo());
             } else {
-                Log.i("checking", "list2 is empty");
+                Log.i("checking", "obsFormDataModelArrayList is empty");
             }
         } else {
             Log.i("checking", "json is null");
@@ -130,7 +130,6 @@ public class ObservationFormActivity extends BaseActivity {
         form_LV.setAdapter(lv_adapter);
 
         myButton = (ImageButton) findViewById(R.id.addphoto);
-//        editText_Observation = (EditText) findViewById(R.id.edit_txt_obervation);
 
         initViews();
         takePhoto();
@@ -207,54 +206,28 @@ public class ObservationFormActivity extends BaseActivity {
                 obs_form_DataModel newData = new obs_form_DataModel();
                 newData.setItemNo(arrayList_dataModel.size() + 1);
                 newData.setPhotoCache(saveFile);
-
                 arrayList_dataModel.add(newData);
 
-//                Set<String> set = new HashSet<String>();
-//                set.addAll(arrayList_dataModel);
                 SharedPreferences mPrefs = getSharedPreferences("myP", MODE_PRIVATE);
                 SharedPreferences.Editor prefsEditor = mPrefs.edit();
 
 
-
-
                 // and store current object into shared preference:
-                Type type = new TypeToken<List<obs_form_DataModel>>() {
-                }.getType();
                 Gson gson = new Gson();
 //                Json json= gson.toJson(newData);
 
-//                List<obs_form_DataModel> listObj = gson.fromJson(json);
-//                prefsEditor.putString("MyObject",json);
-                listOfObjects = new TypeToken<ArrayList<obs_form_DataModel>>() {}.getType();
-                String strObject = gson.toJson(arrayList_dataModel, listOfObjects); // Here list is your List<CUSTOM_CLASS> object
+
+//                listOfObjects = new TypeToken<ArrayList<obs_form_DataModel>>() {
+//                }.getType();
+                // gson to json , json to string;
+                String JsonObject = gson.toJson(arrayList_dataModel, listOfObjects); // Here list is your List<CUSTOM_CLASS> object
 
 
-                prefsEditor.putString("MyList", strObject);
+                prefsEditor.putString("MyList", JsonObject);
                 prefsEditor.putString("myTest", "test");
 
-                Log.i("checking", "                prefsEditor.putString(\"MyList\", \"test\");\n");
+                Log.i("checking", "prefsEditor.putString(\"MyList\", \"test\");\n");
                 prefsEditor.commit();
-
-//                String json = mPrefs.getString("MyList", "");
-//
-//                if (json != "") {
-//                    Log.i("checking", "json ! null");
-//                    Log.i("checking", "json " + json.toString());
-//                    ArrayList<obs_form_DataModel> list2 = gson.fromJson(json, listOfObjects);
-//                    obs_form_DataModel data = new obs_form_DataModel();
-//                    if (!list2.isEmpty()) {
-//                        data = list2.get(0);
-//                        Log.i("checking", "list2 is !empty");
-//                        Log.i("checking", "data.getItemNo()" + data.getItemNo());
-//                    } else {
-//                        Log.i("checking", "list2 is empty");
-//                    }
-//                } else {
-//                    Log.i("checking", "json is null");
-//                }
-
-
 
                 lv_adapter.notifyDataSetChanged();
             }
@@ -262,26 +235,6 @@ public class ObservationFormActivity extends BaseActivity {
         }
 
     }
-
-
-    // convert the arrayList into set , for store in share preference
-
-//    public void addTask(obs_form_DataModel newData) {
-//        if (null == arrayList_dataModel) {
-//            arrayList_dataModel = new ArrayList<obs_form_DataModel>();
-//        }
-//        arrayList_dataModel.add(newData);
-//
-//        // save the task list to preference
-//        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-//        SharedPreferences.Editor editor = prefs.edit();
-//        try {
-//            editor.putString("task", ObjectSerializer.serialize(arrayList_dataModel));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        editor.commit();
-//    }
 
 
     private View.OnClickListener clickListener = new View.OnClickListener() {
