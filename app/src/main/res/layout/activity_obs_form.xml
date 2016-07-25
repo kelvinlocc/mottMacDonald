@@ -96,7 +96,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/addphoto"
-                    android:src="@android:drawable/btn_star_big_on" />
+                    android:src="@mipmap/btn_photo" />
 
                 <ImageView
                     android:layout_width="50dp"

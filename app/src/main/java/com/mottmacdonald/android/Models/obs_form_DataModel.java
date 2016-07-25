@@ -1,5 +1,7 @@
 package com.mottmacdonald.android.Models;
 
+import android.graphics.Bitmap;
+
 import java.io.File;
 
 /**
@@ -15,10 +17,20 @@ public class obs_form_DataModel {
     private String followUpAction;
 
     private File photoCache;
+    private Bitmap bitmap;
 
     private double[] shop_coordinate = new double[2];
     private int user_shop_distance;
     private Boolean[] reactList = new Boolean[3];
+
+
+
+    public void setBitmap(Bitmap data){
+        this.bitmap = data;
+    }
+    public Bitmap getBitmap (){
+        return this.bitmap;
+    }
 
     public void setObservation (String data){
         this.Observation = data;

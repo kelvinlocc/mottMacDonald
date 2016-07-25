@@ -3,6 +3,9 @@ package com.mottmacdonald.android.View;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -55,7 +58,9 @@ import java.util.Set;
  */
 public class ObservationFormActivity extends BaseActivity {
 
+
     private final int TAKE_PHOTO = 1;
+    private final int PICK_IMAGE_REQUEST = 2;
     private static final String ITEM_DATA = "item_data";
     private ImageButton addphoto;
     private TableLayout form;
@@ -67,10 +72,6 @@ public class ObservationFormActivity extends BaseActivity {
     private static String TAG = "ObservationFormActivity";
     private obs_form_lv_adapter lv_adapter;
     private ImageButton myButton;
-
-    private ArrayList<Integer> itemNo;
-    private Integer[] tempList = {1, 2, 3};
-    private EditText editText_Observation;
 
     public ArrayList<obs_form_DataModel> arrayList_dataModel;
 
@@ -95,10 +96,9 @@ public class ObservationFormActivity extends BaseActivity {
         ListView form_LV = (ListView) findViewById(R.id.obs_form_lv);
 
         arrayList_dataModel = new ArrayList<obs_form_DataModel>();
-        itemNo = new ArrayList<Integer>(Arrays.asList(tempList));
 
-        Log.i("checking","clean up");
-        SharedPreferences mPrefs = getSharedPreferences("myP", MODE_PRIVATE);// use JSOnM format to store the object (obs_form)
+        Log.i(TAG,"updated02");
+        SharedPreferences mPrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);// use JSOnM format to store the object (obs_form)
         // check whether a data model store in shared preference:
         String string = mPrefs.getString("myTest", "");
         Log.i("checking", "string " + string + ".");
@@ -109,9 +109,6 @@ public class ObservationFormActivity extends BaseActivity {
         if (!json.isEmpty()) {
             Log.i("checking", "json !null");
             Log.i("checking", "json " + json.toString());
-//            listOfObjects = new TypeToken<ArrayList<obs_form_DataModel>>() {
-//            }.getType();
-
             ArrayList<obs_form_DataModel> obsFormDataModelArrayList = gson.fromJson(json, listOfObjects);
             obs_form_DataModel data = new obs_form_DataModel();
             if (!obsFormDataModelArrayList.isEmpty()) {
@@ -132,7 +129,7 @@ public class ObservationFormActivity extends BaseActivity {
         myButton = (ImageButton) findViewById(R.id.addphoto);
 
         initViews();
-        takePhoto();
+//        takePhoto();
 
     }
 
@@ -192,7 +189,7 @@ public class ObservationFormActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        obs_form_DataModel newData = new obs_form_DataModel();
         if (resultCode == RESULT_OK) {
             if (requestCode == TAKE_PHOTO) {
 
@@ -200,40 +197,81 @@ public class ObservationFormActivity extends BaseActivity {
                 File saveFile = new File(FileUtil.getFileRoot(mContext) + "/mott_" + DeviceUtils.getCurrentTime("yyyyMMddHHmmssSSSS") + ".jpg");
                 PhotoReSize photoReSize = new PhotoReSize(mContext);
                 photoReSize.reSize(file, DeviceUtils.getDisplayWidth(), saveFile);
+
+//                Bitmap bitmap = BitmapFactory.decodeFile(saveFile.getAbsolutePath());
+
+
+
                 mAQuery.id(R.id.obs_image).image(saveFile.getAbsolutePath());
 
                 // add item into data model
-                obs_form_DataModel newData = new obs_form_DataModel();
+
                 newData.setItemNo(arrayList_dataModel.size() + 1);
                 newData.setPhotoCache(saveFile);
-                arrayList_dataModel.add(newData);
+                Log.i(TAG,"saveFile: "+saveFile);
+                Log.i(TAG,"saveFile.getAbsolutePath(): "+saveFile.getAbsolutePath());
 
-                SharedPreferences mPrefs = getSharedPreferences("myP", MODE_PRIVATE);
-                SharedPreferences.Editor prefsEditor = mPrefs.edit();
+                // save photo into bitmap:
+//                newData.setBitmap(bitmap);
 
-
-                // and store current object into shared preference:
-                Gson gson = new Gson();
-//                Json json= gson.toJson(newData);
-
-
-//                listOfObjects = new TypeToken<ArrayList<obs_form_DataModel>>() {
-//                }.getType();
-                // gson to json , json to string;
-                String JsonObject = gson.toJson(arrayList_dataModel, listOfObjects); // Here list is your List<CUSTOM_CLASS> object
-
-
-                prefsEditor.putString("MyList", JsonObject);
-                prefsEditor.putString("myTest", "test");
-
-                Log.i("checking", "prefsEditor.putString(\"MyList\", \"test\");\n");
-                prefsEditor.commit();
-
-                lv_adapter.notifyDataSetChanged();
             }
+
+            else if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+                Log.i(TAG,"select photo from album");
+
+                Uri uri = data.getData();
+
+                try {
+
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                    Uri selectedImageUri = data.getData();
+                    String imagePath = getRealPathFromURI(selectedImageUri);
+                    Log.i(TAG,"imagePath: "+imagePath);
+
+                    File file = new File(imagePath);
+                    Log.i(TAG,"file: "+file);
+                    Log.i(TAG,"file.getAbsolutePath(): "+file.getAbsolutePath());
+                    // Log.d(TAG, String.valueOf(bitmap));
+
+                    ImageView imageView = (ImageView) findViewById(R.id.obs_image);
+                    Bitmap bitmap1 = BitmapFactory.decodeFile(file.getAbsolutePath());
+                    imageView.setImageBitmap(bitmap1);
+
+                    newData.setItemNo(arrayList_dataModel.size() + 1);
+                    newData.setPhotoCache(file);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            arrayList_dataModel.add(newData);
+
+            SharedPreferences mPrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+            SharedPreferences.Editor prefsEditor = mPrefs.edit();
+
+
+            // and store current object into shared preference:
+            Gson gson = new Gson();
+            String JsonObject = gson.toJson(arrayList_dataModel, listOfObjects); // Here list is your List<CUSTOM_CLASS> object
+
+
+            prefsEditor.putString("MyList", JsonObject);
+            prefsEditor.putString("myTest", "test");
+
+            prefsEditor.commit();
+            lv_adapter.notifyDataSetChanged();
             init();
         }
 
+    }
+    public String getRealPathFromURI(Uri uri) {
+        String[] projection = { MediaStore.Images.Media.DATA };
+        @SuppressWarnings("deprecation")
+        Cursor cursor = managedQuery(uri, projection, null, null, null);
+        int column_index = cursor
+                .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
     }
 
 
@@ -256,8 +294,12 @@ public class ObservationFormActivity extends BaseActivity {
                                     takePhoto();
                                     return true;
                                 case R.id.album:
+//                                    select from album
+                                    Intent album = new Intent(Intent.ACTION_GET_CONTENT);
+                                    album.addCategory(Intent.CATEGORY_OPENABLE);
+                                    album.setType("image/*");
+                                    startActivityForResult(album, PICK_IMAGE_REQUEST);
                                     return true;
-
                                 default:
                                     return false;
                             }

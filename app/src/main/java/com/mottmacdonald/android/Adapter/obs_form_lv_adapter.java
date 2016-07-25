@@ -1,11 +1,13 @@
 package com.mottmacdonald.android.Adapter;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -119,7 +121,7 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
         holder.txt_itemNo.setText(Integer.toString(myData.getItemNo()));
 
 
-        holder.editText_Observation = (EditText) view.findViewById(R.id.edit_txt_obervation);
+        holder.editText_Observation = (EditText) view.findViewById(R.id.recommendation);
         holder.editText_Observation.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -166,20 +168,29 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
         });
         holder.followUpAction.setText(myData.getFollowUpAction());
 
-        holder.btn_takePhoto = (ImageButton) view.findViewById(R.id.add_photo);
-        holder.btn_takePhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i(TAG,"take photo!");
-//                takePhoto(position);
-            }
-        });
+        // disable take photo in each row,
+//        holder.btn_takePhoto = (ImageButton) view.findViewById(R.id.add_photo);
+//        holder.btn_takePhoto.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.i(TAG,"take photo!");
+////                takePhoto(position);
+//            }
+//        });
+
+
 
         holder.obs_photo = (ImageView) view.findViewById(R.id.obs_photo);
-
-        //
+        // get image absolute path from data model
         Bitmap bitmap = BitmapFactory.decodeFile(myData.getPhotoCache().getAbsolutePath());
-        holder.obs_photo.setImageBitmap(bitmap);
+//        bitmap = myData.getBitmap();
+        Log.i(TAG,"bitmap size: "+sizeOf(bitmap));
+        Bitmap reducedBitmap = getResizedBitmap(bitmap,200);
+        Log.i(TAG,"reducedBitmap; "+sizeOf(reducedBitmap));
+
+        holder.obs_photo.setImageBitmap(reducedBitmap);
+//        holder.obs_photo.setImageBitmap(reducedBitmap);
+//        reducedBitmap.recycle();
 
 
 
@@ -192,24 +203,30 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
 
         return view;
     }
-//    private void takePhoto(final int position) {
-//        obs_form_DataModel newData = new obs_form_DataModel();
-////        newData.setItemNo(arrayList_dataModel.size()+1);
-////
-////        arrayList_dataModel.add(newData);
-////        lv_adapter.notifyDataSetChanged();
-//        Log.i(TAG, "@4");
-//
-//        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//        File file = new File(FileUtil.getFileRoot(context) + "/mottCacheImage.jpg");
-////        File file = new File(FileUtil.getFileRoot(context) + "/mott_" + DeviceUtils.getCurrentTime("yyyyMMddHHmmssSSSS") + "jpg");
-//        Uri imageUri = Uri.fromFile(file);
-//        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-//
-//        ((Activity) context).startActivityForResult(intent, TAKE_PHOTO);
-////        Intent intent1 = new Intent()
-//    }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
+    protected int sizeOf(Bitmap data) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB_MR1) {
+            return data.getRowBytes() * data.getHeight();
+        } else {
+            return data.getByteCount();
+        }
+    }
+
+    public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        float bitmapRatio = (float)width / (float) height;
+        if (bitmapRatio > 0) {
+            width = maxSize;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxSize;
+            width = (int) (height * bitmapRatio);
+        }
+        return Bitmap.createScaledBitmap(image, width, height, true);
+    }
 
 
 
