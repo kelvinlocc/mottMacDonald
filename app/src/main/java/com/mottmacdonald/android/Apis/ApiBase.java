@@ -28,5 +28,7 @@ public class  ApiBase {
 
     public static final String SAVE_FORM_ITEM = "saveFormItem";
 
+    public static final String SAVE_FORM_ITEMS = "saveFormItems";
+
     public static final String SAVE_FORM_ITEM_OBSERVATION = "saveFormItemObservation";
 }

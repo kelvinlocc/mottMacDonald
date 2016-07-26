@@ -15,10 +15,13 @@ import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxStatus;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.mottmacdonald.android.Adapter.GeneralExpandableAdapter;
 import com.mottmacdonald.android.Apis.SaveFormApi;
 import com.mottmacdonald.android.Data.DataShared;
@@ -26,9 +29,11 @@ import com.mottmacdonald.android.Models.AllTemplatesModel;
 import com.mottmacdonald.android.Models.FormsDataModel;
 import com.mottmacdonald.android.Models.ItemData;
 import com.mottmacdonald.android.Models.SaveFormItemModel;
+import com.mottmacdonald.android.Models.SaveFormItemObservationModel;
 import com.mottmacdonald.android.Models.SectionData;
 import com.mottmacdonald.android.Models.SectionsDataModel;
 import com.mottmacdonald.android.Models.TemplatesData;
+import com.mottmacdonald.android.Models.obs_form_DataModel;
 import com.mottmacdonald.android.MyApplication;
 import com.mottmacdonald.android.R;
 import com.mottmacdonald.android.Report;
@@ -40,6 +45,7 @@ import com.mottmacdonald.android.View.CustomView.DrawView;
 import com.youxiachai.ajax.ICallback;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,6 +68,12 @@ public class GeneralSiteActivity extends BaseActivity {
     private static final String CONTRACT_NAME = "contract_name";
     private static final String CONTRACT_ID = "contract_id";
     private static final String FORM_INFO_ID = "form_info_id";
+
+
+    public static final String PREFS_NAME = "DataModel";
+    Type listOfObjects = new TypeToken<ArrayList<obs_form_DataModel>>() {
+    }.getType();
+
     public static final int TAKE_PHOTO = 1;
 
 
@@ -76,7 +88,7 @@ public class GeneralSiteActivity extends BaseActivity {
     private GeneralExpandableAdapter mAdapter;
     private AQuery footAq;
     private RelativeLayout pmSign, contractorSign, etSign, iecSign;
-    private LinearLayout pm_layout,contractor_layout,et_layout,iec_layout,Confirmation_layout ;
+    private LinearLayout pm_layout, contractor_layout, et_layout, iec_layout, Confirmation_layout;
     private TextView pmTitle, contractorTitle, etTitle, iecTitle;
     private LinearLayout signLeftTitleLayout;
     private DrawView pmView, etView, contractorView, iecView;
@@ -95,9 +107,11 @@ public class GeneralSiteActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.actvity_general_site);
 
+
+
         initDatas();
         initViews();
-        Log.i(TAG,"searchData ");
+        Log.i(TAG, "searchData ");
         searchData();
     }
 
@@ -174,13 +188,12 @@ public class GeneralSiteActivity extends BaseActivity {
         IEC.setText(sharedPreferences.getString("iec", ""));
         //special , date value
         EditText editText_date = (EditText) footView.findViewById(R.id.date);
-        editText_date.setText(sharedPreferences.getString("date",""));
+        editText_date.setText(sharedPreferences.getString("date", ""));
 
 
         //>>
         listView.addHeaderView(headView);
         listView.addFooterView(footView);
-
 
 
     }
@@ -212,9 +225,8 @@ public class GeneralSiteActivity extends BaseActivity {
         if (!TextUtils.isEmpty(report.getPm())) {
 
 
-
             pm_layout.setVisibility(View.VISIBLE);
-            Log.i(TAG,"report.getPm() "+report.getPm());
+            Log.i(TAG, "report.getPm() " + report.getPm());
 
             pmSign.setVisibility(View.VISIBLE);
             pmTitle.setVisibility(View.VISIBLE);
@@ -232,7 +244,7 @@ public class GeneralSiteActivity extends BaseActivity {
                 @Override
                 public void onGlobalLayout() {
 
-                    Log.i(TAG,"onGlobalLayout ");
+                    Log.i(TAG, "onGlobalLayout ");
                     pmSign.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                     pmView = getDrawView(pmSign.getWidth(), pmSign.getHeight());
                     Log.i(TAG, "pmSign.getWidth(): " + pmSign.getWidth() + " pmSign.getHeight(): " + pmSign.getHeight());
@@ -249,7 +261,7 @@ public class GeneralSiteActivity extends BaseActivity {
             pmSign.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.i(TAG, "onclick" );
+                    Log.i(TAG, "onclick");
 
                     Log.i(TAG, "pmSign.getWidth(): " + pmSign.getWidth() + " pmSign.getHeight(): " + pmSign.getHeight());
 
@@ -258,7 +270,7 @@ public class GeneralSiteActivity extends BaseActivity {
             GeneralSiteActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.i(TAG,"set Visibility");
+                    Log.i(TAG, "set Visibility");
                     Confirmation_layout.invalidate();
                     Confirmation_layout.setVisibility(View.VISIBLE);
                     pm_layout.setVisibility(View.VISIBLE);
@@ -266,14 +278,13 @@ public class GeneralSiteActivity extends BaseActivity {
                     pmTitle.setVisibility(View.VISIBLE);
                 }
             });
-        }
-        else {
-            Log.i(TAG,"TextUtils.isEmpty(report.getPm()));  "+TextUtils.isEmpty(report.getPm()));
+        } else {
+            Log.i(TAG, "TextUtils.isEmpty(report.getPm()));  " + TextUtils.isEmpty(report.getPm()));
 
         }
         if (!TextUtils.isEmpty(report.getContractor())) {
             contractor_layout.setVisibility(View.VISIBLE);
-            Log.i(TAG,"report.getContractor() "+report.getContractor());
+            Log.i(TAG, "report.getContractor() " + report.getContractor());
 
             contractorSign.setVisibility(View.VISIBLE);
             contractorTitle.setVisibility(View.VISIBLE);
@@ -291,7 +302,7 @@ public class GeneralSiteActivity extends BaseActivity {
         }
         if (!TextUtils.isEmpty(report.getEt())) {
             et_layout.setVisibility(View.VISIBLE);
-            Log.i(TAG,"report.getEt() "+report.getEt());
+            Log.i(TAG, "report.getEt() " + report.getEt());
 
             etSign.setVisibility(View.VISIBLE);
             etTitle.setVisibility(View.VISIBLE);
@@ -309,7 +320,7 @@ public class GeneralSiteActivity extends BaseActivity {
         }
         if (!TextUtils.isEmpty(report.getIec())) {
             iec_layout.setVisibility(View.VISIBLE);
-            Log.i(TAG,"report.getIec() "+report.getIec());
+            Log.i(TAG, "report.getIec() " + report.getIec());
 
             iecSign.setVisibility(View.VISIBLE);
             iecTitle.setVisibility(View.VISIBLE);
@@ -331,12 +342,11 @@ public class GeneralSiteActivity extends BaseActivity {
         }
 
 
-
     }
 
     private void searchData() {
         String noteText = DeviceUtils.getCurrentDate();
-        Log.i(TAG,"searchData");
+        Log.i(TAG, "searchData");
 
         // Query 类代表了一个可以被重复执行的查询
         Query query = MyApplication.getInstance().getDaoSession().getReportDao().queryBuilder()
@@ -346,11 +356,10 @@ public class GeneralSiteActivity extends BaseActivity {
         // 查询结果以 List 返回
         List<Report> reports = query.list();
         if (reports.size() > 0) {
-            Log.i(TAG,"report.size is >0");
+            Log.i(TAG, "report.size is >0");
             setSignShow(reports.get(0));
-        }
-        else
-        {            Log.i(TAG,"report.size is !>0");
+        } else {
+            Log.i(TAG, "report.size is !>0");
         }
 
         // 在 QueryBuilder 类中内置两个 Flag 用于方便输出执行的 SQL 语句与传递参数的值
@@ -405,46 +414,132 @@ public class GeneralSiteActivity extends BaseActivity {
 
     private void saveFormItem() {
         showProgress("Saving");
+        Log.i(TAG, "saveFormItem ; ");
+
         List<Map<String, String>> mapList = new ArrayList<>();
         for (int i = 0; i < groupDatas.size(); i++) {
             for (int j = 0; j < childrenDatas.get(i).size(); j++) {
                 ItemData data = childrenDatas.get(i).get(j);
                 Map<String, String> map = new HashMap<>();
+
+
                 map.put("forminfo_id", formInfoId);
-                map.put("item_id", data.item_id);
+                map.put("item_id ", data.item_id);
                 map.put("close_out", !TextUtils.isEmpty(mAdapter.getCloseOutData().get(i).get(j)) ?
                         mAdapter.getCloseOutData().get(i).get(j) : "N/A");
                 map.put("answer_id", mAdapter.getAnswerId(i, j));
                 map.put("remarks", mAdapter.getRemarkData().get(i).get(j));
+
+
+                Log.i(TAG, "forminfo_id " + map.get("forminfo_id"));
+                Log.i(TAG, "item_id " + map.get("item_id"));
+                Log.i(TAG, "close_out " + map.get("close_out"));
+                Log.i(TAG, "answer_id " + map.get("answer_id"));
+                Log.i(TAG, "remarks " + map.get("remarks"));
                 mapList.add(map);
             }
         }
+
         //SaveFormApi.saveFormWeather
-        SaveFormApi.saveFormItem(mContext, mapList, new ICallback<SaveFormItemModel>() {
-            @Override
-            public void onSuccess(SaveFormItemModel saveFormItemModel, Enum<?> anEnum, AjaxStatus ajaxStatus) {
-                dismissProgress();
-                if (saveFormItemModel != null) {
-                    if (saveFormItemModel.status == 1) {
-                        showToast("Save Form Complete");
-//                        saveFormItemObs();
-                        MyApplication.getInstance().removeActivityExcept(MainActivity.class);
+        for (int i = 0; i < mapList.size(); i++) {
+            Log.i(TAG, "i " + i);
+
+            Map<String, String> map = mapList.get(i);
+            SaveFormApi.saveFormItem_OnebyOne(mContext, map, new ICallback<SaveFormItemModel>() {
+                @Override
+                public void onSuccess(SaveFormItemModel saveFormItemModel, Enum<?> anEnum, AjaxStatus ajaxStatus) {
+                    dismissProgress();
+                    if (saveFormItemModel != null) {
+                        if (saveFormItemModel.status == 1) {
+                            Log.i(TAG, "saveFormItemModel.status ;" + saveFormItemModel.status);
+                            Log.i(TAG, "saveFormItemModel.formitem_id ;" + saveFormItemModel.formitem_id);
+                            showToast("Save Form Complete");
+                            saveFormItemObs(saveFormItemModel.formitem_id);
+                            MyApplication.getInstance().removeActivityExcept(MainActivity.class);
+                        } else {
+                            showToast("Save failure");
+                        }
                     } else {
-                        showToast("Save failure");
+                        showRequestFailToast();
                     }
-                } else {
-                    showRequestFailToast();
                 }
+
+                @Override
+                public void onError(int i, String s) {
+
+                }
+            });
+        }
+
+
+//        SaveFormApi.saveFormItem(mContext, mapList, new ICallback<SaveFormItemModel>() {
+//            @Override
+//            public void onSuccess(SaveFormItemModel saveFormItemModel, Enum<?> anEnum, AjaxStatus ajaxStatus) {
+//                dismissProgress();
+//                if (saveFormItemModel != null) {
+//                    if (saveFormItemModel.status == 1) {
+//                        Log.i(TAG,"saveFormItemModel.status ;"+saveFormItemModel.status );
+//                        Log.i(TAG,"saveFormItemModel.formitem_id ;"+saveFormItemModel.formitem_id );
+//                        showToast("Save Form Complete");
+//                        saveFormItemObs(saveFormItemModel.formitem_id );
+//                        MyApplication.getInstance().removeActivityExcept(MainActivity.class);
+//                    } else {
+//                        showToast("Save failure");
+//                    }
+//                } else {
+//                    showRequestFailToast();
+//                }
+//            }
+//
+//            @Override
+//            public void onError(int i, String s) {
+//
+//            }
+//        });
+
+
+    }
+
+    private void saveFormItemObs(String formitem_id) {
+        System.out.println("保存图片表");
+        SharedPreferences mPrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);// use JSOnM format to store the object (obs_form)
+        String json = mPrefs.getString("MyList", "");
+        Gson gson = new Gson();
+        if (!json.isEmpty()) {
+            Toast.makeText(mContext, "json is ! empty", Toast.LENGTH_LONG).show();
+            Log.i("checking", "json " + json.toString());
+            ArrayList<obs_form_DataModel> list = gson.fromJson(json,listOfObjects);
+            obs_form_DataModel dataModel = list.get(0);
+            Log.i(TAG,"dataModel.getItemNo(); "+dataModel.getItemNo());
+            Log.i(TAG,"dataModel.getPhotoCache(); "+dataModel.getPhotoCache());
+
+        } else {
+            Toast.makeText(mContext, "json is empty", Toast.LENGTH_LONG).show();
+        }
+
+//        showProgress("Saving");
+        ///storage/emulated/0/Pictures/PokemonGO/IMG_2016-07-25-20033902.png
+//        File file = new File("/storage/emulated/0/Android/data/com.mottmacdonald.android/cache/mott_201605021843579470.jpg");
+        File file = new File("/storage/emulated/0/Pictures/PokemonGO/IMG_2016-07-25-20033902.png");
+        SaveFormApi.saveFormItemObservation(mContext, formitem_id, file, "", "", "", new ICallback<SaveFormItemObservationModel>() {
+            @Override
+            public void onSuccess(SaveFormItemObservationModel resultData, Enum<?> anEnum, AjaxStatus ajaxStatus) {
+//                dismissProgress();
+                Log.i(TAG, "saveFormItemObs successful");
+                showToast("Save Form Complete");
+                MyApplication.getInstance().removeActivityExcept(MainActivity.class);
             }
 
             @Override
             public void onError(int i, String s) {
+                Log.i(TAG, "onError");
+                Log.i(TAG, "i:" + i + " string: " + s);
 
             }
         });
     }
 
-//    private void saveFormItemObs(){
+//    private void saveFormItemObs(String formitem_id ){
 //        System.out.println("保存图片表");
 //        showProgress("Saving");
 //
@@ -463,6 +558,7 @@ public class GeneralSiteActivity extends BaseActivity {
 //            }
 //        });
 //    }
+//
 
 
 }

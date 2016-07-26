@@ -1,4 +1,18 @@
 
+7-26 (Tuesday): x240
+In observation api, the formitem_id should be the formitem id  in forms item
+ So u need to first submit a row to get the return id before upload photos
+[12:20:00 PM] Chi Chiu:
+so use saveFormItem to get the "formitem_id": return ,
+then use this "formitem_id" post each row of data in obs_form_observation?
+but what "formitem_id" related? it is related to each construction phase in general site activity ?
+Or this form
+
+[12:53:16 PM] Sariel:
+This form
+Everytime u submit a row, the formitem_id will auto increment by 1
+
+
 7-25 (Monday): x240
 ObservationFormActivity:
 improve obs_form layout,

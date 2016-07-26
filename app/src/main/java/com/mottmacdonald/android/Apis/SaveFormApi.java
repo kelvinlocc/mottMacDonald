@@ -1,6 +1,7 @@
 package com.mottmacdonald.android.Apis;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 import com.androidquery.AQuery;
@@ -24,10 +25,11 @@ import java.util.Map;
  * 备注：
  */
 public class SaveFormApi {
+    private static final String TAG = "SaveFormApi";
 
     public static void getHsiGraph(Context ctx, int graphType,
                                    String date, String time,
-                                   ICallback<String> callback){
+                                   ICallback<String> callback) {
         AQuery request = new AQuery(ctx);
 
 //        Map<String, Object> params = ApiBase.baseMap(ctx);
@@ -44,7 +46,7 @@ public class SaveFormApi {
     public static void saveFormInfo(Context context, String formId, String date, String environmentalPermitNo,
                                     String siteLocation, String pm, String et, String contractor,
                                     String iec, String other, String followup, String otherObservation,
-                                    ICallback<SaveFormInfoModel> callback){
+                                    ICallback<SaveFormInfoModel> callback) {
 
         AQuery request = new AQuery(context);
 
@@ -70,7 +72,7 @@ public class SaveFormApi {
 
     public static void saveFormWeather(Context context, String formInfoId, String conditionId,
                                        String temperature, String humidityId, String windId,
-                                       String remarks, ICallback<SaveFormWeatherModel> callback){
+                                       String remarks, ICallback<SaveFormWeatherModel> callback) {
         AQuery request = new AQuery(context);
         Map<String, Object> params = new HashMap<>();
         params.put(ApiParams.FORMINFO_ID, formInfoId);
@@ -84,12 +86,13 @@ public class SaveFormApi {
         NetCallback<SaveFormWeatherModel> response = new NetCallback<SaveFormWeatherModel>(
                 SaveFormWeatherModel.class, option, callback);
         response.params(params);
+
         request.transformer(new ApiTransFormer()).ajax(response);
     }
 
 
     public static void saveFormItem(Context context,
-                                    List<Map<String, String>> mapList, ICallback<SaveFormItemModel> callback){
+                                    List<Map<String, String>> mapList, ICallback<SaveFormItemModel> callback) {
         AQuery request = new AQuery(context);
         Map<String, Object> params = new HashMap<>();
 //        params.put(ApiParams.FORMINFO_ID, formInfoId);
@@ -98,19 +101,48 @@ public class SaveFormApi {
 //        params.put(ApiParams.ANSWER_ID, answerId);
 //        params.put(ApiParams.REMARKS, remarks);
         for (int i = 0; i < mapList.size(); i++) {
-            params.put("formitems["+ i +"]", JSON.toJSONString(mapList.get(i)));
-//            System.out.println("转化JSON：" + JSON.toJSONString(mapList.get(i)));
+            params.put("formitems[" + i + "]", JSON.toJSONString(mapList.get(i)));
+            Log.i(TAG, "formitems[" + i + "] " + JSON.toJSONString(mapList.get(i)));
         }
         NetOption option = new NetOption(ApiBase.API_HOST + ApiBase.SAVE_FORM_ITEM);
         NetCallback<SaveFormItemModel> response = new NetCallback<SaveFormItemModel>(
                 SaveFormItemModel.class, option, callback);
         response.params(params);
+
+
         request.transformer(new ApiTransFormer()).ajax(response);
     }
 
+    public static void saveFormItem_OnebyOne(Context context,
+                                    Map<String, String> map, ICallback<SaveFormItemModel> callback) {
+        AQuery request = new AQuery(context);
+        Map<String, Object> params = new HashMap<>();
+//        params.put("")
+
+        //*
+        // map.put("forminfo_id", formInfoId);
+//        map.put("item_id", data.item_id);
+//        map.put("close_out", !TextUtils.isEmpty(mAdapter.getCloseOutData().get(i).get(j)) ?
+//                mAdapter.getCloseOutData().get(i).get(j) : "N/A");
+//        map.put("answer_id", mAdapter.getAnswerId(i, j));
+//        map.put("remarks", mAdapter.getRemarkData().get(i).get(j));
+        //
+        //
+        // *//
+
+        NetOption option = new NetOption(ApiBase.API_HOST + ApiBase.SAVE_FORM_ITEM);
+        NetCallback<SaveFormItemModel> response = new NetCallback<SaveFormItemModel>(
+                SaveFormItemModel.class, option, callback);
+        response.params(map);
+
+
+        request.transformer(new ApiTransFormer()).ajax(response);
+    }
+
+
     public static void saveFormItemObservation(Context context, String formItemId, File image,
                                                String recommendation, String remediated,
-                                               String followup, ICallback<SaveFormItemObservationModel> callback){
+                                               String followup, ICallback<SaveFormItemObservationModel> callback) {
         AQuery request = new AQuery(context);
         Map<String, Object> params = new HashMap<>();
         params.put(ApiParams.FORMITEM_ID, formItemId);

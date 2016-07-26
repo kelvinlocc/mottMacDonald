@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.JsonReader;
 import android.util.Log;
 import android.view.MenuItem;
@@ -24,17 +25,21 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.androidquery.callback.AjaxStatus;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import com.mottmacdonald.android.Adapter.obs_form_lv_adapter;
+import com.mottmacdonald.android.Apis.SaveFormApi;
 import com.mottmacdonald.android.Models.ItemData;
+import com.mottmacdonald.android.Models.SaveFormWeatherModel;
 import com.mottmacdonald.android.Models.obs_form_DataModel;
 import com.mottmacdonald.android.R;
 import com.mottmacdonald.android.Utils.DeviceUtils;
 import com.mottmacdonald.android.Utils.FileUtil;
 import com.mottmacdonald.android.Utils.PhotoReSize;
+import com.youxiachai.ajax.ICallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -97,7 +102,7 @@ public class ObservationFormActivity extends BaseActivity {
 
         arrayList_dataModel = new ArrayList<obs_form_DataModel>();
 
-        Log.i(TAG,"updated02");
+        Log.i(TAG, "updated02");
         SharedPreferences mPrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);// use JSOnM format to store the object (obs_form)
         // check whether a data model store in shared preference:
         String string = mPrefs.getString("myTest", "");
@@ -201,23 +206,20 @@ public class ObservationFormActivity extends BaseActivity {
 //                Bitmap bitmap = BitmapFactory.decodeFile(saveFile.getAbsolutePath());
 
 
-
                 mAQuery.id(R.id.obs_image).image(saveFile.getAbsolutePath());
 
                 // add item into data model
 
                 newData.setItemNo(arrayList_dataModel.size() + 1);
                 newData.setPhotoCache(saveFile);
-                Log.i(TAG,"saveFile: "+saveFile);
-                Log.i(TAG,"saveFile.getAbsolutePath(): "+saveFile.getAbsolutePath());
+                Log.i(TAG, "saveFile: " + saveFile);
+                Log.i(TAG, "saveFile.getAbsolutePath(): " + saveFile.getAbsolutePath());
 
                 // save photo into bitmap:
 //                newData.setBitmap(bitmap);
 
-            }
-
-            else if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-                Log.i(TAG,"select photo from album");
+            } else if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+                Log.i(TAG, "select photo from album");
 
                 Uri uri = data.getData();
 
@@ -226,11 +228,11 @@ public class ObservationFormActivity extends BaseActivity {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                     Uri selectedImageUri = data.getData();
                     String imagePath = getRealPathFromURI(selectedImageUri);
-                    Log.i(TAG,"imagePath: "+imagePath);
+                    Log.i(TAG, "imagePath: " + imagePath);
 
                     File file = new File(imagePath);
-                    Log.i(TAG,"file: "+file);
-                    Log.i(TAG,"file.getAbsolutePath(): "+file.getAbsolutePath());
+                    Log.i(TAG, "file: " + file);
+                    Log.i(TAG, "file.getAbsolutePath(): " + file.getAbsolutePath());
                     // Log.d(TAG, String.valueOf(bitmap));
 
                     ImageView imageView = (ImageView) findViewById(R.id.obs_image);
@@ -264,8 +266,11 @@ public class ObservationFormActivity extends BaseActivity {
         }
 
     }
+
+
+
     public String getRealPathFromURI(Uri uri) {
-        String[] projection = { MediaStore.Images.Media.DATA };
+        String[] projection = {MediaStore.Images.Media.DATA};
         @SuppressWarnings("deprecation")
         Cursor cursor = managedQuery(uri, projection, null, null, null);
         int column_index = cursor
@@ -280,6 +285,33 @@ public class ObservationFormActivity extends BaseActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.back_btn:
+                    saveObsFrom();
+
+
+//                    public static void saveFormItemObservation(Context context, String formItemId, File image,
+//                    String recommendation, String remediated,
+//                    String followup, ICallback<SaveFormItemObservationModel> callback){
+
+
+//                    SaveFormApi.saveFormWeather(mContext, formInfoId, conditionId, temperatureText, humidityId,
+//                            windId, remarkText, new ICallback<SaveFormWeatherModel>() {
+//                                @Override
+//                                public void onSuccess(SaveFormWeatherModel saveFormWeatherModel, Enum<?> anEnum, AjaxStatus ajaxStatus) {
+//                                    dismissProgress();
+//                                    if (saveFormWeatherModel != null) {
+//                                        saveWeatherLocalData(conditionId, temperatureText, humidityId, windId, remarkText);
+//                                        GeneralSiteActivity.start(mContext, contractName, contractId, formInfoId);
+//                                    } else {
+//                                        showRequestFailToast();
+//                                    }
+//                                }
+//
+//                                @Override
+//                                public void onError(int i, String s) {
+//
+//                                }
+//                            });
+//
                     finish();
                     break;
                 case R.id.addphoto:
@@ -340,4 +372,34 @@ public class ObservationFormActivity extends BaseActivity {
             }
         }
     };
+
+    private void saveObsFrom() {
+//        final String temperatureText = mAQuery.id(R.id.temperature_text).getText().toString();
+//        final String remarkText = mAQuery.id(R.id.remarks_text).getText().toString();
+//        if (TextUtils.isEmpty(conditionId)) {
+//            showToast("Please select condition");
+//            return;
+//        }
+
+//        showProgress();
+//        SaveFormApi.saveFormItemObservation(mContext, formItemId, conditionId, temperatureText, humidityId,
+//                windId, remarkText, new ICallback<SaveFormWeatherModel>() {
+//                    @Override
+//                    public void onSuccess(SaveFormWeatherModel saveFormWeatherModel, Enum<?> anEnum, AjaxStatus ajaxStatus) {
+//                        dismissProgress();
+//                        if (saveFormWeatherModel != null) {
+//                            saveWeatherLocalData(conditionId, temperatureText, humidityId, windId, remarkText);
+//                            GeneralSiteActivity.start(mContext, contractName, contractId, formInfoId);
+//                        } else {
+//                            showRequestFailToast();
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onError(int i, String s) {
+//
+//                    }
+//                });
+    }
+
 }

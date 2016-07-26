@@ -336,6 +336,7 @@ public class WeatherActivity extends BaseActivity {
                         if (saveFormWeatherModel != null) {
                             saveWeatherLocalData(conditionId, temperatureText, humidityId, windId, remarkText);
                             GeneralSiteActivity.start(mContext, contractName, contractId, formInfoId);
+                            Log.i(TAG,"create the unique ID for shared preference: contractName, contractId, formInfoId: "+contractName+","+contractId+","+formInfoId);
                         } else {
                             showRequestFailToast();
                         }
