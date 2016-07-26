@@ -7,6 +7,7 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -36,6 +37,7 @@ import java.util.List;
  * 备注：
  */
 public class GeneralExpandableAdapter extends BaseExpandableListAdapter{
+    private final static String TAG = "GeneralExpandable";
 
     private Context mContext;
     private final int CURRENT_CLOSEOUT = 1;
@@ -165,6 +167,7 @@ public class GeneralExpandableAdapter extends BaseExpandableListAdapter{
         SectionData data = mGroupDatas.get(groupPosition);
         if (!TextUtils.isEmpty(data.title))
             holder.subTitle.setText(data.title);
+        Log.i(TAG,"create the unique ID for shared preference:data.title  "+data.title);
         return convertView;
     }
 
@@ -173,6 +176,8 @@ public class GeneralExpandableAdapter extends BaseExpandableListAdapter{
         ChildrenViewHolder holder = null;
         if(convertView == null){
             convertView = mInflater.inflate(R.layout.item_general_list, null);
+            Log.i(TAG,"create the unique ID for shared preference:childPosition "+childPosition);
+
             aq = new AQuery(convertView);
             holder = new ChildrenViewHolder(convertView);
             holder.closeOut.setTag(groupPosition+ "-" + childPosition);
@@ -204,6 +209,9 @@ public class GeneralExpandableAdapter extends BaseExpandableListAdapter{
             aq.id(holder.takePhoto).image(imagePaths.get(groupPosition).get(childPosition));
             System.out.println("图片地址:" + imagePaths.get(groupPosition).get(childPosition));
         }
+
+        Log.i(TAG,"create the unique ID for shared preference:groupPosition+ \"-\" + childPosition "+groupPosition+ "-" + childPosition);
+
         ItemData data = mChildrenDatas.get(groupPosition).get(childPosition);
         holder.refTextView.setText(data.ref);
         holder.itemTextView.setText("·"+ data.header);
@@ -252,12 +260,15 @@ public class GeneralExpandableAdapter extends BaseExpandableListAdapter{
                 case R.id.takephoto_btn:
                     imageSelectGroupPosition = groupPosition;
                     imageSelectChildrenPostion = childrenPosition;
+                    Log.i(TAG,"create the unique ID for shared preference:groupPosition + childPosition "+groupPosition+ "+" + childrenPosition);
+
                     ObservationFormActivity
                             .start(mContext, mChildrenDatas.get(groupPosition).get(childrenPosition));
 //                    takePhoto();
                     break;
 
                 case R.id.yes_btn:
+
                     yesList.get(groupPosition).set(childrenPosition, true);
                     noList.get(groupPosition).set(childrenPosition, false);
                     naOrNotObsList.get(groupPosition).set(childrenPosition, false);
