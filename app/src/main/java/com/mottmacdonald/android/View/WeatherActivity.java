@@ -57,6 +57,8 @@ public class WeatherActivity extends BaseActivity {
     private Weather weatherLocalData;
     private RadioGroup conditionGroup_02; //
     private Boolean toggleKey;
+    public MySharedPref_App mySharedPref_app;
+    public static Context mContext;
 
     public static void start(Context context, String contractName, String contractId,
                              SaveFormInfoModel saveFormInfoModel) {
@@ -65,6 +67,7 @@ public class WeatherActivity extends BaseActivity {
         intent.putExtra(CONTRACT_ID, contractId);
         intent.putExtra(FORM_INFO_DATA, saveFormInfoModel);
         context.startActivity(intent);
+        mContext= context;
     }
 
     @Override
@@ -345,11 +348,10 @@ public class WeatherActivity extends BaseActivity {
                             SharedPreferences.Editor editor = myPreference_UniqueCode.edit();
                             editor.putString("code_head",code_head );
                             editor.commit();
-//                                mySharedPreferenceApplication =new MySharedPref_App("uniqueCode");
-//                            SharedPreferences sharedPreferences = mySharedPreferenceApplication.getSharedPreferences("uniqueCode");
-//                            mySharedPreferenceApplication.putString("uniqueCode",code_head);
+                            mySharedPref_app = new MySharedPref_App(); // get instance
+                            String string = mySharedPref_app.getString(mContext,"uniqueCode","code_head");
+                            Log.i(TAG,"check "+string);
 
-                            Log.i(TAG,"code_head "+code_head);
 
                         } else {
                             showRequestFailToast();

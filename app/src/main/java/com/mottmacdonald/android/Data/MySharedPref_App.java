@@ -8,6 +8,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mottmacdonald.android.Models.obs_form_DataModel;
+import com.mottmacdonald.android.Utils.FileUtil;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -26,7 +27,7 @@ import java.util.ArrayList;
 public class MySharedPref_App extends Application {
     public static final String TAG = "MySharedPref_App";
     SharedPreferences sharedPreferences;
-    ArrayList<obs_form_DataModel> arrayList;
+    ArrayList<String> arrayList;
     Type listOfObjects = new TypeToken<ArrayList<obs_form_DataModel>>() {
     }.getType();
 
@@ -39,10 +40,11 @@ public class MySharedPref_App extends Application {
         editor.commit();
     }
 
-    public String getString(SharedPreferences sharedPreferences, String key) {
-        Log.i(TAG, "getString KEY; " + key);
-//        sharedPreferences.getString(KEY)
-        return "";
+    public String getString(Context context, String Pkey,String key) {
+        Log.i(TAG, "getString Pkey; " + Pkey);
+        SharedPreferences sharedPreferences1 =  context.getSharedPreferences(Pkey,MODE_PRIVATE);
+        Log.i(TAG,"check "+sharedPreferences1.getString(key,"no value"));
+        return sharedPreferences1.getString(key,"no value");
 //        return this.sharedPreferences.getString(KEY,"no value");
 
     }
@@ -78,58 +80,92 @@ public class MySharedPref_App extends Application {
         return obsFormDataModelArrayList;
     }
 
-    public void putString_ArrayList(ArrayList<String> text_lines,Context context) {
-        try {
-            //Modes: MODE_PRIVATE, MODE_WORLD_READABLE, MODE_WORLD_WRITABLE
-            FileOutputStream output = context.openFileOutput("lines.txt", context.MODE_WORLD_READABLE);
-            DataOutputStream dout = new DataOutputStream(output);
-            dout.writeInt(text_lines.size()); // Save line count
-            for (String line : text_lines) // Save lines
-                dout.writeUTF(line);
-            dout.flush(); // Flush stream ...
-            dout.close(); // ... and close.
-        } catch (IOException exc) {
-            exc.printStackTrace();
-        }
-        wrtieFileOnInternalStorage(context,"example","boday");
-        String filename = "mysecondfile";
-        String outputString = "Hello world!";
+    public void input_StringArrayList(ArrayList<String> text_lines, Context context, String fileName) {
 
-        File myDir = context.getFilesDir();
+//        wrtieFileOnInternalStorage(context,"example","boday");
+
+//        String outputString = "new test/\n";
+        for (int i = 0; i < text_lines.size(); i++) {
+            Log.i(TAG, "arrayList i: "+i+"," + text_lines.get(i).toString());
+        }
         try {
-            Log.i(TAG," write to disk, my myDir/"+myDir);
-            File secondFile = new File(myDir + "/text/", filename);
+
+            File secondFile = new File(FileUtil.getFileRoot(context) + "/text/", fileName);
             if (secondFile.getParentFile().mkdirs()) {
                 secondFile.createNewFile();
                 FileOutputStream fos = new FileOutputStream(secondFile);
-
-                fos.write(outputString.getBytes());
-                fos.flush();
-                fos.close();
+                DataOutputStream dout = new DataOutputStream(fos);
+                dout.writeInt(text_lines.size()); // Save line count
+                for (String line : text_lines) // Save lines
+                    dout.writeUTF(line);
+                dout.flush(); // Flush stream ...
+                dout.close(); // ... and close.
+//
+//                fos.write(outputString.getBytes());
+//                fos.flush();
+//                fos.close();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
-    public void wrtieFileOnInternalStorage(Context mcoContext,String sFileName, String sBody){
-        Log.i(TAG," write to disk,wrtieFileOnInternalStorage");
 
-        File file = new File(mcoContext.getFilesDir(),"mydir");
-        if(!file.exists()){
+    public ArrayList<String> output_StringArrayList(Context context,String fileName){
+        arrayList = new ArrayList<String>();
+        File file = new File(FileUtil.getFileRoot(context) + "/text/", fileName);
+//        fileName;
+        try {
+            FileInputStream input = context.openFileInput(fileName); // Open input stream
+            DataInputStream din = new DataInputStream(input);
+            int sz = din.readInt(); // Read line count
+            for (int i = 0; i < sz; i++) { // Read lines
+                String line = din.readUTF();
+                arrayList.add(line);
+            }
+            din.close();
+        }catch (Exception e ){e.printStackTrace();}
+        for (int i = 0; i < arrayList.size(); i++) {
+            Log.i(TAG, "output_StringArrayList arrayList i: "+i+"," + arrayList.get(i).toString());
+        }
+
+        return  arrayList;
+
+    }
+
+    public void wrtieFileOnInternalStorage(Context context, String sFileName, String sBody) {
+        Log.i(TAG, " write to disk,wrtieFileOnInternalStorage");
+
+//        File file = new File(context.getFilesDir(),"mydir");
+        File file = new File(FileUtil.getFileRoot(context) + "/file");
+
+        if (!file.exists()) {
             file.mkdir();
         }
-        Log.i(TAG," write to disk,wrtieFileOnInternalStorage / file"+file);
+        Log.i(TAG, " write to disk,wrtieFileOnInternalStorage / file" + file);
+
+//        try {
+//            //Modes: MODE_PRIVATE, MODE_WORLD_READABLE, MODE_WORLD_WRITABLE
+//            FileOutputStream output = context.openFileOutput("lines.txt", context.MODE_WORLD_READABLE);
+//            DataOutputStream dout = new DataOutputStream(output);
+//            dout.writeInt(text_lines.size()); // Save line count
+//            for (String line : text_lines) // Save lines
+//                dout.writeUTF(line);
+//            dout.flush(); // Flush stream ...
+//            dout.close(); // ... and close.
+//        } catch (IOException exc) {
+//            exc.printStackTrace();
+//        }
 
 
-        try{
+        try {
             File gpxfile = new File(file, sFileName);
             FileWriter writer = new FileWriter(gpxfile);
             writer.append(sBody);
             writer.flush();
             writer.close();
 
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }

@@ -150,7 +150,10 @@ public class GeneralSiteActivity extends BaseActivity {
 
         }
         MySharedPref_App mySharedPref_app = new MySharedPref_App();
-        mySharedPref_app.putString_ArrayList(ArrayList,mContext);
+        MySharedPref_App mySharedPref_app1 = new MySharedPref_App();
+        String string = mySharedPref_app.getString(mContext,"uniqueCode","code_head")+"txt";
+        mySharedPref_app.input_StringArrayList(ArrayList,mContext,string);
+        mySharedPref_app.output_StringArrayList(mContext,string);
     }
 
     private void initViews() {
