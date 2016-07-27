@@ -134,6 +134,11 @@ public class GeneralSiteActivity extends BaseActivity {
         for (int i = 0; i < sections.size(); i++) {
             groupDatas.add(sections.get(i).section);
             childrenDatas.add(sections.get(i).items);
+            for (int j = 0; j < childrenDatas.get(i).size(); j++) {
+                Log.i(TAG, "childrenDatas.get(i) i+j" + i + "+" + j);
+                Log.i(TAG, "childrenDatas.get(i).get(j).item_id; " + childrenDatas.get(i).get(j).item_id);
+            }
+
         }
     }
 
@@ -542,10 +547,9 @@ public class GeneralSiteActivity extends BaseActivity {
 //        showProgress("Saving");
         ///storage/emulated/0/Pictures/PokemonGO/IMG_2016-07-25-20033902.png
 //        File file = new File("/storage/emulated/0/Android/data/com.mottmacdonald.android/cache/mott_201605021843579470.jpg");
-        for (int i =0; i<save_obs_form_dataModels.size();i++)
-        {
+        for (int i = 0; i < save_obs_form_dataModels.size(); i++) {
 
-            Log.i(TAG,"create the unique ID for shared preference: follow up action: "+save_obs_form_dataModels.get(i).getPhotoCache());
+            Log.i(TAG, "create the unique ID for shared preference: follow up action: " + save_obs_form_dataModels.get(i).getPhotoCache());
 
 
         }

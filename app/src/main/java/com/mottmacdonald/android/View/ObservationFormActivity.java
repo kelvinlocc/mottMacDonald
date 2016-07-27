@@ -9,51 +9,32 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.text.InputType;
-import android.text.TextUtils;
-import android.util.JsonReader;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.androidquery.callback.AjaxStatus;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import com.mottmacdonald.android.Adapter.obs_form_lv_adapter;
-import com.mottmacdonald.android.Apis.SaveFormApi;
+import com.mottmacdonald.android.Data.MySharedPref_App;
 import com.mottmacdonald.android.Models.ItemData;
-import com.mottmacdonald.android.Models.SaveFormWeatherModel;
 import com.mottmacdonald.android.Models.obs_form_DataModel;
 import com.mottmacdonald.android.R;
 import com.mottmacdonald.android.Utils.DeviceUtils;
 import com.mottmacdonald.android.Utils.FileUtil;
 import com.mottmacdonald.android.Utils.PhotoReSize;
-import com.youxiachai.ajax.ICallback;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.io.Serializable;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * 说明：
@@ -78,10 +59,10 @@ public class ObservationFormActivity extends BaseActivity {
     private obs_form_lv_adapter lv_adapter;
     private ImageButton myButton;
 
-    public ArrayList<obs_form_DataModel> arrayList_dataModel;
+    public ArrayList<obs_form_DataModel> arrayList;
 
-    public String PREFS_NAME = "";
-
+    public String KEY = "";
+    public static Context mContext;
     // method of list 02:
     Type listOfObjects = new TypeToken<ArrayList<obs_form_DataModel>>() {
     }.getType();
@@ -89,6 +70,7 @@ public class ObservationFormActivity extends BaseActivity {
     public static void start(Context context, ItemData itemData) {
         Intent intent = new Intent(context, ObservationFormActivity.class);
         intent.putExtra(ITEM_DATA, itemData);
+        mContext = context;
         context.startActivity(intent);
     }
 
@@ -102,41 +84,45 @@ public class ObservationFormActivity extends BaseActivity {
         String head =  myPreference_UniqueCode.getString("code_head","no head");
         String tail =  myPreference_UniqueCode.getString(head,"no tail");
         Log.i(TAG,"create the unique ID for shared preference: head+ tail "+head+","+tail);
-        PREFS_NAME = head+tail;
+        KEY = head+tail;
 
 
         ListView form_LV = (ListView) findViewById(R.id.obs_form_lv);
 
-        arrayList_dataModel = new ArrayList<obs_form_DataModel>();
+        arrayList = new ArrayList<obs_form_DataModel>();
 
-        SharedPreferences mPrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);// use JSOnM format to store the object (obs_form)
-        // check whether a data model store in shared preference:
-        String string = mPrefs.getString("myTest", "");
-        Log.i(TAG, "string " + string + ".");
+        SharedPreferences mPrefs = getSharedPreferences(KEY, MODE_PRIVATE);// use JSOnM format to store the object (obs_form)
+//        // check whether a data model store in shared preference:
+//        String string = mPrefs.getString("myTest", "");
+//        Log.i(TAG, "string " + string + ".");
+//
+//
+//
+//        String json = mPrefs.getString("MyList", "");
+//        Gson gson = new Gson();
+//        if (!json.isEmpty()) {
+//            Log.i(TAG, "json !null");
+//            Log.i(TAG, "json " + json.toString());
+//            ArrayList<obs_form_DataModel> obsFormDataModelArrayList = gson.fromJson(json, listOfObjects);
+//            obs_form_DataModel data = new obs_form_DataModel();
+//            if (!obsFormDataModelArrayList.isEmpty()) {
+//                arrayList = obsFormDataModelArrayList;
+//                data = obsFormDataModelArrayList.get(0);
+//                Log.i(TAG, "obsFormDataModelArrayList is !empty");
+//                Log.i(TAG, "data.getItemNo()" + data.getItemNo());
+//                Log.i(TAG, "data.getObservation()" + data.getObservation());
+//            } else {
+//                Log.i(TAG, "obsFormDataModelArrayList is empty");
+//            }
+//        } else {
+//            Log.i(TAG, "json is null");
+//        }
+//        MySharedPref_
+        MySharedPref_App mySharedPref_app = new MySharedPref_App();
+//        if (MySharedPref_App.)
+        arrayList = mySharedPref_app.getArrayList(KEY,mContext);
 
-
-
-        String json = mPrefs.getString("MyList", "");
-        Gson gson = new Gson();
-        if (!json.isEmpty()) {
-            Log.i(TAG, "json !null");
-            Log.i(TAG, "json " + json.toString());
-            ArrayList<obs_form_DataModel> obsFormDataModelArrayList = gson.fromJson(json, listOfObjects);
-            obs_form_DataModel data = new obs_form_DataModel();
-            if (!obsFormDataModelArrayList.isEmpty()) {
-                arrayList_dataModel = obsFormDataModelArrayList;
-                data = obsFormDataModelArrayList.get(0);
-                Log.i(TAG, "obsFormDataModelArrayList is !empty");
-                Log.i(TAG, "data.getItemNo()" + data.getItemNo());
-                Log.i(TAG, "data.getObservation()" + data.getObservation());
-            } else {
-                Log.i(TAG, "obsFormDataModelArrayList is empty");
-            }
-        } else {
-            Log.i(TAG, "json is null");
-        }
-
-        lv_adapter = new obs_form_lv_adapter(this, arrayList_dataModel,PREFS_NAME);
+        lv_adapter = new obs_form_lv_adapter(this, arrayList, KEY);
         form_LV.setAdapter(lv_adapter);
 
         myButton = (ImageButton) findViewById(R.id.addphoto);
@@ -186,7 +172,7 @@ public class ObservationFormActivity extends BaseActivity {
 
                 // add item into data model
 
-                newData.setItemNo(arrayList_dataModel.size() + 1);
+                newData.setItemNo(arrayList.size() + 1);
                 newData.setPhotoCache(saveFile);
                 newData.setObservation("N/A");
 //                Log.i(TAG, "saveFile: " + saveFile);
@@ -216,7 +202,7 @@ public class ObservationFormActivity extends BaseActivity {
                     Bitmap bitmap1 = BitmapFactory.decodeFile(file.getAbsolutePath());
                     imageView.setImageBitmap(bitmap1);
 
-                    newData.setItemNo(arrayList_dataModel.size() + 1);
+                    newData.setItemNo(arrayList.size() + 1);
                     newData.setPhotoCache(file);
                     newData.setObservation("N/A");
 //                    Log.i(TAG,"set ")
@@ -225,16 +211,16 @@ public class ObservationFormActivity extends BaseActivity {
                     e.printStackTrace();
                 }
             }
-            arrayList_dataModel.add(newData);
+            arrayList.add(newData);
 
-            SharedPreferences mPrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+            SharedPreferences mPrefs = getSharedPreferences(KEY, MODE_PRIVATE);
             SharedPreferences.Editor prefsEditor = mPrefs.edit();
 
 
             Log.i(TAG,"notifyDataSetChanged");
             // and store current object into shared preference:
             Gson gson = new Gson();
-            String JsonObject = gson.toJson(arrayList_dataModel, listOfObjects); // Here list is your List<CUSTOM_CLASS> object
+            String JsonObject = gson.toJson(arrayList, listOfObjects); // Here list is your List<CUSTOM_CLASS> object
 
 
             prefsEditor.putString("MyList", JsonObject);

@@ -268,6 +268,9 @@ public class GeneralExpandableAdapter extends BaseExpandableListAdapter{
                     String code_head = myPreference_UniqueCode.getString("code_head","");
                     editor.putString(code_head,code_tail);
                     editor.commit();
+                    Log.i(TAG, "childrenDatas.get(i) groupPosition+childrenPosition" + groupPosition + "+" + childrenPosition);
+                    Log.i(TAG,"childrenDatas.get(i) "+mChildrenDatas.get(groupPosition).get(childrenPosition).item_id);
+
                     ObservationFormActivity
                             .start(mContext, mChildrenDatas.get(groupPosition).get(childrenPosition));
 //                    takePhoto();

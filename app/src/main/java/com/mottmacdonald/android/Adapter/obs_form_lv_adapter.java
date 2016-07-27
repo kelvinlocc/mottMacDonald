@@ -32,11 +32,11 @@ import java.util.ArrayList;
  * Created by KelvinLo on 6/22/2016.
  */
 public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnScrollListener {
-    public static String  TAG = "obs_form_lv_adapter ";
+    public static String TAG = "obs_form_lv_adapter ";
     String[] result;
     Context context;
     public String PREFS_NAME = "";
-//    ArrayList<obs_form_DataModel> myArrayList_dataModel;
+    //    ArrayList<obs_form_DataModel> myArrayList_dataModel;
     int[] imageId;
     private static LayoutInflater inflater = null;
     private ArrayList<Integer> itemNo;
@@ -48,11 +48,11 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
     final SharedPreferences mPrefs;
 
 
-    public obs_form_lv_adapter(Context context2, ArrayList<obs_form_DataModel> data01,String preference) {//
+    public obs_form_lv_adapter(Context context2, ArrayList<obs_form_DataModel> data01, String preference) {//
         // TODO Auto-generated constructor stub
         context = context2;//
 //        itemNo = data01;
-        PREFS_NAME =preference;
+        PREFS_NAME = preference;
         myArrayList_dataModel = data01;
         inflater = (LayoutInflater) context.
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -67,7 +67,7 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
             myArrayList_dataModel = gson.fromJson(json, listOfObjects);
             obs_form_DataModel data = new obs_form_DataModel();
             if (!myArrayList_dataModel.isEmpty()) {
-//                arrayList_dataModel = myArrayList_dataModel;
+//                arrayList = myArrayList_dataModel;
                 data = myArrayList_dataModel.get(0);
                 Log.i(TAG, "myArrayList_dataModel is !empty");
                 Log.i(TAG, "data.getItemNo()" + data.getItemNo());
@@ -82,9 +82,11 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
     @Override
     public int getCount() {
         // TODO Auto-generated method stub
-
+        if (myArrayList_dataModel != null) {
 //        return itemNo.size();
-        return myArrayList_dataModel.size();
+            return myArrayList_dataModel.size();
+        } else return 0;
+
     }
 
     @Override
@@ -129,9 +131,7 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
         view = inflater.inflate(R.layout.obs_form_lv_item, null);
 
 
-
         Log.i(TAG, " at position: " + myArrayList_dataModel.get(position).getObservation());
-
 
 
         myData = new obs_form_DataModel();
@@ -149,21 +149,21 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
 
-                    Log.i(TAG," user is finished typing");
+                    Log.i(TAG, " user is finished typing");
                     String string = holder.editText_Observation.getText().toString().trim();
-                    Log.i(TAG,string);
+                    Log.i(TAG, string);
 
                     myArrayList_dataModel.get(position).setObservation(string);
-                    Log.i(TAG,"input model get observation: "+myArrayList_dataModel.get(position).getObservation());
+                    Log.i(TAG, "input model get observation: " + myArrayList_dataModel.get(position).getObservation());
 //                    notifyDataSetChanged();
-                    update(mPrefs,position);
+                    update(mPrefs, position);
                     return false;
                 }
                 return false;
             }
         });
 
-        Log.i(TAG,"@adapter "+myArrayList_dataModel.get(position).getObservation());
+        Log.i(TAG, "@adapter " + myArrayList_dataModel.get(position).getObservation());
         holder.editText_Observation.setText(myArrayList_dataModel.get(position).getObservation());
 
 
@@ -171,11 +171,10 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
         holder.toBeRemediated.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE)
-                {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
                     String string = holder.toBeRemediated.getText().toString().trim();
                     myData.setToBeRemediated_before(string);
-                    return  false;
+                    return false;
                 }
                 return false;
             }
@@ -186,8 +185,7 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
         holder.followUpAction.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE)
-                {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
                     String string = holder.followUpAction.getText().toString().trim();
                     myData.setFollowUpAction(string);
                     return false;
@@ -202,21 +200,18 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
         Bitmap bitmap = BitmapFactory.decodeFile(myData.getPhotoCache().getAbsolutePath());
 //        bitmap = myData.getBitmap();
 //        Log.i(TAG,"bitmap size: "+sizeOf(bitmap));
-        Bitmap reducedBitmap = getResizedBitmap(bitmap,200);
+        Bitmap reducedBitmap = getResizedBitmap(bitmap, 200);
 //        Log.i(TAG,"reducedBitmap; "+sizeOf(reducedBitmap));
 
         holder.obs_photo.setImageBitmap(reducedBitmap);
 //        holder.obs_photo.setImageBitmap(reducedBitmap);
 
 
-
-
-
         return view;
     }
 
-    protected void update (SharedPreferences preferences,int position){
-        Log.i(TAG,"update shared preference");
+    protected void update(SharedPreferences preferences, int position) {
+        Log.i(TAG, "update shared preference");
         // and store current object into shared preference:
         SharedPreferences.Editor prefsEditor = preferences.edit();
 
@@ -244,7 +239,7 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
         int width = image.getWidth();
         int height = image.getHeight();
 
-        float bitmapRatio = (float)width / (float) height;
+        float bitmapRatio = (float) width / (float) height;
         if (bitmapRatio > 0) {
             width = maxSize;
             height = (int) (width / bitmapRatio);
@@ -254,11 +249,6 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
         }
         return Bitmap.createScaledBitmap(image, width, height, true);
     }
-
-
-
-
-
 
 
 }

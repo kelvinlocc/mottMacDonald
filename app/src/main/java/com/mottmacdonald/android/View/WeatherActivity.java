@@ -15,7 +15,7 @@ import com.alibaba.fastjson.JSON;
 import com.androidquery.callback.AjaxStatus;
 import com.mottmacdonald.android.Apis.SaveFormApi;
 import com.mottmacdonald.android.Data.DataShared;
-import com.mottmacdonald.android.Data.MySharedPreference;
+import com.mottmacdonald.android.Data.MySharedPref_App;
 import com.mottmacdonald.android.Models.ConditionOptionsModel;
 import com.mottmacdonald.android.Models.HumidityOptionsModel;
 import com.mottmacdonald.android.Models.SaveFormInfoModel;
@@ -43,7 +43,7 @@ import de.greenrobot.dao.query.QueryBuilder;
  */
 public class WeatherActivity extends BaseActivity {
     private static String TAG = "WeatherActivity ";
-    MySharedPreference mySharedPreference;
+    MySharedPref_App mySharedPreferenceApplication;
     private static final String CONTRACT_NAME = "contract_name";
     private static final String CONTRACT_ID = "contract_id";
     private static final String FORM_INFO_DATA = "form_info_data";
@@ -341,15 +341,15 @@ public class WeatherActivity extends BaseActivity {
                             Log.i(TAG,"create the unique ID for shared preference: contractName, contractId, formInfoId: "+contractName+","+contractId+","+formInfoId);
                             String code_head = contractName+contractId+formInfoId;
                             Log.i(TAG,"code_head "+code_head);
-//                            SharedPreferences myPreference_UniqueCode = getSharedPreferences("uniqueCode",MODE_PRIVATE);
-//                            SharedPreferences.Editor editor = myPreference_UniqueCode.edit();
-//                            editor.putString("code_head",code_head );
-//                            editor.commit();
+                            SharedPreferences myPreference_UniqueCode = getSharedPreferences("uniqueCode",MODE_PRIVATE);
+                            SharedPreferences.Editor editor = myPreference_UniqueCode.edit();
+                            editor.putString("code_head",code_head );
+                            editor.commit();
+//                                mySharedPreferenceApplication =new MySharedPref_App("uniqueCode");
+//                            SharedPreferences sharedPreferences = mySharedPreferenceApplication.getSharedPreferences("uniqueCode");
+//                            mySharedPreferenceApplication.putString("uniqueCode",code_head);
 
-                            mySharedPreference = new MySharedPreference();
-                            mySharedPreference.putString("uniqueCode",code_head);
-
-                            Log.i(TAG,"get unique code: "+mySharedPreference.getSharedPreferences("uniqueCode"));
+                            Log.i(TAG,"code_head "+code_head);
 
                         } else {
                             showRequestFailToast();
