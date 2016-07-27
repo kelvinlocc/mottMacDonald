@@ -348,10 +348,11 @@ public class WeatherActivity extends BaseActivity {
                             SharedPreferences.Editor editor = myPreference_UniqueCode.edit();
                             editor.putString("code_head",code_head );
                             editor.commit();
+
                             mySharedPref_app = new MySharedPref_App(); // get instance
                             String string = mySharedPref_app.getString(mContext,"uniqueCode","code_head");
                             Log.i(TAG,"check "+string);
-
+//                            mySharedPref_app.putString(mContext,);
 
                         } else {
                             showRequestFailToast();

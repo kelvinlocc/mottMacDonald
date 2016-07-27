@@ -53,14 +53,16 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
         // TODO Auto-generated constructor stub
         context = context2;//
 //        itemNo = data01;
-        KEY = preference;
+//        KEY = preference;
 //        arrayList = data01;
         inflater = (LayoutInflater) context.
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mPrefs = context.getSharedPreferences(KEY, Context.MODE_PRIVATE);// use JSOnM format to store the object (obs_form)
+        mPrefs = context.getSharedPreferences(preference, Context.MODE_PRIVATE);// use JSOnM format to store the object (obs_form)
         // check whether a data model store in shared preference:
         MySharedPref_App mySharedPref_app = new MySharedPref_App();
-        arrayList = mySharedPref_app.getArrayList(preference, context2);
+//        arrayList = mySharedPref_app.getArrayList(preference, context2);
+        arrayList = data01;
+        Log.i(TAG,"arrayList.size() @adapter"+arrayList.size());
     }
 
     @Override
@@ -112,11 +114,13 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
         view = inflater.inflate(R.layout.obs_form_lv_item, null);
 
 
-        Log.i(TAG, " at position: " + arrayList.get(position).getObservation());
-
+        Log.i(TAG, " at position: " + arrayList.get(position).getRecommedation());
+        MySharedPref_App mySharedPref_app = new MySharedPref_App();
+//        arrayList = mySharedPref_app.getArrayList(KEY, context);
 
         myData = new obs_form_DataModel();
         myData = arrayList.get(position);
+        Log.i(TAG,"arrayList.size() @adapter"+arrayList.size());
 
 
         holder.txt_itemNo = (TextView) view.findViewById(R.id.item_no);
@@ -134,8 +138,8 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
                     String string = holder.editText_Observation.getText().toString().trim();
                     Log.i(TAG, string);
 
-                    arrayList.get(position).setObservation(string);
-                    Log.i(TAG, "input model get observation: " + arrayList.get(position).getObservation());
+                    arrayList.get(position).setRecommedation(string);
+                    Log.i(TAG, "input model get observation: " + arrayList.get(position).getRecommedation());
 //                    notifyDataSetChanged();
                     update(mPrefs, position);
                     return false;
@@ -144,8 +148,8 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
             }
         });
 
-        Log.i(TAG, "@adapter " + arrayList.get(position).getObservation());
-        holder.editText_Observation.setText(arrayList.get(position).getObservation());
+        Log.i(TAG, "@adapter " + arrayList.get(position).getRecommedation());
+        holder.editText_Observation.setText(arrayList.get(position).getRecommedation());
 
 
         holder.toBeRemediated = (EditText) view.findViewById(R.id.to_be_remediated_before);
@@ -177,7 +181,7 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
         holder.followUpAction.setText(myData.getFollowUpAction());
 
         holder.obs_photo = (ImageView) view.findViewById(R.id.obs_photo);
-        Bitmap bitmap = BitmapFactory.decodeFile(myData.getPhotoCache().getAbsolutePath());
+        Bitmap bitmap = BitmapFactory.decodeFile(myData.getFile().getAbsolutePath());
         Bitmap reducedBitmap = getResizedBitmap(bitmap, 200);
         holder.obs_photo.setImageBitmap(reducedBitmap);
 

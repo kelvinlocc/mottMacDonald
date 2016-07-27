@@ -12,11 +12,11 @@ import java.io.File;
 public class obs_form_DataModel {
 
     private Integer itemNo; // head, dynamicalyy added
-    private String Observation;
+    private String Recommedation;
     private String toBeRemediated_before;
     private String followUpAction;
 
-    private File photoCache;
+    private File file;
     private Bitmap bitmap;
 
     private double[] shop_coordinate = new double[2];
@@ -32,12 +32,12 @@ public class obs_form_DataModel {
         return this.bitmap;
     }
 
-    public void setObservation (String data){
-        this.Observation = data;
+    public void setRecommedation(String data){
+        this.Recommedation = data;
     }
 
-    public String getObservation (){
-        return this.Observation;
+    public String getRecommedation(){
+        return this.Recommedation;
     }
     public void setItemNo(Integer value) {
         this.itemNo= value;
@@ -67,12 +67,12 @@ public class obs_form_DataModel {
 
 
 
-    public void setPhotoCache (File data){
-        this.photoCache = data;
+    public void setFile(File data){
+        this.file = data;
     }
 
-    public File getPhotoCache (){
-        return this.photoCache;
+    public File getFile(){
+        return this.file;
     }
 
 

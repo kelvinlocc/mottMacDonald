@@ -141,8 +141,8 @@ public class SaveFormApi {
 
 
     public static void saveFormItemObservation(Context context, String formItemId, File image,
-                                               String recommendation, String remediated,
-                                               String followup, ICallback<SaveFormItemObservationModel> callback) {
+                                                   String recommendation, String remediated,
+                                                   String followup, ICallback<SaveFormItemObservationModel> callback) {
         AQuery request = new AQuery(context);
         Map<String, Object> params = new HashMap<>();
         params.put(ApiParams.FORMITEM_ID, formItemId);

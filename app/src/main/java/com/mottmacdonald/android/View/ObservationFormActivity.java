@@ -87,6 +87,7 @@ public class ObservationFormActivity extends BaseActivity {
         String tail =  myPreference_UniqueCode.getString(head,"no tail");
         Log.i(TAG,"create the unique ID for shared preference: head+ tail "+head+","+tail);
         KEY = head+tail;
+        Log.i(TAG,"key of obs_form:@putting"+KEY);
 
 
         SharedPreferences mPrefs = getSharedPreferences(KEY, MODE_PRIVATE);// use JSOnM format to store the object (obs_form)
@@ -108,7 +109,7 @@ public class ObservationFormActivity extends BaseActivity {
 //                data = obsFormDataModelArrayList.get(0);
 //                Log.i(TAG, "obsFormDataModelArrayList is !empty");
 //                Log.i(TAG, "data.getItemNo()" + data.getItemNo());
-//                Log.i(TAG, "data.getObservation()" + data.getObservation());
+//                Log.i(TAG, "data.getRecommedation()" + data.getRecommedation());
 //            } else {
 //                Log.i(TAG, "obsFormDataModelArrayList is empty");
 //            }
@@ -171,8 +172,8 @@ public class ObservationFormActivity extends BaseActivity {
                 // add item into data model
 
                 newData.setItemNo(arrayList.size() + 1);
-                newData.setPhotoCache(saveFile);
-                newData.setObservation("N/A");
+                newData.setFile(saveFile);
+                newData.setRecommedation("N/A");
 //                Log.i(TAG, "saveFile: " + saveFile);
 //                Log.i(TAG, "saveFile.getAbsolutePath(): " + saveFile.getAbsolutePath());
 
@@ -192,17 +193,15 @@ public class ObservationFormActivity extends BaseActivity {
                     Log.i(TAG, "imagePath: " + imagePath);
 
                     File file = new File(imagePath);
-//                    Log.i(TAG, "file: " + file);
-//                    Log.i(TAG, "file.getAbsolutePath(): " + file.getAbsolutePath());
-                    // Log.d(TAG, String.valueOf(bitmap));
-
                     ImageView imageView = (ImageView) findViewById(R.id.obs_image);
                     Bitmap bitmap1 = BitmapFactory.decodeFile(file.getAbsolutePath());
                     imageView.setImageBitmap(bitmap1);
 
                     newData.setItemNo(arrayList.size() + 1);
-                    newData.setPhotoCache(file);
-                    newData.setObservation("N/A");
+                    newData.setFile(file);
+                    newData.setRecommedation("N/A");
+                    newData.setToBeRemediated_before("N/A");
+                    newData.setFollowUpAction("N/A");
 //                    Log.i(TAG,"set ")
 
                 } catch (IOException e) {
@@ -216,6 +215,7 @@ public class ObservationFormActivity extends BaseActivity {
 
 
             Log.i(TAG,"notifyDataSetChanged");
+            Log.i(TAG,"arrayList.size() "+arrayList.size());
             // and store current object into shared preference:
             Gson gson = new Gson();
             String JsonObject = gson.toJson(arrayList, listOfObjects); // Here list is your List<CUSTOM_CLASS> object

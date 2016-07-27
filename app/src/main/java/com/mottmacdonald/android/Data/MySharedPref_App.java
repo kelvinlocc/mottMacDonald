@@ -18,7 +18,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.security.PublicKey;
 import java.util.ArrayList;
 
 /**
@@ -26,25 +25,27 @@ import java.util.ArrayList;
  */
 public class MySharedPref_App extends Application {
     public static final String TAG = "MySharedPref_App";
-    SharedPreferences sharedPreferences;
     ArrayList<String> arrayList;
     Type listOfObjects = new TypeToken<ArrayList<obs_form_DataModel>>() {
     }.getType();
 
 
-    public void putString(SharedPreferences sharedPreferences, String key, String string) {
-        Log.i(TAG, "putString KEY,string; " + key + "," + string);
-
-        SharedPreferences.Editor editor = this.sharedPreferences.edit();
-        editor.putString(key, string);
+    public void putString(Context context, String Pkey, String key,String value) {
+        Log.i(TAG, "putString Pkey, key; " + Pkey + "," + key);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Pkey, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(key,value);
         editor.commit();
+
+
+
     }
 
-    public String getString(Context context, String Pkey,String key) {
+    public String getString(Context context, String Pkey, String key) {
         Log.i(TAG, "getString Pkey; " + Pkey);
-        SharedPreferences sharedPreferences1 =  context.getSharedPreferences(Pkey,MODE_PRIVATE);
-        Log.i(TAG,"check "+sharedPreferences1.getString(key,"no value"));
-        return sharedPreferences1.getString(key,"no value");
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Pkey, MODE_PRIVATE);
+        Log.i(TAG, "check " + sharedPreferences.getString(key, "no value"));
+        return sharedPreferences.getString(key, "no value");
 //        return this.sharedPreferences.getString(KEY,"no value");
 
     }
@@ -69,7 +70,7 @@ public class MySharedPref_App extends Application {
                 data = obsFormDataModelArrayList.get(0);
                 Log.i(TAG, "obsFormDataModelArrayList is !empty");
                 Log.i(TAG, "data.getItemNo()" + data.getItemNo());
-                Log.i(TAG, "data.getObservation()" + data.getObservation());
+                Log.i(TAG, "data.getRecommedation()" + data.getRecommedation());
                 return obsFormDataModelArrayList;
             } else {
                 Log.i(TAG, "obsFormDataModelArrayList is empty");
@@ -80,56 +81,68 @@ public class MySharedPref_App extends Application {
         return obsFormDataModelArrayList;
     }
 
-    public void input_StringArrayList(ArrayList<String> text_lines, Context context, String fileName) {
-
-//        wrtieFileOnInternalStorage(context,"example","boday");
-
-//        String outputString = "new test/\n";
-        for (int i = 0; i < text_lines.size(); i++) {
-            Log.i(TAG, "arrayList i: "+i+"," + text_lines.get(i).toString());
+    public void write_StringArrayList(ArrayList<String> arrayList, Context context, String fileName) {
+        File secondFile = new File(FileUtil.getFileRoot(context) + "/data_file/");
+        Log.i(TAG, "new input");
+        boolean success = true;
+        if (!secondFile.exists()) {
+            Log.i(TAG, " file exist");
+            success = secondFile.mkdir();
         }
-        try {
-
-            File secondFile = new File(FileUtil.getFileRoot(context) + "/text/", fileName);
-            if (secondFile.getParentFile().mkdirs()) {
-                secondFile.createNewFile();
-                FileOutputStream fos = new FileOutputStream(secondFile);
+        if (success) {
+            File file = new File(secondFile, fileName);
+            try {
+                Log.i(TAG, "file; " + file);
+                Log.i(TAG, "file.getAbsolutePath() " + file.getAbsolutePath());
+                FileOutputStream fos = new FileOutputStream(file);
                 DataOutputStream dout = new DataOutputStream(fos);
-                dout.writeInt(text_lines.size()); // Save line count
-                for (String line : text_lines) // Save lines
+                dout.writeInt(arrayList.size()); // Save line count
+                for (String line : arrayList) // Save lines
                     dout.writeUTF(line);
                 dout.flush(); // Flush stream ...
-                dout.close(); // ... and close.
-//
-//                fos.write(outputString.getBytes());
-//                fos.flush();
-//                fos.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+                dout.close(); // ... and close.}
 
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            Log.i(TAG, " make file failed");
+        }
     }
-
-    public ArrayList<String> output_StringArrayList(Context context,String fileName){
+    public ArrayList<String> read_StringArrayList(Context context, String fileName) {
         arrayList = new ArrayList<String>();
-        File file = new File(FileUtil.getFileRoot(context) + "/text/", fileName);
-//        fileName;
-        try {
-            FileInputStream input = context.openFileInput(fileName); // Open input stream
-            DataInputStream din = new DataInputStream(input);
-            int sz = din.readInt(); // Read line count
-            for (int i = 0; i < sz; i++) { // Read lines
-                String line = din.readUTF();
-                arrayList.add(line);
-            }
-            din.close();
-        }catch (Exception e ){e.printStackTrace();}
-        for (int i = 0; i < arrayList.size(); i++) {
-            Log.i(TAG, "output_StringArrayList arrayList i: "+i+"," + arrayList.get(i).toString());
+        Log.i(TAG, "fileName " + fileName);
+        File secondFile = new File(FileUtil.getFileRoot(context) + "/data_file/");
+        Log.i(TAG, "new read");
+        boolean success = true;
+        if (!secondFile.exists()) {
+            Log.i(TAG, " file !exist");
+            success = secondFile.mkdir();
         }
+        if (success) {
+            File file = new File(secondFile, fileName);
+            Log.i(TAG, " file path "+file.getAbsolutePath());
 
-        return  arrayList;
+            try {
+                FileInputStream input = new FileInputStream(file); // Open input stream
+                Log.i(TAG, " open file success!");
+
+                DataInputStream din = new DataInputStream(input);
+                int sz = din.readInt(); // Read line count
+                for (int i = 0; i < sz; i++) { // Read lines
+                    String line = din.readUTF();
+                    arrayList.add(line);
+                }
+                din.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+
+            }
+        }
+        for (int i = 0; i < arrayList.size(); i++) {
+            Log.i(TAG, "arrayList " + i + ": " + arrayList.get(i).toString());
+        }
+        return arrayList;
 
     }
 

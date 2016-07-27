@@ -135,14 +135,17 @@ public class GeneralSiteActivity extends BaseActivity {
                 }
             }
         }
+        SharedPreferences myPreference_UniqueCode = getSharedPreferences("uniqueCode", MODE_PRIVATE);
+        String head = myPreference_UniqueCode.getString("code_head", "no head");
+
         for (int i = 0; i < sections.size(); i++) {
             groupDatas.add(sections.get(i).section);
             childrenDatas.add(sections.get(i).items);
             for (int j = 0; j < childrenDatas.get(i).size(); j++) {
                 Log.i(TAG, "childrenDatas.get(i) i+j" + i + "+" + j);
                 Log.i(TAG, "childrenDatas.get(i).get(j).item_id; " + childrenDatas.get(i).get(j).item_id);
-                String string = new String();
-                string = i+","+j;
+                String string = head + Integer.toString(i) + Integer.toString(j);
+
                 ArrayList.add(string);
 
 
@@ -150,10 +153,11 @@ public class GeneralSiteActivity extends BaseActivity {
 
         }
         MySharedPref_App mySharedPref_app = new MySharedPref_App();
-        MySharedPref_App mySharedPref_app1 = new MySharedPref_App();
-        String string = mySharedPref_app.getString(mContext,"uniqueCode","code_head")+"txt";
-        mySharedPref_app.input_StringArrayList(ArrayList,mContext,string);
-        mySharedPref_app.output_StringArrayList(mContext,string);
+
+        String string = mySharedPref_app.getString(mContext, "uniqueCode", "code_head") + ".txt";
+        mySharedPref_app.write_StringArrayList(ArrayList, mContext, string);
+        mySharedPref_app.read_StringArrayList(mContext, string);
+//        mySharedPref_app.output_StringArrayList(mContext,string);
     }
 
     private void initViews() {
@@ -481,6 +485,10 @@ public class GeneralSiteActivity extends BaseActivity {
             }
         }
 
+
+//        arrayList = mySharedPref_app.getArrayList(KEY,mContext);
+
+
         //SaveFormApi.saveFormWeather
         for (int i = 0; i < mapList.size(); i++) {
             Log.i(TAG, "i " + i);
@@ -552,7 +560,7 @@ public class GeneralSiteActivity extends BaseActivity {
             ArrayList<obs_form_DataModel> list = gson.fromJson(json, listOfObjects);
             obs_form_DataModel dataModel = list.get(0);
             Log.i(TAG, "dataModel.getItemNo(); " + dataModel.getItemNo());
-            Log.i(TAG, "dataModel.getPhotoCache(); " + dataModel.getPhotoCache());
+            Log.i(TAG, "dataModel.getFile(); " + dataModel.getFile());
 
         } else {
             Toast.makeText(mContext, "json is empty", Toast.LENGTH_LONG).show();
@@ -563,12 +571,39 @@ public class GeneralSiteActivity extends BaseActivity {
 //        File file = new File("/storage/emulated/0/Android/data/com.mottmacdonald.android/cache/mott_201605021843579470.jpg");
         for (int i = 0; i < save_obs_form_dataModels.size(); i++) {
 
-            Log.i(TAG, "create the unique ID for shared preference: follow up action: " + save_obs_form_dataModels.get(i).getPhotoCache());
+            Log.i(TAG, "create the unique ID for shared preference: follow up action: " + save_obs_form_dataModels.get(i).getFile());
 
 
         }
+
+
+        MySharedPref_App mySharedPref_app = new MySharedPref_App();
+        String string = mySharedPref_app.getString(mContext, "uniqueCode", "code_head") + ".txt";
+//        mySharedPref_app.write_StringArrayList(ArrayList,mContext,string);
+//        mySharedPref_app.read_StringArrayList(mContext,string);
+//
+        // get all the obs_form;
+
+        ArrayList<String> arrayList = mySharedPref_app.read_StringArrayList(mContext, string);
+        // the whole key for getting the obs_form:
+        for (int i = 0; i < arrayList.size(); i++) {
+            Log.i(TAG, "key of obs_form:@getting" + arrayList.get(i));
+            ArrayList<obs_form_DataModel> temp = mySharedPref_app.getArrayList(arrayList.get(i).toString(), mContext);
+            for (int j = 0; j < temp.size(); j++) {
+                Log.i(TAG, " key of obs_form i,j" + i + j + "," + temp.get(j).getRecommedation());
+                saveObsFrom(formitem_id, temp.get(j).getFile(), temp.get(j).getRecommedation(), temp.get(j).getToBeRemediated_before(), temp.get(j).getFollowUpAction());
+            }
+
+        }
+
+
         File file = new File("/storage/emulated/0/Pictures/PokemonGO/IMG_2016-07-25-20033902.png");
-        SaveFormApi.saveFormItemObservation(mContext, formitem_id, file, "", "", "", new ICallback<SaveFormItemObservationModel>() {
+
+    }
+
+    private void saveObsFrom(String formitem_id, File file, String recommendation, String remediated,
+                             String followup) {
+        SaveFormApi.saveFormItemObservation(mContext, formitem_id, file, recommendation, remediated, followup, new ICallback<SaveFormItemObservationModel>() {
             @Override
             public void onSuccess(SaveFormItemObservationModel resultData, Enum<?> anEnum, AjaxStatus ajaxStatus) {
 //                dismissProgress();
@@ -584,8 +619,8 @@ public class GeneralSiteActivity extends BaseActivity {
 
             }
         });
-    }
 
+    }
 //    private void saveFormItemObs(String formitem_id ){
 //        System.out.println("保存图片表");
 //        showProgress("Saving");
