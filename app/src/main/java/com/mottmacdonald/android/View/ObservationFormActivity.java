@@ -78,18 +78,16 @@ public class ObservationFormActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_obs_form);
+        ListView form_LV = (ListView) findViewById(R.id.obs_form_lv);
+        arrayList = new ArrayList<obs_form_DataModel>();
+
 
         SharedPreferences myPreference_UniqueCode = getSharedPreferences("uniqueCode",MODE_PRIVATE);
-
         String head =  myPreference_UniqueCode.getString("code_head","no head");
         String tail =  myPreference_UniqueCode.getString(head,"no tail");
         Log.i(TAG,"create the unique ID for shared preference: head+ tail "+head+","+tail);
         KEY = head+tail;
 
-
-        ListView form_LV = (ListView) findViewById(R.id.obs_form_lv);
-
-        arrayList = new ArrayList<obs_form_DataModel>();
 
         SharedPreferences mPrefs = getSharedPreferences(KEY, MODE_PRIVATE);// use JSOnM format to store the object (obs_form)
 //        // check whether a data model store in shared preference:

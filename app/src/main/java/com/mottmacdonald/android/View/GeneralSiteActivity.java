@@ -25,6 +25,7 @@ import com.google.gson.reflect.TypeToken;
 import com.mottmacdonald.android.Adapter.GeneralExpandableAdapter;
 import com.mottmacdonald.android.Apis.SaveFormApi;
 import com.mottmacdonald.android.Data.DataShared;
+import com.mottmacdonald.android.Data.MySharedPref_App;
 import com.mottmacdonald.android.Models.AllTemplatesModel;
 import com.mottmacdonald.android.Models.FormsDataModel;
 import com.mottmacdonald.android.Models.ItemData;
@@ -74,6 +75,7 @@ public class GeneralSiteActivity extends BaseActivity {
     Type listOfObjects = new TypeToken<ArrayList<obs_form_DataModel>>() {
     }.getType();
     ArrayList<obs_form_DataModel> save_obs_form_dataModels;
+    ArrayList<String> ArrayList;
 
     public static final int TAKE_PHOTO = 1;
 
@@ -94,6 +96,7 @@ public class GeneralSiteActivity extends BaseActivity {
     private LinearLayout signLeftTitleLayout;
     private DrawView pmView, etView, contractorView, iecView;
     private EditText PM, ET, Contractor, IEC;
+    private static Context mContext;
 
     public static void start(Context context, String contractName, String contractId, String formInfoId) {
         Intent intent = new Intent(context, GeneralSiteActivity.class);
@@ -101,13 +104,14 @@ public class GeneralSiteActivity extends BaseActivity {
         intent.putExtra(CONTRACT_ID, contractId);
         intent.putExtra(FORM_INFO_ID, formInfoId);
         context.startActivity(intent);
+        mContext = context;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.actvity_general_site);
-
+        ArrayList = new ArrayList<String>();
 
         initDatas();
         initViews();
@@ -137,9 +141,16 @@ public class GeneralSiteActivity extends BaseActivity {
             for (int j = 0; j < childrenDatas.get(i).size(); j++) {
                 Log.i(TAG, "childrenDatas.get(i) i+j" + i + "+" + j);
                 Log.i(TAG, "childrenDatas.get(i).get(j).item_id; " + childrenDatas.get(i).get(j).item_id);
+                String string = new String();
+                string = i+","+j;
+                ArrayList.add(string);
+
+
             }
 
         }
+        MySharedPref_App mySharedPref_app = new MySharedPref_App();
+        mySharedPref_app.putString_ArrayList(ArrayList,mContext);
     }
 
     private void initViews() {

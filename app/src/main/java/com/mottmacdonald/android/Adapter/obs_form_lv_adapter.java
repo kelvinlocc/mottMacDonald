@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.mottmacdonald.android.Data.MySharedPref_App;
 import com.mottmacdonald.android.Models.obs_form_DataModel;
 import com.mottmacdonald.android.R;
 
@@ -35,12 +36,12 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
     public static String TAG = "obs_form_lv_adapter ";
     String[] result;
     Context context;
-    public String PREFS_NAME = "";
-    //    ArrayList<obs_form_DataModel> myArrayList_dataModel;
+    public String KEY = "";
+    //    ArrayList<obs_form_DataModel> arrayList;
     int[] imageId;
     private static LayoutInflater inflater = null;
     private ArrayList<Integer> itemNo;
-    private ArrayList<obs_form_DataModel> myArrayList_dataModel;
+    private ArrayList<obs_form_DataModel> arrayList;
     obs_form_DataModel myData;
     private final int TAKE_PHOTO = 1;
     Type listOfObjects = new TypeToken<ArrayList<obs_form_DataModel>>() {
@@ -52,40 +53,20 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
         // TODO Auto-generated constructor stub
         context = context2;//
 //        itemNo = data01;
-        PREFS_NAME = preference;
-        myArrayList_dataModel = data01;
+        KEY = preference;
+//        arrayList = data01;
         inflater = (LayoutInflater) context.
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mPrefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);// use JSOnM format to store the object (obs_form)
+        mPrefs = context.getSharedPreferences(KEY, Context.MODE_PRIVATE);// use JSOnM format to store the object (obs_form)
         // check whether a data model store in shared preference:
-
-        String json = mPrefs.getString("MyList", "");
-        Gson gson = new Gson();
-        if (!json.isEmpty()) {
-            Log.i(TAG, "json !null");
-            Log.i(TAG, "json " + json.toString());
-            myArrayList_dataModel = gson.fromJson(json, listOfObjects);
-            obs_form_DataModel data = new obs_form_DataModel();
-            if (!myArrayList_dataModel.isEmpty()) {
-//                arrayList = myArrayList_dataModel;
-                data = myArrayList_dataModel.get(0);
-                Log.i(TAG, "myArrayList_dataModel is !empty");
-                Log.i(TAG, "data.getItemNo()" + data.getItemNo());
-            } else {
-                Log.i(TAG, "myArrayList_dataModel is empty");
-            }
-        } else {
-            Log.i(TAG, "json is null");
-        }
+        MySharedPref_App mySharedPref_app = new MySharedPref_App();
+        arrayList = mySharedPref_app.getArrayList(preference, context2);
     }
 
     @Override
     public int getCount() {
         // TODO Auto-generated method stub
-        if (myArrayList_dataModel != null) {
-//        return itemNo.size();
-            return myArrayList_dataModel.size();
-        } else return 0;
+        return arrayList.size();
 
     }
 
@@ -131,15 +112,15 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
         view = inflater.inflate(R.layout.obs_form_lv_item, null);
 
 
-        Log.i(TAG, " at position: " + myArrayList_dataModel.get(position).getObservation());
+        Log.i(TAG, " at position: " + arrayList.get(position).getObservation());
 
 
         myData = new obs_form_DataModel();
-        myData = myArrayList_dataModel.get(position);
+        myData = arrayList.get(position);
 
 
         holder.txt_itemNo = (TextView) view.findViewById(R.id.item_no);
-//        holder.txt_itemNo.setText(Integer.toString(myArrayList_dataModel.get(position).getItemNo()));
+//        holder.txt_itemNo.setText(Integer.toString(arrayList.get(position).getItemNo()));
         holder.txt_itemNo.setText(Integer.toString(myData.getItemNo()));
 
 
@@ -153,8 +134,8 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
                     String string = holder.editText_Observation.getText().toString().trim();
                     Log.i(TAG, string);
 
-                    myArrayList_dataModel.get(position).setObservation(string);
-                    Log.i(TAG, "input model get observation: " + myArrayList_dataModel.get(position).getObservation());
+                    arrayList.get(position).setObservation(string);
+                    Log.i(TAG, "input model get observation: " + arrayList.get(position).getObservation());
 //                    notifyDataSetChanged();
                     update(mPrefs, position);
                     return false;
@@ -163,8 +144,8 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
             }
         });
 
-        Log.i(TAG, "@adapter " + myArrayList_dataModel.get(position).getObservation());
-        holder.editText_Observation.setText(myArrayList_dataModel.get(position).getObservation());
+        Log.i(TAG, "@adapter " + arrayList.get(position).getObservation());
+        holder.editText_Observation.setText(arrayList.get(position).getObservation());
 
 
         holder.toBeRemediated = (EditText) view.findViewById(R.id.to_be_remediated_before);
@@ -196,15 +177,9 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
         holder.followUpAction.setText(myData.getFollowUpAction());
 
         holder.obs_photo = (ImageView) view.findViewById(R.id.obs_photo);
-        // get image absolute path from data model
         Bitmap bitmap = BitmapFactory.decodeFile(myData.getPhotoCache().getAbsolutePath());
-//        bitmap = myData.getBitmap();
-//        Log.i(TAG,"bitmap size: "+sizeOf(bitmap));
         Bitmap reducedBitmap = getResizedBitmap(bitmap, 200);
-//        Log.i(TAG,"reducedBitmap; "+sizeOf(reducedBitmap));
-
         holder.obs_photo.setImageBitmap(reducedBitmap);
-//        holder.obs_photo.setImageBitmap(reducedBitmap);
 
 
         return view;
@@ -214,14 +189,9 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
         Log.i(TAG, "update shared preference");
         // and store current object into shared preference:
         SharedPreferences.Editor prefsEditor = preferences.edit();
-
         Gson gson1 = new Gson();
-        String JsonObject = gson1.toJson(myArrayList_dataModel, listOfObjects); // Here list is your List<CUSTOM_CLASS> object
-//        Log.i(TAG,"put data model in myList");
-//        Log.i(TAG,"myArrayList_dataModel getObservation"+myArrayList_dataModel.get(position).getObservation());
-
+        String JsonObject = gson1.toJson(arrayList, listOfObjects); // Here list is your List<CUSTOM_CLASS> object
         prefsEditor.putString("MyList", JsonObject);
-
         prefsEditor.commit();
         notifyDataSetChanged();
     }
