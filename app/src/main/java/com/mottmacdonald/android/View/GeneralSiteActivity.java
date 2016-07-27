@@ -73,6 +73,7 @@ public class GeneralSiteActivity extends BaseActivity {
     public static final String PREFS_NAME = "DataModel";
     Type listOfObjects = new TypeToken<ArrayList<obs_form_DataModel>>() {
     }.getType();
+    ArrayList<obs_form_DataModel> save_obs_form_dataModels;
 
     public static final int TAKE_PHOTO = 1;
 
@@ -106,7 +107,6 @@ public class GeneralSiteActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.actvity_general_site);
-
 
 
         initDatas();
@@ -413,8 +413,30 @@ public class GeneralSiteActivity extends BaseActivity {
     };
 
     private void saveFormItem() {
+
         showProgress("Saving");
         Log.i(TAG, "saveFormItem ; ");
+        SharedPreferences preferences = getSharedPreferences("uniqueCode", MODE_PRIVATE);
+        String head = preferences.getString("code_head", "no head");
+        String tail = preferences.getString(head, "no tail");
+
+        Log.i(TAG, "create the unique ID for shared preference: head,tail " + head + "," + tail);
+        String PREFS_NAME = head + tail;
+
+        SharedPreferences preferences1 = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        String json = preferences1.getString("MyList", "");
+        Gson gson = new Gson();
+        if (!json.isEmpty()) {
+            Log.i(TAG, "json is !empty");
+            listOfObjects = new TypeToken<ArrayList<obs_form_DataModel>>() {
+            }.getType();
+
+            save_obs_form_dataModels = gson.fromJson(json, listOfObjects);
+
+        } else {
+            Log.i(TAG, "json is empty");
+        }
+
 
         List<Map<String, String>> mapList = new ArrayList<>();
         for (int i = 0; i < groupDatas.size(); i++) {
@@ -508,10 +530,10 @@ public class GeneralSiteActivity extends BaseActivity {
         if (!json.isEmpty()) {
             Toast.makeText(mContext, "json is ! empty", Toast.LENGTH_LONG).show();
             Log.i("checking", "json " + json.toString());
-            ArrayList<obs_form_DataModel> list = gson.fromJson(json,listOfObjects);
+            ArrayList<obs_form_DataModel> list = gson.fromJson(json, listOfObjects);
             obs_form_DataModel dataModel = list.get(0);
-            Log.i(TAG,"dataModel.getItemNo(); "+dataModel.getItemNo());
-            Log.i(TAG,"dataModel.getPhotoCache(); "+dataModel.getPhotoCache());
+            Log.i(TAG, "dataModel.getItemNo(); " + dataModel.getItemNo());
+            Log.i(TAG, "dataModel.getPhotoCache(); " + dataModel.getPhotoCache());
 
         } else {
             Toast.makeText(mContext, "json is empty", Toast.LENGTH_LONG).show();
@@ -520,6 +542,13 @@ public class GeneralSiteActivity extends BaseActivity {
 //        showProgress("Saving");
         ///storage/emulated/0/Pictures/PokemonGO/IMG_2016-07-25-20033902.png
 //        File file = new File("/storage/emulated/0/Android/data/com.mottmacdonald.android/cache/mott_201605021843579470.jpg");
+        for (int i =0; i<save_obs_form_dataModels.size();i++)
+        {
+
+            Log.i(TAG,"create the unique ID for shared preference: follow up action: "+save_obs_form_dataModels.get(i).getPhotoCache());
+
+
+        }
         File file = new File("/storage/emulated/0/Pictures/PokemonGO/IMG_2016-07-25-20033902.png");
         SaveFormApi.saveFormItemObservation(mContext, formitem_id, file, "", "", "", new ICallback<SaveFormItemObservationModel>() {
             @Override

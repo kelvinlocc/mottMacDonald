@@ -80,7 +80,7 @@ public class ObservationFormActivity extends BaseActivity {
 
     public ArrayList<obs_form_DataModel> arrayList_dataModel;
 
-    public static final String PREFS_NAME = "DataModel";
+    public String PREFS_NAME = "";
 
     // method of list 02:
     Type listOfObjects = new TypeToken<ArrayList<obs_form_DataModel>>() {
@@ -95,40 +95,48 @@ public class ObservationFormActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
         setContentView(R.layout.activity_obs_form);
+
+        SharedPreferences myPreference_UniqueCode = getSharedPreferences("uniqueCode",MODE_PRIVATE);
+
+        String head =  myPreference_UniqueCode.getString("code_head","no head");
+        String tail =  myPreference_UniqueCode.getString(head,"no tail");
+        Log.i(TAG,"create the unique ID for shared preference: head+ tail "+head+","+tail);
+        PREFS_NAME = head+tail;
+
+
         ListView form_LV = (ListView) findViewById(R.id.obs_form_lv);
 
         arrayList_dataModel = new ArrayList<obs_form_DataModel>();
 
-        Log.i(TAG, "updated02");
         SharedPreferences mPrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);// use JSOnM format to store the object (obs_form)
         // check whether a data model store in shared preference:
         String string = mPrefs.getString("myTest", "");
-        Log.i("checking", "string " + string + ".");
+        Log.i(TAG, "string " + string + ".");
+
 
 
         String json = mPrefs.getString("MyList", "");
         Gson gson = new Gson();
         if (!json.isEmpty()) {
-            Log.i("checking", "json !null");
-            Log.i("checking", "json " + json.toString());
+            Log.i(TAG, "json !null");
+            Log.i(TAG, "json " + json.toString());
             ArrayList<obs_form_DataModel> obsFormDataModelArrayList = gson.fromJson(json, listOfObjects);
             obs_form_DataModel data = new obs_form_DataModel();
             if (!obsFormDataModelArrayList.isEmpty()) {
                 arrayList_dataModel = obsFormDataModelArrayList;
                 data = obsFormDataModelArrayList.get(0);
-                Log.i("checking", "obsFormDataModelArrayList is !empty");
-                Log.i("checking", "data.getItemNo()" + data.getItemNo());
+                Log.i(TAG, "obsFormDataModelArrayList is !empty");
+                Log.i(TAG, "data.getItemNo()" + data.getItemNo());
+                Log.i(TAG, "data.getObservation()" + data.getObservation());
             } else {
-                Log.i("checking", "obsFormDataModelArrayList is empty");
+                Log.i(TAG, "obsFormDataModelArrayList is empty");
             }
         } else {
-            Log.i("checking", "json is null");
+            Log.i(TAG, "json is null");
         }
 
-        lv_adapter = new obs_form_lv_adapter(this, arrayList_dataModel);
+        lv_adapter = new obs_form_lv_adapter(this, arrayList_dataModel,PREFS_NAME);
         form_LV.setAdapter(lv_adapter);
 
         myButton = (ImageButton) findViewById(R.id.addphoto);
@@ -138,39 +146,7 @@ public class ObservationFormActivity extends BaseActivity {
 
     }
 
-    public void init() {
 
-//        TableLayout form = (TableLayout) findViewById(R.id.table_layout);
-        //we don;t use table layout
-//        for (int i = 0; i < 0; i++) {
-//
-//            TableRow row = new TableRow(this);
-////            TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
-//            TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT);
-//            Log.i(TAG, "update03");
-//
-//            Log.i(TAG, "TableRow.LayoutParams: " + lp);
-//            row.setLayoutParams(lp);
-//            item_no = new TextView(this);
-//            item_no.setText("temp");
-//            addphoto = new ImageButton(this);
-//            obs_image = new ImageView(this);
-//            recommendation = new EditText(this);
-//            recommendation.setInputType(InputType.TYPE_CLASS_TEXT);
-//            date = new EditText(this);
-//            date.setInputType(InputType.TYPE_CLASS_DATETIME);
-//            followup = new EditText(this);
-//            followup.setInputType(InputType.TYPE_CLASS_TEXT);
-//            row.addView(item_no);
-//            row.addView(addphoto);
-//            row.addView(obs_image);
-//            row.addView(recommendation);
-//            row.addView(date);
-//            row.addView(followup);
-//            form.addView(row, i);
-//        }
-
-    }
 
     private void initViews() {
         mAQuery.id(R.id.back_btn).clicked(clickListener);
@@ -212,8 +188,9 @@ public class ObservationFormActivity extends BaseActivity {
 
                 newData.setItemNo(arrayList_dataModel.size() + 1);
                 newData.setPhotoCache(saveFile);
-                Log.i(TAG, "saveFile: " + saveFile);
-                Log.i(TAG, "saveFile.getAbsolutePath(): " + saveFile.getAbsolutePath());
+                newData.setObservation("N/A");
+//                Log.i(TAG, "saveFile: " + saveFile);
+//                Log.i(TAG, "saveFile.getAbsolutePath(): " + saveFile.getAbsolutePath());
 
                 // save photo into bitmap:
 //                newData.setBitmap(bitmap);
@@ -231,8 +208,8 @@ public class ObservationFormActivity extends BaseActivity {
                     Log.i(TAG, "imagePath: " + imagePath);
 
                     File file = new File(imagePath);
-                    Log.i(TAG, "file: " + file);
-                    Log.i(TAG, "file.getAbsolutePath(): " + file.getAbsolutePath());
+//                    Log.i(TAG, "file: " + file);
+//                    Log.i(TAG, "file.getAbsolutePath(): " + file.getAbsolutePath());
                     // Log.d(TAG, String.valueOf(bitmap));
 
                     ImageView imageView = (ImageView) findViewById(R.id.obs_image);
@@ -241,6 +218,8 @@ public class ObservationFormActivity extends BaseActivity {
 
                     newData.setItemNo(arrayList_dataModel.size() + 1);
                     newData.setPhotoCache(file);
+                    newData.setObservation("N/A");
+//                    Log.i(TAG,"set ")
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -252,6 +231,7 @@ public class ObservationFormActivity extends BaseActivity {
             SharedPreferences.Editor prefsEditor = mPrefs.edit();
 
 
+            Log.i(TAG,"notifyDataSetChanged");
             // and store current object into shared preference:
             Gson gson = new Gson();
             String JsonObject = gson.toJson(arrayList_dataModel, listOfObjects); // Here list is your List<CUSTOM_CLASS> object
@@ -259,10 +239,8 @@ public class ObservationFormActivity extends BaseActivity {
 
             prefsEditor.putString("MyList", JsonObject);
             prefsEditor.putString("myTest", "test");
-
             prefsEditor.commit();
             lv_adapter.notifyDataSetChanged();
-            init();
         }
 
     }

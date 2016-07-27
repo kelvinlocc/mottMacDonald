@@ -2,6 +2,7 @@ package com.mottmacdonald.android.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.Editable;
@@ -176,8 +177,6 @@ public class GeneralExpandableAdapter extends BaseExpandableListAdapter{
         ChildrenViewHolder holder = null;
         if(convertView == null){
             convertView = mInflater.inflate(R.layout.item_general_list, null);
-            Log.i(TAG,"create the unique ID for shared preference:childPosition "+childPosition);
-
             aq = new AQuery(convertView);
             holder = new ChildrenViewHolder(convertView);
             holder.closeOut.setTag(groupPosition+ "-" + childPosition);
@@ -211,6 +210,8 @@ public class GeneralExpandableAdapter extends BaseExpandableListAdapter{
         }
 
         Log.i(TAG,"create the unique ID for shared preference:groupPosition+ \"-\" + childPosition "+groupPosition+ "-" + childPosition);
+
+
 
         ItemData data = mChildrenDatas.get(groupPosition).get(childPosition);
         holder.refTextView.setText(data.ref);
@@ -261,7 +262,12 @@ public class GeneralExpandableAdapter extends BaseExpandableListAdapter{
                     imageSelectGroupPosition = groupPosition;
                     imageSelectChildrenPostion = childrenPosition;
                     Log.i(TAG,"create the unique ID for shared preference:groupPosition + childPosition "+groupPosition+ "+" + childrenPosition);
-
+                    String code_tail = groupPosition+"+"+childrenPosition;
+                    SharedPreferences myPreference_UniqueCode = mContext.getSharedPreferences("uniqueCode",Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = myPreference_UniqueCode.edit();
+                    String code_head = myPreference_UniqueCode.getString("code_head","");
+                    editor.putString(code_head,code_tail);
+                    editor.commit();
                     ObservationFormActivity
                             .start(mContext, mChildrenDatas.get(groupPosition).get(childrenPosition));
 //                    takePhoto();
