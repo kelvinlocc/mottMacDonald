@@ -1,0 +1,20 @@
+
+
+
+save image in locla
+signature
+test for bigger screen
+
+
+
+http://mott.accordhkdev.com/cms/public/user/profile
+mott cms:
+Sariel Lau, [20.07.16 16:06]
+account: tester@mott.com
+password: tester
+
+ftp://mott.accordhkdev.com
+login: mott
+pw: 123456
+
+please be aware when u overwrite or change anything inside, coz the client will also see the changes as well.
