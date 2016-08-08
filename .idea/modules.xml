@@ -4,7 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" />
-      <module fileurl="file://$PROJECT_DIR$/mottMacDonald.iml" filepath="$PROJECT_DIR$/mottMacDonald.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mottMacDonald_160808.iml" filepath="$PROJECT_DIR$/mottMacDonald_160808.iml" />
       <module fileurl="file://$PROJECT_DIR$/mottdatagenerator/mottdatagenerator.iml" filepath="$PROJECT_DIR$/mottdatagenerator/mottdatagenerator.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />
     </modules>

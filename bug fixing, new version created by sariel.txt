@@ -1,0 +1,15 @@
+fix upload twice
+
+---
+
+Mott Macdonald seem hv some bugs for uploading observation photos:
+1) all photos will be uploaded twice, (please try with PR560)
+2) some photos may be fail to upload
+
+i will send u the update code, coz i modify some code for bug fixing and higher version sdk support on album pick and photo capture
+also, a bug occured when i didnt type anything in Followup field, the signature fields will have some weird issues:
+1) except the PM signature gesture view, other gesture views cannot draw
+2) cannot save
+not too sure, but i found the record in db which the filename is empty
+
+

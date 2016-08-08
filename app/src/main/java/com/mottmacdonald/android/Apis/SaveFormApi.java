@@ -139,6 +139,21 @@ public class SaveFormApi {
         request.transformer(new ApiTransFormer()).ajax(response);
     }
 
+    public static void getItemID (Context context,
+                                             Map<String, String> map, ICallback<SaveFormItemModel> callback) {
+        AQuery request = new AQuery(context);
+        Map<String, Object> params = new HashMap<>();
+
+        NetOption option = new NetOption(ApiBase.API_HOST + ApiBase.SAVE_FORM_ITEM);
+        NetCallback<SaveFormItemModel> response = new NetCallback<SaveFormItemModel>(
+                SaveFormItemModel.class, option, callback);
+        response.params(map);
+
+
+        request.transformer(new ApiTransFormer()).ajax(response);
+    }
+
+
 
     public static void saveFormItemObservation(Context context, String formItemId, File image,
                                                    String recommendation, String remediated,

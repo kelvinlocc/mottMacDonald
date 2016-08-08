@@ -1,5 +1,9 @@
 
+http://mott.accordhkdev.com/mydbadmin/
 
+login: mott
+
+password: 123456
 
 save image in locla
 signature

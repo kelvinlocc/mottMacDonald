@@ -79,7 +79,7 @@ public class GeneralSiteActivity extends BaseActivity {
 
     public static final int TAKE_PHOTO = 1;
 
-
+    MySharedPref_App mySharedPref_app;
     private String contractName;
     private String contractId;
     private String formInfoId;
@@ -112,7 +112,7 @@ public class GeneralSiteActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.actvity_general_site);
         ArrayList = new ArrayList<String>();
-
+        mySharedPref_app =new MySharedPref_App();
         initDatas();
         initViews();
         Log.i(TAG, "searchData ");
@@ -460,7 +460,7 @@ public class GeneralSiteActivity extends BaseActivity {
             Log.i(TAG, "json is empty");
         }
 
-
+        //// TODO: get the item.id
         List<Map<String, String>> mapList = new ArrayList<>();
         for (int i = 0; i < groupDatas.size(); i++) {
             for (int j = 0; j < childrenDatas.get(i).size(); j++) {
@@ -469,7 +469,7 @@ public class GeneralSiteActivity extends BaseActivity {
 
 
                 map.put("forminfo_id", formInfoId);
-                map.put("item_id ", data.item_id);
+                map.put("item_id", data.item_id);
                 map.put("close_out", !TextUtils.isEmpty(mAdapter.getCloseOutData().get(i).get(j)) ?
                         mAdapter.getCloseOutData().get(i).get(j) : "N/A");
                 map.put("answer_id", mAdapter.getAnswerId(i, j));
@@ -481,6 +481,7 @@ public class GeneralSiteActivity extends BaseActivity {
                 Log.i(TAG, "close_out " + map.get("close_out"));
                 Log.i(TAG, "answer_id " + map.get("answer_id"));
                 Log.i(TAG, "remarks " + map.get("remarks"));
+//                checker_save_obs_form(formInfoId,data.item_id);
                 mapList.add(map);
             }
         }
@@ -493,7 +494,7 @@ public class GeneralSiteActivity extends BaseActivity {
         for (int i = 0; i < mapList.size(); i++) {
             Log.i(TAG, "i " + i);
 
-            Map<String, String> map = mapList.get(i);
+            final Map<String, String> map = mapList.get(i);
             SaveFormApi.saveFormItem_OnebyOne(mContext, map, new ICallback<SaveFormItemModel>() {
                 @Override
                 public void onSuccess(SaveFormItemModel saveFormItemModel, Enum<?> anEnum, AjaxStatus ajaxStatus) {
@@ -501,9 +502,9 @@ public class GeneralSiteActivity extends BaseActivity {
                     if (saveFormItemModel != null) {
                         if (saveFormItemModel.status == 1) {
                             Log.i(TAG, "saveFormItemModel.status ;" + saveFormItemModel.status);
-                            Log.i(TAG, "saveFormItemModel.formitem_id ;" + saveFormItemModel.formitem_id);
-                            showToast("Save Form Complete");
-                            saveFormItemObs(saveFormItemModel.formitem_id);
+                            Log.i(TAG, "onSuccess:  formitem_id;" + saveFormItemModel.formitem_id);
+                            Log.i(TAG, "onSuccess:  item_id; " + map.get("item_id"));
+                            checker_save_obs_form(saveFormItemModel.formitem_id,map.get("item_id"));
                             MyApplication.getInstance().removeActivityExcept(MainActivity.class);
                         } else {
                             showToast("Save failure");
@@ -519,32 +520,15 @@ public class GeneralSiteActivity extends BaseActivity {
                 }
             });
         }
+    }
 
-
-//        SaveFormApi.saveFormItem(mContext, mapList, new ICallback<SaveFormItemModel>() {
-//            @Override
-//            public void onSuccess(SaveFormItemModel saveFormItemModel, Enum<?> anEnum, AjaxStatus ajaxStatus) {
-//                dismissProgress();
-//                if (saveFormItemModel != null) {
-//                    if (saveFormItemModel.status == 1) {
-//                        Log.i(TAG,"saveFormItemModel.status ;"+saveFormItemModel.status );
-//                        Log.i(TAG,"saveFormItemModel.formitem_id ;"+saveFormItemModel.formitem_id );
-//                        showToast("Save Form Complete");
-//                        saveFormItemObs(saveFormItemModel.formitem_id );
-//                        MyApplication.getInstance().removeActivityExcept(MainActivity.class);
-//                    } else {
-//                        showToast("Save failure");
-//                    }
-//                } else {
-//                    showRequestFailToast();
-//                }
-//            }
-//
-//            @Override
-//            public void onError(int i, String s) {
-//
-//            }
-//        });
+    public void checker_save_obs_form (String formItem_id, String item_id){
+        String KEY = mySharedPref_app.getHead(mContext)+item_id;
+        ArrayList<obs_form_DataModel> temp = mySharedPref_app.getArrayList(KEY, mContext);
+        for (int j = 0; j < temp.size(); j++) {
+            Log.i(TAG, "temp.getRecommedation "+temp.get(j).getRecommedation());
+            saveObsFrom(formItem_id,temp.get(j).getFile(),temp.get(j).getRecommedation(),temp.get(j).getToBeRemediated_before(),temp.get(j).getFollowUpAction());
+        }
 
 
     }
@@ -566,16 +550,10 @@ public class GeneralSiteActivity extends BaseActivity {
             Toast.makeText(mContext, "json is empty", Toast.LENGTH_LONG).show();
         }
 
-//        showProgress("Saving");
-        ///storage/emulated/0/Pictures/PokemonGO/IMG_2016-07-25-20033902.png
-//        File file = new File("/storage/emulated/0/Android/data/com.mottmacdonald.android/cache/mott_201605021843579470.jpg");
         for (int i = 0; i < save_obs_form_dataModels.size(); i++) {
 
             Log.i(TAG, "create the unique ID for shared preference: follow up action: " + save_obs_form_dataModels.get(i).getFile());
-
-
         }
-
 
         MySharedPref_App mySharedPref_app = new MySharedPref_App();
         String string = mySharedPref_app.getString(mContext, "uniqueCode", "code_head") + ".txt";
@@ -583,22 +561,19 @@ public class GeneralSiteActivity extends BaseActivity {
 //        mySharedPref_app.read_StringArrayList(mContext,string);
 //
         // get all the obs_form;
-
         ArrayList<String> arrayList = mySharedPref_app.read_StringArrayList(mContext, string);
         // the whole key for getting the obs_form:
         for (int i = 0; i < arrayList.size(); i++) {
-            Log.i(TAG, "key of obs_form:@getting" + arrayList.get(i));
+            Log.i(TAG, "key of obs_form:getting" + arrayList.get(i));
+            //get data from shared preference
             ArrayList<obs_form_DataModel> temp = mySharedPref_app.getArrayList(arrayList.get(i).toString(), mContext);
             for (int j = 0; j < temp.size(); j++) {
                 Log.i(TAG, " key of obs_form i,j" + i + j + "," + temp.get(j).getRecommedation());
+                Log.i(TAG, " temp.getRecommedation "+temp.get(j).getRecommedation());
                 saveObsFrom(formitem_id, temp.get(j).getFile(), temp.get(j).getRecommedation(), temp.get(j).getToBeRemediated_before(), temp.get(j).getFollowUpAction());
             }
 
         }
-
-
-        File file = new File("/storage/emulated/0/Pictures/PokemonGO/IMG_2016-07-25-20033902.png");
-
     }
 
     private void saveObsFrom(String formitem_id, File file, String recommendation, String remediated,
@@ -621,26 +596,4 @@ public class GeneralSiteActivity extends BaseActivity {
         });
 
     }
-//    private void saveFormItemObs(String formitem_id ){
-//        System.out.println("保存图片表");
-//        showProgress("Saving");
-//
-//        File file = new File("/storage/emulated/0/Android/data/com.mottmacdonald.android/cache/mott_201605021843579470.jpg");
-//        SaveFormApi.saveFormItemObservation(mContext, "28", file, "", "", "", new ICallback<SaveFormItemObservationModel>() {
-//            @Override
-//            public void onSuccess(SaveFormItemObservationModel resultData, Enum<?> anEnum, AjaxStatus ajaxStatus) {
-//                dismissProgress();
-//                showToast("Save Form Complete");
-//                MyApplication.getInstance().removeActivityExcept(MainActivity.class);
-//            }
-//
-//            @Override
-//            public void onError(int i, String s) {
-//
-//            }
-//        });
-//    }
-//
-
-
 }

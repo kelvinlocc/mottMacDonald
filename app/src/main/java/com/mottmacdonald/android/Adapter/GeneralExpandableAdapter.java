@@ -267,6 +267,7 @@ public class GeneralExpandableAdapter extends BaseExpandableListAdapter {
                     editor.putString(code_head, code_tail);
                     editor.commit();
                     Log.i(TAG, "childrenDatas.get(i) groupPosition+childrenPosition" + groupPosition + "+" + childrenPosition);
+                    // // TODO: get the item.id
                     Log.i(TAG, "childrenDatas.get(i) " + mChildrenDatas.get(groupPosition).get(childrenPosition).item_id);
                     // use head+tail as new pref, tail&dataModel
                     MySharedPref_App mySharedPref_app = new MySharedPref_App();

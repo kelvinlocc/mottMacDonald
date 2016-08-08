@@ -41,6 +41,21 @@ public class MySharedPref_App extends Application {
 
     }
 
+    public void setHead (Context context,String string){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("head",MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("head",string);
+        editor.apply();
+        Log.i(TAG, "setHead: string:"+string);
+
+    }
+
+    public String getHead (Context context){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("head",MODE_PRIVATE);
+
+        return sharedPreferences.getString("head","null");
+    }
+
     public String getString(Context context, String Pkey, String key) {
         Log.i(TAG, "getString Pkey; " + Pkey);
         SharedPreferences sharedPreferences = context.getSharedPreferences(Pkey, MODE_PRIVATE);
@@ -50,6 +65,7 @@ public class MySharedPref_App extends Application {
 
     }
 
+    // get data from sharedPreference
     public ArrayList<obs_form_DataModel> getArrayList(String key, Context context) {
         Log.i(TAG, "getArrayList KEY(context.MODE_PRIVATE);!!! " + key);
         SharedPreferences sharedPreferences;
@@ -81,6 +97,7 @@ public class MySharedPref_App extends Application {
         return obsFormDataModelArrayList;
     }
 
+    // write data into internal memory
     public void write_StringArrayList(ArrayList<String> arrayList, Context context, String fileName) {
         File secondFile = new File(FileUtil.getFileRoot(context) + "/data_file/");
         Log.i(TAG, "new input");
@@ -109,6 +126,8 @@ public class MySharedPref_App extends Application {
             Log.i(TAG, " make file failed");
         }
     }
+
+    // read internal memory data
     public ArrayList<String> read_StringArrayList(Context context, String fileName) {
         arrayList = new ArrayList<String>();
         Log.i(TAG, "fileName " + fileName);
@@ -146,60 +165,5 @@ public class MySharedPref_App extends Application {
 
     }
 
-    public void wrtieFileOnInternalStorage(Context context, String sFileName, String sBody) {
-        Log.i(TAG, " write to disk,wrtieFileOnInternalStorage");
-
-//        File file = new File(context.getFilesDir(),"mydir");
-        File file = new File(FileUtil.getFileRoot(context) + "/file");
-
-        if (!file.exists()) {
-            file.mkdir();
-        }
-        Log.i(TAG, " write to disk,wrtieFileOnInternalStorage / file" + file);
-
-//        try {
-//            //Modes: MODE_PRIVATE, MODE_WORLD_READABLE, MODE_WORLD_WRITABLE
-//            FileOutputStream output = context.openFileOutput("lines.txt", context.MODE_WORLD_READABLE);
-//            DataOutputStream dout = new DataOutputStream(output);
-//            dout.writeInt(text_lines.size()); // Save line count
-//            for (String line : text_lines) // Save lines
-//                dout.writeUTF(line);
-//            dout.flush(); // Flush stream ...
-//            dout.close(); // ... and close.
-//        } catch (IOException exc) {
-//            exc.printStackTrace();
-//        }
-
-
-        try {
-            File gpxfile = new File(file, sFileName);
-            FileWriter writer = new FileWriter(gpxfile);
-            writer.append(sBody);
-            writer.flush();
-            writer.close();
-
-        } catch (Exception e) {
-
-        }
-    }
-
-    public ArrayList<String> getString_ArrayList(String key) {
-
-        ArrayList<String> arrayList = new ArrayList<String>();
-        try {
-            FileInputStream input = openFileInput("lines.txt"); // Open input stream
-            DataInputStream din = new DataInputStream(input);
-            int sz = din.readInt(); // Read line count
-            for (int i = 0; i < sz; i++) { // Read lines
-                String line = din.readUTF();
-                arrayList.add(line);
-            }
-            din.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return arrayList;
-    }
 
 }

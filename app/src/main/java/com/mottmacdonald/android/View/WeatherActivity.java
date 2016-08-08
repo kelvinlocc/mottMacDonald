@@ -76,6 +76,7 @@ public class WeatherActivity extends BaseActivity {
         setContentView(R.layout.activity_weather);
         initViews();
         searchData();
+        mySharedPref_app = new MySharedPref_App(); // get instance
     }
 
     private void initViews() {
@@ -177,14 +178,7 @@ public class WeatherActivity extends BaseActivity {
     private RadioGroup.OnCheckedChangeListener conditionChangeListener = new RadioGroup.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(RadioGroup group, int checkedId) {
-//            if (conditionGroup_02.getCheckedRadioButtonId() != -1) {
-//
-//                Log.i(TAG,"condition group 1 has checked");
-//                clear_condition_radioGroup("group02");
-//            }
-//            else {
-//                Log.i(TAG,"checked radio button id is: "+conditionGroup.getCheckedRadioButtonId());
-//            }
+
             Log.i(TAG, "checkedID: " + checkedId);
 
             if (checkedId != -1 &&
@@ -342,17 +336,14 @@ public class WeatherActivity extends BaseActivity {
                             saveWeatherLocalData(conditionId, temperatureText, humidityId, windId, remarkText);
                             GeneralSiteActivity.start(mContext, contractName, contractId, formInfoId);
                             Log.i(TAG,"create the unique ID for shared preference: contractName, contractId, formInfoId: "+contractName+","+contractId+","+formInfoId);
-                            String code_head = contractName+contractId+formInfoId;
-                            Log.i(TAG,"code_head "+code_head);
-                            SharedPreferences myPreference_UniqueCode = getSharedPreferences("uniqueCode",MODE_PRIVATE);
-                            SharedPreferences.Editor editor = myPreference_UniqueCode.edit();
-                            editor.putString("code_head",code_head );
-                            editor.commit();
+                            String head = contractName+contractId+formInfoId;
+                            Log.i(TAG,"head "+head);
+                            // // TODO: 8/8/2016
+                            mySharedPref_app.setHead(mContext,head);
 
-                            mySharedPref_app = new MySharedPref_App(); // get instance
-                            String string = mySharedPref_app.getString(mContext,"uniqueCode","code_head");
-                            Log.i(TAG,"check "+string);
-//                            mySharedPref_app.putString(mContext,);
+
+
+//                            Log.i(TAG,"check: "+mySharedPref_app.getHead(mContext));
 
                         } else {
                             showRequestFailToast();

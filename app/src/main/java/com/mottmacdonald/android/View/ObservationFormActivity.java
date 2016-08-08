@@ -7,7 +7,9 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
@@ -19,6 +21,7 @@ import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -32,7 +35,9 @@ import com.mottmacdonald.android.Utils.FileUtil;
 import com.mottmacdonald.android.Utils.PhotoReSize;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -60,18 +65,20 @@ public class ObservationFormActivity extends BaseActivity {
     private ImageButton myButton;
 
     public ArrayList<obs_form_DataModel> arrayList;
-
-    public String KEY = "";
+    public MySharedPref_App mySharedPref_app;
+    public String KEY;
     public static Context mContext;
     // method of list 02:
     Type listOfObjects = new TypeToken<ArrayList<obs_form_DataModel>>() {
     }.getType();
+    public static String item_id;
 
     public static void start(Context context, ItemData itemData) {
         Intent intent = new Intent(context, ObservationFormActivity.class);
         intent.putExtra(ITEM_DATA, itemData);
         mContext = context;
         context.startActivity(intent);
+        item_id = itemData.item_id;
     }
 
     @Override
@@ -79,56 +86,21 @@ public class ObservationFormActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_obs_form);
         ListView form_LV = (ListView) findViewById(R.id.obs_form_lv);
-        arrayList = new ArrayList<obs_form_DataModel>();
+        arrayList = new ArrayList<>();
+        mySharedPref_app = new MySharedPref_App();
 
+        String head =  mySharedPref_app.getHead(mContext);
+//        Log.i(TAG,"create the unique ID for shared preference: head+ tail "+head+","+tail);
+        //ObservationFormActivity: create the unique ID for shared preference: head+ tail P560(R)1760,00
+        KEY = head+item_id;
+        Log.i(TAG, "onCreate: KEY =head + item_id: "+KEY);
 
-        SharedPreferences myPreference_UniqueCode = getSharedPreferences("uniqueCode",MODE_PRIVATE);
-        String head =  myPreference_UniqueCode.getString("code_head","no head");
-        String tail =  myPreference_UniqueCode.getString(head,"no tail");
-        Log.i(TAG,"create the unique ID for shared preference: head+ tail "+head+","+tail);
-        KEY = head+tail;
-        Log.i(TAG,"key of obs_form:@putting"+KEY);
-
-
-        SharedPreferences mPrefs = getSharedPreferences(KEY, MODE_PRIVATE);// use JSOnM format to store the object (obs_form)
-//        // check whether a data model store in shared preference:
-//        String string = mPrefs.getString("myTest", "");
-//        Log.i(TAG, "string " + string + ".");
-//
-//
-//
-//        String json = mPrefs.getString("MyList", "");
-//        Gson gson = new Gson();
-//        if (!json.isEmpty()) {
-//            Log.i(TAG, "json !null");
-//            Log.i(TAG, "json " + json.toString());
-//            ArrayList<obs_form_DataModel> obsFormDataModelArrayList = gson.fromJson(json, listOfObjects);
-//            obs_form_DataModel data = new obs_form_DataModel();
-//            if (!obsFormDataModelArrayList.isEmpty()) {
-//                arrayList = obsFormDataModelArrayList;
-//                data = obsFormDataModelArrayList.get(0);
-//                Log.i(TAG, "obsFormDataModelArrayList is !empty");
-//                Log.i(TAG, "data.getItemNo()" + data.getItemNo());
-//                Log.i(TAG, "data.getRecommedation()" + data.getRecommedation());
-//            } else {
-//                Log.i(TAG, "obsFormDataModelArrayList is empty");
-//            }
-//        } else {
-//            Log.i(TAG, "json is null");
-//        }
-//        MySharedPref_
         MySharedPref_App mySharedPref_app = new MySharedPref_App();
-//        if (MySharedPref_App.)
         arrayList = mySharedPref_app.getArrayList(KEY,mContext);
-
         lv_adapter = new obs_form_lv_adapter(this, arrayList, KEY);
         form_LV.setAdapter(lv_adapter);
-
         myButton = (ImageButton) findViewById(R.id.addphoto);
-
         initViews();
-//        takePhoto();
-
     }
 
 
@@ -142,16 +114,53 @@ public class ObservationFormActivity extends BaseActivity {
     private void takePhoto() {
 
 
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        File file = new File(FileUtil.getFileRoot(mContext) + "/mottCacheImage.jpg");
+        /*if (Build.VERSION.SDK_INT <= 19) {
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            File file = new File(FileUtil.getFileRoot(mContext) + "/mottCacheImage.jpg");
 //        File file = new File(FileUtil.getFileRoot(mContext) + "/mott_" + DeviceUtils.getCurrentTime("yyyyMMddHHmmssSSSS") + "jpg");
-        Uri imageUri = Uri.fromFile(file);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        ((BaseActivity) mContext).startActivityForResult(intent, TAKE_PHOTO);
+            Uri imageUri = Uri.fromFile(file);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+            ((BaseActivity) mContext).startActivityForResult(intent, TAKE_PHOTO);
 
-
+        } else if (Build.VERSION.SDK_INT > 19) {
+*/
+            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+            startActivityForResult(cameraIntent, TAKE_PHOTO);
+        //}
     }
 
+    private void selectFromAlbum(){
+        if (Build.VERSION.SDK_INT <= 19) {
+            Intent album = new Intent(Intent.ACTION_GET_CONTENT);
+            album.addCategory(Intent.CATEGORY_OPENABLE);
+            album.setType("image/*");
+            startActivityForResult(album, PICK_IMAGE_REQUEST);
+        } else if (Build.VERSION.SDK_INT > 19) {
+            Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(intent, PICK_IMAGE_REQUEST);
+        }
+    }
+    private File savebitmap(Bitmap bitmap) {
+        String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+        OutputStream outStream = null;
+
+        File file = new File(FileUtil.getFileRoot(mContext) + "/mottCacheImage.png");
+
+        try {
+            // make a new bitmap from your file
+
+
+            outStream = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+            outStream.flush();
+            outStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Log.e("file", "" + file);
+        return file;
+
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -159,7 +168,9 @@ public class ObservationFormActivity extends BaseActivity {
         if (resultCode == RESULT_OK) {
             if (requestCode == TAKE_PHOTO) {
 
-                File file = new File(FileUtil.getFileRoot(mContext) + "/mottCacheImage.jpg");
+                //File file = new File(FileUtil.getFileRoot(mContext) + "/mottCacheImage.jpg");
+                Bitmap photo = (Bitmap) data.getExtras().get("data");
+                File file = savebitmap(photo);
                 File saveFile = new File(FileUtil.getFileRoot(mContext) + "/mott_" + DeviceUtils.getCurrentTime("yyyyMMddHHmmssSSSS") + ".jpg");
                 PhotoReSize photoReSize = new PhotoReSize(mContext);
                 photoReSize.reSize(file, DeviceUtils.getDisplayWidth(), saveFile);
@@ -170,10 +181,12 @@ public class ObservationFormActivity extends BaseActivity {
                 mAQuery.id(R.id.obs_image).image(saveFile.getAbsolutePath());
 
                 // add item into data model
-
                 newData.setItemNo(arrayList.size() + 1);
                 newData.setFile(saveFile);
                 newData.setRecommedation("N/A");
+
+                newData.setToBeRemediated_before("N/A");
+                newData.setFollowUpAction("N/A");
 //                Log.i(TAG, "saveFile: " + saveFile);
 //                Log.i(TAG, "saveFile.getAbsolutePath(): " + saveFile.getAbsolutePath());
 
@@ -209,7 +222,6 @@ public class ObservationFormActivity extends BaseActivity {
                 }
             }
             arrayList.add(newData);
-
             SharedPreferences mPrefs = getSharedPreferences(KEY, MODE_PRIVATE);
             SharedPreferences.Editor prefsEditor = mPrefs.edit();
 
@@ -289,10 +301,8 @@ public class ObservationFormActivity extends BaseActivity {
                                     return true;
                                 case R.id.album:
 //                                    select from album
-                                    Intent album = new Intent(Intent.ACTION_GET_CONTENT);
-                                    album.addCategory(Intent.CATEGORY_OPENABLE);
-                                    album.setType("image/*");
-                                    startActivityForResult(album, PICK_IMAGE_REQUEST);
+                                    selectFromAlbum();
+
                                     return true;
                                 default:
                                     return false;
