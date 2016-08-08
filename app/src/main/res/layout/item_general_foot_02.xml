@@ -54,7 +54,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:id="@+id/confirmation_layout"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <LinearLayout
             android:id="@+id/left_title_layout"
@@ -131,7 +131,7 @@
                             android:id="@+id/pm_sign"
                             style="@style/sign_box"
                             android:layout_weight="1"
-                            android:visibility="gone">
+                            android:visibility="visible">
 
                             <View
                                 style="@style/line_horizontal"

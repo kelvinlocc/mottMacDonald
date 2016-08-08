@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -112,7 +113,7 @@ public class GeneralSiteActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.actvity_general_site);
         ArrayList = new ArrayList<String>();
-        mySharedPref_app =new MySharedPref_App();
+        mySharedPref_app = new MySharedPref_App();
         initDatas();
         initViews();
         Log.i(TAG, "searchData ");
@@ -175,6 +176,7 @@ public class GeneralSiteActivity extends BaseActivity {
         View footView = LayoutInflater.from(mContext).inflate(R.layout.item_general_foot_02, null);
         footAq = new AQuery(footView);
         footAq.id(R.id.save_btn).clicked(clickListener);
+        // // TODO: 8/8/2016  pmSign;
         pmSign = (RelativeLayout) footView.findViewById(R.id.pm_sign);
         contractorSign = (RelativeLayout) footView.findViewById(R.id.contractor_sign);
         etSign = (RelativeLayout) footView.findViewById(R.id.et_sign);
@@ -257,11 +259,8 @@ public class GeneralSiteActivity extends BaseActivity {
             pmSign.getViewTreeObserver();
             Log.i(TAG, "pmSign.getWidth(): " + pmSign.getWidth() + " pmSign.getHeight(): " + pmSign.getHeight());
 
-            pmView = getDrawView(300, 300);
 //            Log.i(TAG, "pmSign.getWidth(): " + pmSign.getWidth() + " pmSign.getHeight(): " + pmSign.getHeight());
-            pmSign.addView(pmView);
 
-//            ViewTreeObserver vto1 = pmSign.getViewTreeObserver();
             ViewTreeObserver vto1 = pmSign.getViewTreeObserver();
             vto1.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
@@ -270,7 +269,6 @@ public class GeneralSiteActivity extends BaseActivity {
                     Log.i(TAG, "onGlobalLayout ");
                     pmSign.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                     pmView = getDrawView(pmSign.getWidth(), pmSign.getHeight());
-                    Log.i(TAG, "pmSign.getWidth(): " + pmSign.getWidth() + " pmSign.getHeight(): " + pmSign.getHeight());
                     pmSign.addView(pmView);
                     GeneralSiteActivity.this.runOnUiThread(new Runnable() {
                         @Override
@@ -281,30 +279,46 @@ public class GeneralSiteActivity extends BaseActivity {
                     });
                 }
             });
-            pmSign.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.i(TAG, "onclick");
 
-                    Log.i(TAG, "pmSign.getWidth(): " + pmSign.getWidth() + " pmSign.getHeight(): " + pmSign.getHeight());
-
-                }
-            });
-            GeneralSiteActivity.this.runOnUiThread(new Runnable() {
+            // test: confirmed bug :
+            // delay
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    Log.i(TAG, "set Visibility");
-                    Confirmation_layout.invalidate();
-                    Confirmation_layout.setVisibility(View.VISIBLE);
-                    pm_layout.setVisibility(View.VISIBLE);
-                    pmSign.setVisibility(View.VISIBLE);
-                    pmTitle.setVisibility(View.VISIBLE);
+                    Log.i(TAG, "run: delay thread");
+//                    Log.i(TAG, "pmSign.getWidth(): " + pmSign.getWidth() + " pmSign.getHeight(): " + pmSign.getHeight());
+                    pmView = getDrawView(pmSign.getWidth(), pmSign.getHeight());
+                    Log.i(TAG, "pmSign.getWidth(): " + pmSign.getWidth() + " pmSign.getHeight(): " + pmSign.getHeight());
+//                    pmView.invalidate();
+                    pmSign.addView(pmView);
+
+
+//                    pmSign.addView(pmView);
+//                    ViewTreeObserver vto1 = pmSign.getViewTreeObserver();
+//                    vto1.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//                        @Override
+//                        public void onGlobalLayout() {
+//
+//                            Log.i(TAG, "onGlobalLayout ");
+//                            pmSign.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+//                            pmView = getDrawView(pmSign.getWidth(), pmSign.getHeight());
+//                            pmSign.addView(pmView);
+//                            GeneralSiteActivity.this.runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    Log.i(TAG, "pmSign.getWidth(): " + pmSign.getWidth() + " pmSign.getHeight(): " + pmSign.getHeight());
+////                                    pmSign.invalidate();
+//                                }
+//                            });
+//                        }
+//                    });
                 }
-            });
+            }, 5000);
         } else {
             Log.i(TAG, "TextUtils.isEmpty(report.getPm()));  " + TextUtils.isEmpty(report.getPm()));
-
         }
+
         if (!TextUtils.isEmpty(report.getContractor())) {
             contractor_layout.setVisibility(View.VISIBLE);
             Log.i(TAG, "report.getContractor() " + report.getContractor());
@@ -504,7 +518,7 @@ public class GeneralSiteActivity extends BaseActivity {
                             Log.i(TAG, "saveFormItemModel.status ;" + saveFormItemModel.status);
                             Log.i(TAG, "onSuccess:  formitem_id;" + saveFormItemModel.formitem_id);
                             Log.i(TAG, "onSuccess:  item_id; " + map.get("item_id"));
-                            checker_save_obs_form(saveFormItemModel.formitem_id,map.get("item_id"));
+                            checker_save_obs_form(saveFormItemModel.formitem_id, map.get("item_id"));
                             MyApplication.getInstance().removeActivityExcept(MainActivity.class);
                         } else {
                             showToast("Save failure");
@@ -522,12 +536,12 @@ public class GeneralSiteActivity extends BaseActivity {
         }
     }
 
-    public void checker_save_obs_form (String formItem_id, String item_id){
-        String KEY = mySharedPref_app.getHead(mContext)+item_id;
+    public void checker_save_obs_form(String formItem_id, String item_id) {
+        String KEY = mySharedPref_app.getHead(mContext) + item_id;
         ArrayList<obs_form_DataModel> temp = mySharedPref_app.getArrayList(KEY, mContext);
         for (int j = 0; j < temp.size(); j++) {
-            Log.i(TAG, "temp.getRecommedation "+temp.get(j).getRecommedation());
-            saveObsFrom(formItem_id,temp.get(j).getFile(),temp.get(j).getRecommedation(),temp.get(j).getToBeRemediated_before(),temp.get(j).getFollowUpAction());
+            Log.i(TAG, "temp.getRecommedation " + temp.get(j).getRecommedation());
+            saveObsFrom(formItem_id, temp.get(j).getFile(), temp.get(j).getRecommedation(), temp.get(j).getToBeRemediated_before(), temp.get(j).getFollowUpAction());
         }
 
 
@@ -569,7 +583,7 @@ public class GeneralSiteActivity extends BaseActivity {
             ArrayList<obs_form_DataModel> temp = mySharedPref_app.getArrayList(arrayList.get(i).toString(), mContext);
             for (int j = 0; j < temp.size(); j++) {
                 Log.i(TAG, " key of obs_form i,j" + i + j + "," + temp.get(j).getRecommedation());
-                Log.i(TAG, " temp.getRecommedation "+temp.get(j).getRecommedation());
+                Log.i(TAG, " temp.getRecommedation " + temp.get(j).getRecommedation());
                 saveObsFrom(formitem_id, temp.get(j).getFile(), temp.get(j).getRecommedation(), temp.get(j).getToBeRemediated_before(), temp.get(j).getFollowUpAction());
             }
 

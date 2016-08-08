@@ -29,18 +29,6 @@ public class MySharedPref_App extends Application {
     Type listOfObjects = new TypeToken<ArrayList<obs_form_DataModel>>() {
     }.getType();
 
-
-    public void putString(Context context, String Pkey, String key,String value) {
-        Log.i(TAG, "putString Pkey, key; " + Pkey + "," + key);
-        SharedPreferences sharedPreferences = context.getSharedPreferences(Pkey, MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(key,value);
-        editor.commit();
-
-
-
-    }
-
     public void setHead (Context context,String string){
         SharedPreferences sharedPreferences = context.getSharedPreferences("head",MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -89,7 +77,9 @@ public class MySharedPref_App extends Application {
                 Log.i(TAG, "data.getRecommedation()" + data.getRecommedation());
                 return obsFormDataModelArrayList;
             } else {
+
                 Log.i(TAG, "obsFormDataModelArrayList is empty");
+                return  null;
             }
         } else {
             Log.i(TAG, "json is null");
