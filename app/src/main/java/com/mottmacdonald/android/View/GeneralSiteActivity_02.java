@@ -64,8 +64,8 @@ import de.greenrobot.dao.query.QueryBuilder;
  * 创建日期：2016/4/15 1:55
  * 备注：
  */
-public class GeneralSiteActivity extends BaseActivity {
-    private String TAG = this.getClass().getName();
+public class GeneralSiteActivity_02 extends BaseActivity {
+    private static final String TAG = "GeneralSiteActivity16";
     private static final String PREF_NAME = "myNameList";
 
 
@@ -102,15 +102,13 @@ public class GeneralSiteActivity extends BaseActivity {
     private static Context mContext;
 
     public static void start(Context context, String contractName, String contractId, String formInfoId) {
-        Intent intent = new Intent(context, GeneralSiteActivity.class);
+        Intent intent = new Intent(context, GeneralSiteActivity_02.class);
         intent.putExtra(CONTRACT_NAME, contractName);
         intent.putExtra(CONTRACT_ID, contractId);
         intent.putExtra(FORM_INFO_ID, formInfoId);
         context.startActivity(intent);
         mContext = context;
     }
-
-    boolean pm, con, et, iec;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,101 +119,23 @@ public class GeneralSiteActivity extends BaseActivity {
         initDatas();
         initViews();
 
-        pm = con = et = iec = true;
 
-        pm_layout.setVisibility(View.VISIBLE);
+        pm_layout.setVisibility(View.GONE);
         contractor_layout.setVisibility(View.GONE);
         et_layout.setVisibility(View.GONE);
         iec_layout.setVisibility(View.GONE);
-        GeneralSiteActivity.this.runOnUiThread(new Runnable() {
+        GeneralSiteActivity_02.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-//                searchData();
+                searchData();
 
 
             }
         });
 //        searchData();
-
-        setSignShow_02();
-        addOnGlobalLayoutListener_02();
-        postADelayUpdateThread();
-
-//        postADelayUpdateThread();
-
-    }
-
-    private void setSignShow_02() {
-        Log.i(TAG, "setSignShow_02: ");
-        if (pm) {
-            pm_layout.setVisibility(View.VISIBLE);
-            pmSign.setVisibility(View.VISIBLE);
-            outputWidthHeight(pmSign);
-        }
-
-        if (con) {
-            contractor_layout.setVisibility(View.VISIBLE);
-            contractorSign.setVisibility(View.VISIBLE);
-            outputWidthHeight(contractorSign);
-        }
-        if (et) {
-            et_layout.setVisibility(View.VISIBLE);
-            etSign.setVisibility(View.VISIBLE);
-            outputWidthHeight(etSign);
-        }
-        if (true) {
-            iec_layout.setVisibility(View.VISIBLE);
-            iecSign.setVisibility(View.VISIBLE);
-            outputWidthHeight(iecSign);
-        }
-        pm_layout.setVisibility(View.INVISIBLE);
-        pm_layout.setVisibility(View.VISIBLE);
+        addOnGlobalLayoutListener();
 
 
-    }
-
-
-    public void addOnGlobalLayoutListener_02() {
-        Log.i(TAG, "addOnGlobalLayoutListener_02: ");
-        ViewTreeObserver vto1 = pmSign.getViewTreeObserver();
-        vto1.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-            @Override
-            public void onGlobalLayout() {
-                pmSign.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                Log.i(TAG, "pmSign.getWidth(): " + pmSign.getWidth() + " pmSign.getHeight(): " + pmSign.getHeight());
-            }
-        });
-        ViewTreeObserver vto2 = contractorSign.getViewTreeObserver();
-        vto2.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                contractorSign.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                Log.i(TAG, "contractorSign.getWidth(): " + contractorSign.getWidth() + " contractorSign.getHeight(): " + contractorSign.getHeight());
-            }
-        });
-        ViewTreeObserver vto3 = etSign.getViewTreeObserver();
-        vto3.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                etSign.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                Log.i(TAG, "etSign.getWidth(): " + etSign.getWidth() + " etSign.getHeight(): " + etSign.getHeight());
-            }
-        });
-
-        ViewTreeObserver vto4 = iecSign.getViewTreeObserver();
-        vto4.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                iecSign.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                Log.i(TAG, "iecSign.getWidth(): " + iecSign.getWidth() + " iecSign.getHeight(): " + iecSign.getHeight());
-            }
-        });
-
-    }
-
-    public void outputWidthHeight(RelativeLayout relativeLayout) {
-        Log.i(TAG, "outputWidthHeight: width: " + relativeLayout.getWidth() + " height: " + relativeLayout.getHeight());
     }
 
     private void searchData() {
@@ -286,6 +206,7 @@ public class GeneralSiteActivity extends BaseActivity {
 
     private void initViews() {
         mAQuery.id(R.id.title_text).text(contractName + "-GENERAL SITE ACTIVITIES");
+//        mAdapter = new GeneralAdapter(mContext, sections);
         mAdapter = new GeneralExpandableAdapter(mContext, groupDatas, childrenDatas);
         listView = (ExpandableListView) findViewById(R.id.listview);
         listView.setAdapter(mAdapter);
@@ -293,6 +214,7 @@ public class GeneralSiteActivity extends BaseActivity {
         for (int i = 0; i < mAdapter.getGroupCount(); i++) {
             listView.expandGroup(i);
         }
+//        mAQuery.id(R.id.listview).adapter(adapter);
         View headView = LayoutInflater.from(mContext).inflate(R.layout.item_general_head, null);
         View footView = LayoutInflater.from(mContext).inflate(R.layout.item_general_foot_02, null);
         footAq = new AQuery(footView);
@@ -344,6 +266,17 @@ public class GeneralSiteActivity extends BaseActivity {
         listView.addHeaderView(headView);
         listView.addFooterView(footView);
 
+        ViewTreeObserver vto1 = pmSign.getViewTreeObserver();
+        vto1.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+            @Override
+            public void onGlobalLayout() {
+                pmSign.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                pmView = getDrawView(pmSign.getWidth(), pmSign.getHeight());
+                Log.i(TAG, "pmSign.getWidth(): " + pmSign.getWidth() + " pmSign.getHeight(): " + pmSign.getHeight());
+                pmSign.addView(pmView);
+            }
+        });
     }
 
 
@@ -437,7 +370,7 @@ public class GeneralSiteActivity extends BaseActivity {
 
         if (!TextUtils.isEmpty(report.getPm()) || !TextUtils.isEmpty(report.getContractor()) ||
                 !TextUtils.isEmpty(report.getEt()) || !TextUtils.isEmpty(report.getIec())) {
-            Toast.makeText(GeneralSiteActivity.this, "Exception!!!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(GeneralSiteActivity_02.this, "Exception!!!", Toast.LENGTH_SHORT).show();
             signLeftTitleLayout.setVisibility(View.VISIBLE);
             Confirmation_layout.setVisibility(View.VISIBLE);
         }
@@ -518,17 +451,14 @@ public class GeneralSiteActivity extends BaseActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.i(TAG, "run: delay thread");
+                Log.i(TAG, "run: delay thread2");
 //                    Log.i(TAG, "pmSign.getWidth(): " + pmSign.getWidth() + " pmSign.getHeight(): " + pmSign.getHeight());
-//                pmView = getDrawView(pmSign.getWidth(), pmSign.getHeight());
-
-
+                pmView = getDrawView(pmSign.getWidth(), pmSign.getHeight());
                 Log.i(TAG, "pmSign.getWidth(): " + pmSign.getWidth() + " pmSign.getHeight(): " + pmSign.getHeight());
-//                addOnGlobalLayoutListener_02();
 //                    pmView.invalidate();
-//                pmSign.addView(pmView);
+                pmSign.addView(pmView);
             }
-        }, 5000);
+        }, 2000);
     }
 
 
