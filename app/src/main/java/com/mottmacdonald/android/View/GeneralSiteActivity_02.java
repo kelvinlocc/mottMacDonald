@@ -216,7 +216,7 @@ public class GeneralSiteActivity_02 extends BaseActivity {
         }
 //        mAQuery.id(R.id.listview).adapter(adapter);
         View headView = LayoutInflater.from(mContext).inflate(R.layout.item_general_head, null);
-        View footView = LayoutInflater.from(mContext).inflate(R.layout.item_general_foot_02, null);
+        View footView = LayoutInflater.from(mContext).inflate(R.layout.item_general_foot, null);
         footAq = new AQuery(footView);
         footAq.id(R.id.save_btn).clicked(clickListener);
         // // TODO: 8/8/2016  pmSign;

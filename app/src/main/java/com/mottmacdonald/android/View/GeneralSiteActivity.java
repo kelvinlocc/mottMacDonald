@@ -1,10 +1,8 @@
 package com.mottmacdonald.android.View;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -120,102 +118,36 @@ public class GeneralSiteActivity extends BaseActivity {
         mySharedPref_app = new MySharedPref_App();
         initDatas();
         initViews();
-
         pm = con = et = iec = true;
-
-        pm_layout.setVisibility(View.VISIBLE);
-        contractor_layout.setVisibility(View.GONE);
-        et_layout.setVisibility(View.GONE);
-        iec_layout.setVisibility(View.GONE);
-        GeneralSiteActivity.this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-//                searchData();
-
-
-            }
-        });
-//        searchData();
-
-        setSignShow_02();
-        addOnGlobalLayoutListener_02();
-        postADelayUpdateThread();
-
-//        postADelayUpdateThread();
-
+        searchData();
     }
+
+
 
     private void setSignShow_02() {
         Log.i(TAG, "setSignShow_02: ");
         if (pm) {
             pm_layout.setVisibility(View.VISIBLE);
             pmSign.setVisibility(View.VISIBLE);
-            outputWidthHeight(pmSign);
+//            outputWidthHeight(pmSign);
         }
 
         if (con) {
             contractor_layout.setVisibility(View.VISIBLE);
             contractorSign.setVisibility(View.VISIBLE);
-            outputWidthHeight(contractorSign);
+//            outputWidthHeight(contractorSign);
         }
         if (et) {
             et_layout.setVisibility(View.VISIBLE);
             etSign.setVisibility(View.VISIBLE);
-            outputWidthHeight(etSign);
+//            outputWidthHeight(etSign);
         }
         if (true) {
             iec_layout.setVisibility(View.VISIBLE);
             iecSign.setVisibility(View.VISIBLE);
-            outputWidthHeight(iecSign);
+//            outputWidthHeight(iecSign);
         }
-        pm_layout.setVisibility(View.INVISIBLE);
-        pm_layout.setVisibility(View.VISIBLE);
 
-
-    }
-
-
-    public void addOnGlobalLayoutListener_02() {
-        Log.i(TAG, "addOnGlobalLayoutListener_02: ");
-        ViewTreeObserver vto1 = pmSign.getViewTreeObserver();
-        vto1.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-            @Override
-            public void onGlobalLayout() {
-                pmSign.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                Log.i(TAG, "pmSign.getWidth(): " + pmSign.getWidth() + " pmSign.getHeight(): " + pmSign.getHeight());
-            }
-        });
-        ViewTreeObserver vto2 = contractorSign.getViewTreeObserver();
-        vto2.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                contractorSign.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                Log.i(TAG, "contractorSign.getWidth(): " + contractorSign.getWidth() + " contractorSign.getHeight(): " + contractorSign.getHeight());
-            }
-        });
-        ViewTreeObserver vto3 = etSign.getViewTreeObserver();
-        vto3.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                etSign.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                Log.i(TAG, "etSign.getWidth(): " + etSign.getWidth() + " etSign.getHeight(): " + etSign.getHeight());
-            }
-        });
-
-        ViewTreeObserver vto4 = iecSign.getViewTreeObserver();
-        vto4.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                iecSign.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                Log.i(TAG, "iecSign.getWidth(): " + iecSign.getWidth() + " iecSign.getHeight(): " + iecSign.getHeight());
-            }
-        });
-
-    }
-
-    public void outputWidthHeight(RelativeLayout relativeLayout) {
-        Log.i(TAG, "outputWidthHeight: width: " + relativeLayout.getWidth() + " height: " + relativeLayout.getHeight());
     }
 
     private void searchData() {
@@ -276,9 +208,12 @@ public class GeneralSiteActivity extends BaseActivity {
         }
         MySharedPref_App mySharedPref_app = new MySharedPref_App();
 
+        //<temp
         String string = mySharedPref_app.getString(mContext, "uniqueCode", "code_head") + ".txt";
         mySharedPref_app.write_StringArrayList(ArrayList, mContext, string);
         mySharedPref_app.read_StringArrayList(mContext, string);
+        //temp>
+
 //        mySharedPref_app.output_StringArrayList(mContext,string);
     }
 
@@ -294,7 +229,7 @@ public class GeneralSiteActivity extends BaseActivity {
             listView.expandGroup(i);
         }
         View headView = LayoutInflater.from(mContext).inflate(R.layout.item_general_head, null);
-        View footView = LayoutInflater.from(mContext).inflate(R.layout.item_general_foot_02, null);
+        View footView = LayoutInflater.from(mContext).inflate(R.layout.item_general_foot, null);
         footAq = new AQuery(footView);
         footAq.id(R.id.save_btn).clicked(clickListener);
         // // TODO: 8/8/2016  pmSign;
@@ -337,15 +272,25 @@ public class GeneralSiteActivity extends BaseActivity {
         IEC.setText(sharedPreferences.getString("iec", ""));
         //special , date value
         EditText editText_date = (EditText) footView.findViewById(R.id.date);
+        EditText editText_date_02 = (EditText) footView.findViewById(R.id.date_02);
+        EditText editText_date_03 = (EditText) footView.findViewById(R.id.date_03);
+        EditText editText_date_04 = (EditText) footView.findViewById(R.id.date_04);
+
         editText_date.setText(sharedPreferences.getString("date", ""));
+        editText_date_02.setText(sharedPreferences.getString("date", ""));
+        editText_date_03.setText(sharedPreferences.getString("date", ""));
+        editText_date_04.setText(sharedPreferences.getString("date", ""));
 
 
         //>>
         listView.addHeaderView(headView);
         listView.addFooterView(footView);
+        pm_layout.setVisibility(View.GONE);
+        contractor_layout.setVisibility(View.GONE);
+        et_layout.setVisibility(View.GONE);
+        iec_layout.setVisibility(View.GONE);
 
     }
-
 
     private DrawView getDrawView(int w, int h) {
 //        DrawView drawView = new DrawView(mContext, pmSign.getWidth(), pmSign.getHeight());
@@ -367,72 +312,83 @@ public class GeneralSiteActivity extends BaseActivity {
 
     private void setSignShow(Report report) {
         Log.i(TAG, "setSignShow: ");
-//        pmSign.setVisibility(View.GONE);
-
-
-//        if (!TextUtils.isEmpty(report.getPm())) {
-        if (true) {
+        if (!TextUtils.isEmpty(report.getPm())) {
+//        if (true) {
             pm_layout.setVisibility(View.VISIBLE);
             Log.i(TAG, "report.getPm() " + report.getPm());
-
             pmSign.setVisibility(View.VISIBLE);
             pmTitle.setVisibility(View.VISIBLE);
+            ViewTreeObserver vt01 = pmSign.getViewTreeObserver();
+            vt01.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    Log.i(TAG, "onPreDraw: ");
+                    Log.i(TAG, "onPreDraw: "+pmSign.toString()+": width: "+pmSign.getWidth());
+                    pmSign.getViewTreeObserver().removeOnPreDrawListener(this);
+                    pmView = getDrawView(pmSign.getWidth(),pmSign.getHeight());
+                    pmSign.addView(pmView);
+                    return true;
+                }
+            });
         }
 
-//        if (!TextUtils.isEmpty(report.getContractor())) {
-        if (true) {
+        if (!TextUtils.isEmpty(report.getContractor())) {
+//        if (true) {
             contractor_layout.setVisibility(View.VISIBLE);
             Log.i(TAG, "report.getContractor() " + report.getContractor());
-
             contractorSign.setVisibility(View.VISIBLE);
             contractorTitle.setVisibility(View.VISIBLE);
-//            ViewTreeObserver vto2 = contractorSign.getViewTreeObserver();
-//            vto2.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//                @Override
-//                public void onGlobalLayout() {
-//                    contractorSign.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-//                    contractorView = getDrawView(contractorSign.getWidth(), contractorSign.getHeight());
-//                    Log.i(TAG, "contractorSign.getWidth(): " + contractorSign.getWidth() + " contractorSign.getHeight(): " + contractorSign.getHeight());
-//
-//                    contractorSign.addView(contractorView);
-//                }
-//            });
+            ViewTreeObserver vt02 = contractorSign.getViewTreeObserver();
+            vt02.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    Log.i(TAG, "onPreDraw: ");
+                    Log.i(TAG, "onPreDraw: "+contractorSign.toString()+": width: "+contractorSign.getWidth());
+                    contractorSign.getViewTreeObserver().removeOnPreDrawListener(this);
+                    contractorView = getDrawView(contractorSign.getWidth(),contractorSign.getHeight());
+                    contractorSign.addView(contractorView);
+                    return true;
+                }
+            });
         }
-//        if (!TextUtils.isEmpty(report.getEt())) {
-        if (true) {
+        if (!TextUtils.isEmpty(report.getEt())) {
+//        if (true) {
             et_layout.setVisibility(View.VISIBLE);
             Log.i(TAG, "report.getEt() " + report.getEt());
-
             etSign.setVisibility(View.VISIBLE);
             etTitle.setVisibility(View.VISIBLE);
-//            ViewTreeObserver vto3 = etSign.getViewTreeObserver();
-//            vto3.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//                @Override
-//                public void onGlobalLayout() {
-//                    etSign.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-//                    etView = getDrawView(etSign.getWidth(), etSign.getHeight());
-//                    Log.i(TAG, "etSign.getWidth(): " + etSign.getWidth() + " etSign.getHeight(): " + etSign.getHeight());
-//
-//                    etSign.addView(etView);
-//                }
-//            });
+            ViewTreeObserver vt03 = etSign.getViewTreeObserver();
+            vt03.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    Log.i(TAG, "onPreDraw: ");
+                    Log.i(TAG, "onPreDraw: "+etSign.toString()+": width: "+etSign.getWidth());
+                    etSign.getViewTreeObserver().removeOnPreDrawListener(this);
+                    etView = getDrawView(etSign.getWidth(),etSign.getHeight());
+                    etSign.addView(etView);
+                    return true;
+                }
+            });
         }
-//        if (!TextUtils.isEmpty(report.getIec())) {
-        if (true) {
+        if (!TextUtils.isEmpty(report.getIec())) {
+//        if (true) {
 
             iec_layout.setVisibility(View.VISIBLE);
             Log.i(TAG, "report.getIec() " + report.getIec());
             iecSign.setVisibility(View.VISIBLE);
             iecTitle.setVisibility(View.VISIBLE);
-//            ViewTreeObserver vto4 = iecSign.getViewTreeObserver();
-//            vto4.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//                @Override
-//                public void onGlobalLayout() {
-//                    iecSign.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-//                    iecView = getDrawView(iecSign.getWidth(), iecSign.getHeight());
-//                    iecSign.addView(iecView);
-//                }
-//            });
+            ViewTreeObserver vt04 = iecSign.getViewTreeObserver();
+            vt04.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    Log.i(TAG, "onPreDraw: ");
+                    Log.i(TAG, "onPreDraw: "+iecSign.toString()+": width: "+iecSign.getWidth());
+                    iecSign.getViewTreeObserver().removeOnPreDrawListener(this);
+                    iecView = getDrawView(iecSign.getWidth(),iecSign.getHeight());
+                    iecSign.addView(iecView);
+                    return true;
+                }
+            });
         }
 
         if (!TextUtils.isEmpty(report.getPm()) || !TextUtils.isEmpty(report.getContractor()) ||
@@ -441,73 +397,6 @@ public class GeneralSiteActivity extends BaseActivity {
             signLeftTitleLayout.setVisibility(View.VISIBLE);
             Confirmation_layout.setVisibility(View.VISIBLE);
         }
-
-        sign_layout.invalidate();
-//        addOnGlobalLayoutListener();
-//        postADelayUpdateThread();
-        Log.i(TAG, "pmSign.getWidth(): " + pmSign.getWidth() + " pmSign.getHeight(): " + pmSign.getHeight());
-
-    }
-
-    public void addOnGlobalLayoutListener() {
-        Log.i(TAG, "addOnGlobalLayoutListener: ");
-        ViewTreeObserver vto1 = pmSign.getViewTreeObserver();
-        vto1.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-            @Override
-            public void onGlobalLayout() {
-                pmSign.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                pmView = getDrawView(pmSign.getWidth(), pmSign.getHeight());
-                Log.i(TAG, "pmSign.getWidth(): " + pmSign.getWidth() + " pmSign.getHeight(): " + pmSign.getHeight());
-                pmSign.addView(pmView);
-            }
-        });
-
-        ViewTreeObserver vto2 = contractorSign.getViewTreeObserver();
-        vto2.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                contractorSign.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                contractorView = getDrawView(contractorSign.getWidth(), contractorSign.getHeight());
-                Log.i(TAG, "contractorSign.getWidth(): " + contractorSign.getWidth() + " contractorSign.getHeight(): " + contractorSign.getHeight());
-                contractorSign.addView(contractorView);
-            }
-        });
-        ViewTreeObserver vto3 = etSign.getViewTreeObserver();
-        vto3.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                etSign.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                etView = getDrawView(etSign.getWidth(), etSign.getHeight());
-                etSign.addView(etView);
-                Log.i(TAG, "etSign.getWidth(): " + etSign.getWidth() + " etSign.getHeight(): " + etSign.getHeight());
-
-            }
-        });
-
-        ViewTreeObserver vto4 = iecSign.getViewTreeObserver();
-        vto4.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                iecSign.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                iecView = getDrawView(iecSign.getWidth(), iecSign.getHeight());
-                iecSign.addView(iecView);
-                Log.i(TAG, "iecSign.getWidth(): " + iecSign.getWidth() + " iecSign.getHeight(): " + iecSign.getHeight());
-
-            }
-        });
-//        Log.i(TAG, "pmSign.getWidth(): " + pmSign.getWidth() + " pmSign.getHeight(): " + pmSign.getHeight());
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Log.i(TAG, "run: ");
-                Log.i(TAG, "contractorSign.getWidth(): " + contractorSign.getWidth() + " contractorSign.getHeight(): " + contractorSign.getHeight());
-
-
-            }
-        }, 5000);
-
     }
 
     public void postADelayUpdateThread() {
@@ -519,17 +408,14 @@ public class GeneralSiteActivity extends BaseActivity {
             @Override
             public void run() {
                 Log.i(TAG, "run: delay thread");
-//                    Log.i(TAG, "pmSign.getWidth(): " + pmSign.getWidth() + " pmSign.getHeight(): " + pmSign.getHeight());
-//                pmView = getDrawView(pmSign.getWidth(), pmSign.getHeight());
-
-
+                pm_layout.setVisibility(View.INVISIBLE);
                 Log.i(TAG, "pmSign.getWidth(): " + pmSign.getWidth() + " pmSign.getHeight(): " + pmSign.getHeight());
-//                addOnGlobalLayoutListener_02();
-//                    pmView.invalidate();
-//                pmSign.addView(pmView);
+
             }
         }, 5000);
     }
+
+
 
 
     @Override
@@ -675,6 +561,7 @@ public class GeneralSiteActivity extends BaseActivity {
 
     }
 
+    // pervious method, incorrect!
     private void saveFormItemObs(String formitem_id) {
         System.out.println("保存图片表");
         SharedPreferences mPrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);// use JSOnM format to store the object (obs_form)

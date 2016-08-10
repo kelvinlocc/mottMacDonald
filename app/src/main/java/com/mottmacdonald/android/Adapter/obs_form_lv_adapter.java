@@ -1,11 +1,14 @@
 package com.mottmacdonald.android.Adapter;
 
 import android.annotation.TargetApi;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -14,19 +17,28 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mottmacdonald.android.Data.MySharedPref_App;
 import com.mottmacdonald.android.Models.obs_form_DataModel;
 import com.mottmacdonald.android.R;
+import com.mottmacdonald.android.Utils.showDatePicker;
+import com.mottmacdonald.android.Utils.showTimePicker;
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 
 
 /**
@@ -47,7 +59,9 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
     Type listOfObjects = new TypeToken<ArrayList<obs_form_DataModel>>() {
     }.getType();
     final SharedPreferences mPrefs;
-
+    private Calendar myCalendar;
+    private DatePickerDialog datePickerDialog;
+    DatePickerDialog.OnDateSetListener date;
 
     public obs_form_lv_adapter(Context context2, ArrayList<obs_form_DataModel> data01, String preference) {//
         // TODO Auto-generated constructor stub
@@ -63,6 +77,8 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
 //        arrayList = mySharedPref_app.getArrayList(preference, context2);
         arrayList = data01;
         Log.i(TAG,"arrayList.size() @adapter"+arrayList.size());
+        myCalendar =  Calendar.getInstance();
+
     }
 
     @Override
@@ -108,6 +124,7 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
+
         // TODO Auto-generated method stub
         final Holder holder = new Holder();
         View view;
@@ -153,17 +170,65 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
 
 
         holder.toBeRemediated = (EditText) view.findViewById(R.id.to_be_remediated_before);
-        holder.toBeRemediated.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//        holder.toBeRemediated.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                if (actionId == EditorInfo.IME_ACTION_DONE) {
+//                    String string = holder.toBeRemediated.getText().toString().trim();
+//                    myData.setToBeRemediated_before(string);
+//                    return false;
+//                }
+//                return false;
+//            }
+//        });
+
+
+        holder.toBeRemediated.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    String string = holder.toBeRemediated.getText().toString().trim();
-                    myData.setToBeRemediated_before(string);
-                    return false;
-                }
-                return false;
+            public void onClick(View v) {
+                Log.i(TAG, "onClick: ");
+
+                final DialogFragment timePickerFragment = new showTimePicker.TimePickerFragment(){
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        Calendar c = Calendar.getInstance();
+                        c.set(hourOfDay, minute);
+                        Log.i(TAG, "onTimeSet: hourofday: "+hourOfDay);
+                        String date_time = myData.getToBeRemediated_before();
+                        date_time = date_time+" "+hourOfDay+":"+minute;
+                        myData.setToBeRemediated_before(date_time);
+                        Log.i(TAG, "onTimeSet: date_time "+date_time);
+                        update(mPrefs, position);
+                    }
+                };
+
+                DialogFragment datePickerFragment = new showDatePicker.DatePickerFragment() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int day) {
+                        Log.d(TAG, "onDateSet");
+                        Calendar c = Calendar.getInstance();
+                        c.set(year, month, day);
+
+                        String Date = Integer.toString(year)+"-"+Integer.toString(month+1)+"-"+Integer.toString(day);
+                        Log.i(TAG, "onDateSet: date "+Date);
+                        myData.setToBeRemediated_before(Date);
+
+//                        editText.setText(df.format(c.getTime()));
+//                        nextField.requestFocus(); //moves the focus to something else after dialog is closed
+                        timePickerFragment.show(((FragmentActivity)context).getFragmentManager(),"timePicker");
+
+                    }
+                };
+
+                ((FragmentActivity)context).getSupportFragmentManager();
+                Toast.makeText(context, "", Toast.LENGTH_SHORT).show();
+                datePickerFragment.show(((FragmentActivity) context).getFragmentManager(), "datePicker");
             }
         });
+
+
+
+
         holder.toBeRemediated.setText(myData.getToBeRemediated_before());
 
         holder.followUpAction = (EditText) view.findViewById(R.id.follow_up_action);
@@ -173,6 +238,7 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     String string = holder.followUpAction.getText().toString().trim();
                     myData.setFollowUpAction(string);
+                    update(mPrefs, position);
                     return false;
                 }
                 return false;
@@ -188,6 +254,15 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
 
         return view;
     }
+    private void updateLabel() {
+
+        String myFormat = "MM/dd/yy"; //In which you need put here
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+        notifyDataSetChanged();
+//        .setText(sdf.format(myCalendar.getTime()));
+    }
+
+
 
     protected void update(SharedPreferences preferences, int position) {
         Log.i(TAG, "update shared preference");

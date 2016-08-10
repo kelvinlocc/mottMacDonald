@@ -1,296 +1,469 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:paddingLeft="@dimen/list_margin_screen"
     android:paddingRight="@dimen/list_margin_screen">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/item_margin_vertical"
+        android:layout_marginTop="@dimen/item_margin_vertical"
+        android:padding="10dp"
         android:text="FOLLOW UP ACTIONS BY CONTRACTOR"
         android:textColor="@color/themeColor"
         android:textSize="@dimen/text_size_large"
-        android:textStyle="bold"
-        android:padding="10dp"
-        android:layout_marginTop="@dimen/item_margin_vertical"
-        android:layout_marginBottom="@dimen/item_margin_vertical"/>
+        android:textStyle="bold" />
 
     <EditText
         android:id="@+id/followup_text"
         style="@style/general_edittext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="top"
         android:minHeight="100dp"
-        android:singleLine="false"
-        android:gravity="top"/>
+        android:singleLine="false" />
 
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/item_margin_vertical"
+        android:layout_marginTop="@dimen/item_margin_vertical"
+        android:padding="10dp"
         android:text="OTHER OBSERVATION"
         android:textColor="@color/themeColor"
         android:textSize="@dimen/text_size_large"
-        android:textStyle="bold"
-        android:padding="10dp"
-        android:layout_marginTop="@dimen/item_margin_vertical"
-        android:layout_marginBottom="@dimen/item_margin_vertical"/>
+        android:textStyle="bold" />
 
     <EditText
         android:id="@+id/other_obs_text"
+        style="@style/general_edittext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="top"
         android:minHeight="100dp"
         android:singleLine="false"
-        android:gravity="top"
-        style="@style/general_edittext"
         android:visibility="gone" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:id="@+id/confirmation_layout"
+        android:visibility="visible">
+
         <LinearLayout
             android:id="@+id/left_title_layout"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="102dp"
             android:orientation="vertical"
-            android:visibility="visible"
-            android:layout_marginTop="102dp">
+            android:visibility="visible">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="120dp"
-                android:text="Signature"
                 android:gravity="center"
+                android:text="Signature"
                 android:textColor="@color/themeColor"
                 android:visibility="visible" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
+                android:gravity="center"
                 android:text="Name"
-                android:gravity="center"
-                android:textColor="@color/themeColor"/>
+                android:textColor="@color/themeColor" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:text="Date"
                 android:gravity="center"
-                android:textColor="@color/themeColor"/>
+                android:text="Date"
+                android:textColor="@color/themeColor" />
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:id="@+id/check">
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:id="@+id/sign_layout">
+
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:orientation="horizontal"
-                android:layout_marginTop="32dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:id="@+id/pm_layout"
                 android:visibility="visible">
-                <TextView
-                    android:id="@+id/pm_title"
-                    style="@style/general_sign_title"
-                    android:visibility="visible"
-                    android:text="Project Manager (PM) / \nPM’s Representative"/>
-                <TextView
-                    android:id="@+id/contractor_title"
-                    style="@style/general_sign_title"
-                    android:visibility="visible"
-                    android:text="Contractor’s \nRepresentative "/>
-                <TextView
-                    android:id="@+id/et_title"
-                    style="@style/general_sign_title"
-                    android:visibility="visible"
-                    android:text="ET Leader / \nET’s Representative"/>
-                <TextView
-                    android:id="@+id/iec_title"
-                    style="@style/general_sign_title"
-                    android:visibility="visible"
-                    android:text="IEC / \nIEC’s Representative"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="32dp"
+                    android:orientation="horizontal"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:id="@+id/pm_title"
+                        style="@style/general_sign_title"
+                        android:text="Project Manager (PM) / \nPM’s Representative"
+                        android:visibility="visible" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/check"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <RelativeLayout
+                            android:id="@+id/pm_sign"
+                            style="@style/sign_box"
+                            android:layout_weight="1"
+                            android:visibility="visible">
+
+                            <View
+                                style="@style/line_horizontal"
+                                android:layout_marginTop="120dp" />
+
+                            <View
+                                style="@style/line_horizontal"
+                                android:layout_marginTop="160dp" />
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <RelativeLayout
+                            style="@style/sign_name"
+                            android:layout_gravity="bottom"
+                            android:layout_weight="1"
+                            android:visibility="visible">
+
+                            <EditText
+                                android:id="@+id/pm"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@null" />
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <RelativeLayout
+                            style="@style/sign_name"
+                            android:layout_weight="1"
+                            android:visibility="visible">
+
+                            <EditText
+                                android:id="@+id/date"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@null" />
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:id="@+id/contractor_layout"
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="32dp"
+                    android:orientation="horizontal"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:id="@+id/contractor_title"
+                        style="@style/general_sign_title"
+                        android:text="Contractor’s \nRepresentative "
+                        android:visibility="visible" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <RelativeLayout
+                            android:id="@+id/contractor_sign"
+                            style="@style/sign_box"
+                            android:layout_weight="1"
+                            android:visibility="visible">
+
+                            <View
+                                style="@style/line_horizontal"
+                                android:layout_marginTop="120dp" />
+
+                            <View
+                                style="@style/line_horizontal"
+                                android:layout_marginTop="160dp" />
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <RelativeLayout
+                            style="@style/sign_name"
+                            android:layout_weight="1"
+                            android:visibility="visible">
+
+                            <EditText
+                                android:id="@+id/contractor"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@null" />
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <RelativeLayout
+                            style="@style/sign_name"
+                            android:layout_weight="1"
+                            android:visibility="visible">
+
+                            <EditText
+                                android:id="@+id/date_02"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@null" />
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:id="@+id/et_layout"
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="32dp"
+                    android:orientation="horizontal"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:id="@+id/et_title"
+                        style="@style/general_sign_title"
+                        android:text="ET Leader / \nET’s Representative"
+                        android:visibility="visible" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <RelativeLayout
+                            android:id="@+id/et_sign"
+                            style="@style/sign_box"
+                            android:layout_weight="1"
+                            android:visibility="visible">
+
+                            <View
+                                style="@style/line_horizontal"
+                                android:layout_marginTop="120dp" />
+
+                            <View
+                                style="@style/line_horizontal"
+                                android:layout_marginTop="160dp" />
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <RelativeLayout
+                            style="@style/sign_name"
+                            android:layout_weight="1"
+                            android:visibility="visible">
+
+                            <EditText
+                                android:id="@+id/et"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@null" />
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <RelativeLayout
+                            style="@style/sign_name"
+                            android:layout_weight="1"
+                            android:visibility="visible">
+
+                            <EditText
+                                android:id="@+id/date_03"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@null" />
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginTop="10dp">
+                android:layout_weight="1"
+                android:id="@+id/iec_layout"
+                android:visibility="visible">
 
                 <LinearLayout
-                    android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="60dp"
+                    android:layout_marginTop="32dp"
+                    android:orientation="horizontal"
+                    android:visibility="visible">
 
-                    <RelativeLayout
-                        android:id="@+id/pm_sign"
-                        style="@style/sign_box"
-                        android:layout_weight="1"
-                        android:visibility="gone">
-                        <View
-                            style="@style/line_horizontal"
-                            android:layout_marginTop="120dp"/>
-                        <View
-                            style="@style/line_horizontal"
-                            android:layout_marginTop="160dp"/>
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:id="@+id/contractor_sign"
-                        style="@style/sign_box"
-                        android:visibility="gone"
-                        android:layout_weight="1">
-                        <View
-                            style="@style/line_horizontal"
-                            android:layout_marginTop="120dp"/>
-                        <View
-                            style="@style/line_horizontal"
-                            android:layout_marginTop="160dp"/>
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:id="@+id/et_sign"
-                        style="@style/sign_box"
-                        android:visibility="gone"
-                        android:layout_weight="1">
-                        <View
-                            style="@style/line_horizontal"
-                            android:layout_marginTop="120dp"/>
-                        <View
-                            style="@style/line_horizontal"
-                            android:layout_marginTop="160dp"/>
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:id="@+id/iec_sign"
-                        style="@style/sign_box"
-                        android:visibility="gone"
-                        android:layout_weight="1">
-                        <View
-                            style="@style/line_horizontal"
-                            android:layout_marginTop="120dp"/>
-                        <View
-                            style="@style/line_horizontal"
-                            android:layout_marginTop="160dp"/>
-                    </RelativeLayout>
+                    <TextView
+                        android:id="@+id/iec_title"
+                        style="@style/general_sign_title"
+                        android:text="IEC / \nIEC’s Representative"
+                        android:visibility="visible" />
                 </LinearLayout>
 
                 <LinearLayout
-                    android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
 
-                    <RelativeLayout
-                        style="@style/sign_name"
-                        android:layout_weight="1"
-                        android:visibility="visible"
-                        android:layout_gravity="bottom">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
 
-                        <EditText
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:id="@+id/pm"
-                            android:background="@null" />
+                        <RelativeLayout
+                            android:id="@+id/iec_sign"
+                            style="@style/sign_box"
+                            android:layout_weight="1"
+                            android:visibility="visible">
 
-                    </RelativeLayout>
-                    <RelativeLayout
-                        style="@style/sign_name"
-                        android:layout_weight="1"
-                        android:visibility="visible">
+                            <View
+                                style="@style/line_horizontal"
+                                android:layout_marginTop="120dp" />
 
-                        <EditText
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:id="@+id/et"
-                            android:background="@null" />
-                    </RelativeLayout>
-                    <RelativeLayout
-                        style="@style/sign_name"
-                        android:layout_weight="1"
-                        android:visibility="visible">
+                            <View
+                                style="@style/line_horizontal"
+                                android:layout_marginTop="160dp" />
+                        </RelativeLayout>
+                    </LinearLayout>
 
-                        <EditText
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:id="@+id/contractor"
-                            android:background="@null" />
-                    </RelativeLayout>
-                    <RelativeLayout
-                        style="@style/sign_name"
-                        android:layout_weight="1"
-                        android:visibility="visible">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
 
-                        <EditText
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:id="@+id/iec"
-                            android:background="@null" />
-                    </RelativeLayout>
+                        <RelativeLayout
+                            style="@style/sign_name"
+                            android:layout_weight="1"
+                            android:visibility="visible">
+
+                            <EditText
+                                android:id="@+id/iec"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@null" />
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <RelativeLayout
+                            style="@style/sign_name"
+                            android:layout_weight="1"
+                            android:visibility="visible">
+
+                            <EditText
+                                android:id="@+id/date_04"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@null" />
+                        </RelativeLayout>
+
+                    </LinearLayout>
 
                 </LinearLayout>
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
-
-                    <RelativeLayout
-                        style="@style/sign_name"
-                        android:layout_weight="1"
-                        android:visibility="visible"
-                      >
-
-                        <EditText
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:id="@+id/date"
-                            android:background="@null" />
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        style="@style/sign_name"
-                        android:layout_weight="1"
-                        android:visibility="visible"
-                         >
-
-                        <EditText
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:id="@+id/data_01"
-                            android:background="@null" />
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        style="@style/sign_name"
-                        android:layout_weight="1"
-                        android:visibility="visible"
-                       >
-
-                        <EditText
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:id="@+id/date_03"
-                            android:background="@null" />
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        style="@style/sign_name"
-                        android:layout_weight="1"
-                        android:visibility="visible"
-                       >
-
-                        <EditText
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:id="@+id/date_04"
-                            android:background="@null" />
-                    </RelativeLayout>
-
-                </LinearLayout>
-
             </LinearLayout>
+
         </LinearLayout>
+
     </LinearLayout>
 
     <android.support.percent.PercentRelativeLayout
@@ -301,11 +474,11 @@
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/save_btn"
             style="@style/common_button_match_horizontal"
-            android:text="Save and Synchronise"
             android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
             android:layout_marginBottom="20dp"
-            app:layout_widthPercent="50%"
-            android:layout_centerHorizontal="true"/>
-        </android.support.percent.PercentRelativeLayout>
+            android:text="Save and Synchronise"
+            app:layout_widthPercent="50%" />
+    </android.support.percent.PercentRelativeLayout>
 
 </LinearLayout>

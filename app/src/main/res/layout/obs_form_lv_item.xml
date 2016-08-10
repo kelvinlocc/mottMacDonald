@@ -42,11 +42,12 @@
         android:layout_weight="1" />
 
     <EditText
-        android:inputType="date"
+        android:inputType="none"
         android:layout_width="0dp"
         android:imeOptions="actionDone"
         android:layout_height="wrap_content"
         android:id="@+id/to_be_remediated_before"
+        android:focusable="false"
         android:layout_weight="1" />
 
     <EditText
