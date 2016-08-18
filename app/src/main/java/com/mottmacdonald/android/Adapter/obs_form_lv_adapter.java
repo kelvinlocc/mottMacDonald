@@ -1,8 +1,10 @@
 package com.mottmacdonald.android.Adapter;
 
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,6 +19,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -46,38 +49,30 @@ import java.util.Locale;
  */
 public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnScrollListener {
     public static String TAG = "obs_form_lv_adapter ";
-    String[] result;
+
     Context context;
-    public String KEY = "";
-    //    ArrayList<obs_form_DataModel> arrayList;
-    int[] imageId;
+    public boolean enable_delete_action;
+
     private static LayoutInflater inflater = null;
-    private ArrayList<Integer> itemNo;
+
     private ArrayList<obs_form_DataModel> arrayList;
-    obs_form_DataModel myData;
-    private final int TAKE_PHOTO = 1;
+//    DialogInterface.OnClickListener dialogClickListener;
+
     Type listOfObjects = new TypeToken<ArrayList<obs_form_DataModel>>() {
     }.getType();
     final SharedPreferences mPrefs;
-    private Calendar myCalendar;
-    private DatePickerDialog datePickerDialog;
-    DatePickerDialog.OnDateSetListener date;
 
-    public obs_form_lv_adapter(Context context2, ArrayList<obs_form_DataModel> data01, String preference) {//
+    public obs_form_lv_adapter(Context context2, ArrayList<obs_form_DataModel> data01, String preference, Boolean bool) {//
         // TODO Auto-generated constructor stub
         context = context2;//
-//        itemNo = data01;
-//        KEY = preference;
-//        arrayList = data01;
+        enable_delete_action = bool;
         inflater = (LayoutInflater) context.
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mPrefs = context.getSharedPreferences(preference, Context.MODE_PRIVATE);// use JSOnM format to store the object (obs_form)
         // check whether a data model store in shared preference:
-        MySharedPref_App mySharedPref_app = new MySharedPref_App();
 //        arrayList = mySharedPref_app.getArrayList(preference, context2);
         arrayList = data01;
-        Log.i(TAG,"arrayList.size() @adapter"+arrayList.size());
-        myCalendar =  Calendar.getInstance();
+        Log.i(TAG, "arrayList.size() @adapter" + arrayList.size());
 
     }
 
@@ -111,14 +106,13 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
     }
 
     public class Holder {
-        TextView tv;
-        ImageView img;
         TextView txt_itemNo;
         EditText editText_Observation;
         EditText toBeRemediated;
         EditText followUpAction;
         ImageButton btn_takePhoto;
         ImageView obs_photo;
+        ImageButton remove_btn;
 
     }
 
@@ -132,17 +126,27 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
 
 
         Log.i(TAG, " at position: " + arrayList.get(position).getRecommedation());
-        MySharedPref_App mySharedPref_app = new MySharedPref_App();
-//        arrayList = mySharedPref_app.getArrayList(KEY, context);
+        Log.i(TAG, "arrayList.size() @adapter" + arrayList.size());
 
-        myData = new obs_form_DataModel();
-        myData = arrayList.get(position);
-        Log.i(TAG,"arrayList.size() @adapter"+arrayList.size());
 
+        holder.remove_btn = (ImageButton) view.findViewById(R.id.remove_btn);
+        holder.remove_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(context, "position: " + position, Toast.LENGTH_SHORT).show();
+                Log.i(TAG, "onClick: delete at position: " + position);
+                confirmation_deletion(position);
+
+            }
+        });
+        if (enable_delete_action) {
+            holder.remove_btn.setVisibility(View.VISIBLE);
+        } else {
+            holder.remove_btn.setVisibility(View.INVISIBLE);
+        }
 
         holder.txt_itemNo = (TextView) view.findViewById(R.id.item_no);
-//        holder.txt_itemNo.setText(Integer.toString(arrayList.get(position).getItemNo()));
-        holder.txt_itemNo.setText(Integer.toString(myData.getItemNo()));
+        holder.txt_itemNo.setText(Integer.toString(position + 1));
 
 
         holder.editText_Observation = (EditText) view.findViewById(R.id.recommendation);
@@ -157,7 +161,6 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
 
                     arrayList.get(position).setRecommedation(string);
                     Log.i(TAG, "input model get observation: " + arrayList.get(position).getRecommedation());
-//                    notifyDataSetChanged();
                     update(mPrefs, position);
                     return false;
                 }
@@ -170,34 +173,23 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
 
 
         holder.toBeRemediated = (EditText) view.findViewById(R.id.to_be_remediated_before);
-//        holder.toBeRemediated.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-//            @Override
-//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-//                if (actionId == EditorInfo.IME_ACTION_DONE) {
-//                    String string = holder.toBeRemediated.getText().toString().trim();
-//                    myData.setToBeRemediated_before(string);
-//                    return false;
-//                }
-//                return false;
-//            }
-//        });
-
-
         holder.toBeRemediated.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.i(TAG, "onClick: ");
 
-                final DialogFragment timePickerFragment = new showTimePicker.TimePickerFragment(){
+                final DialogFragment timePickerFragment = new showTimePicker.TimePickerFragment() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        Calendar c = Calendar.getInstance();
-                        c.set(hourOfDay, minute);
-                        Log.i(TAG, "onTimeSet: hourofday: "+hourOfDay);
-                        String date_time = myData.getToBeRemediated_before();
-                        date_time = date_time+" "+hourOfDay+":"+minute;
-                        myData.setToBeRemediated_before(date_time);
-                        Log.i(TAG, "onTimeSet: date_time "+date_time);
+                        Log.i(TAG, "onTimeSet: hourofday: " + hourOfDay);
+                        String date_time = arrayList.get(position).getToBeRemediated_before();
+                        String min_string = Integer.toString(minute);
+                        if (minute < 10) {
+                            min_string = "0" + min_string;
+                        }
+                        date_time = date_time + " " + hourOfDay + ":" + min_string;
+                        arrayList.get(position).setToBeRemediated_before(date_time);
+                        Log.i(TAG, "onTimeSet: date_time " + min_string);
                         update(mPrefs, position);
                     }
                 };
@@ -209,27 +201,20 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
                         Calendar c = Calendar.getInstance();
                         c.set(year, month, day);
 
-                        String Date = Integer.toString(year)+"-"+Integer.toString(month+1)+"-"+Integer.toString(day);
-                        Log.i(TAG, "onDateSet: date "+Date);
-                        myData.setToBeRemediated_before(Date);
-
-//                        editText.setText(df.format(c.getTime()));
-//                        nextField.requestFocus(); //moves the focus to something else after dialog is closed
-                        timePickerFragment.show(((FragmentActivity)context).getFragmentManager(),"timePicker");
+                        String Date = Integer.toString(year) + "-" + Integer.toString(month + 1) + "-" + Integer.toString(day);
+                        Log.i(TAG, "onDateSet: date " + Date);
+                        arrayList.get(position).setToBeRemediated_before(Date);
+                        timePickerFragment.show(((FragmentActivity) context).getFragmentManager(), "timePicker");
 
                     }
                 };
 
-                ((FragmentActivity)context).getSupportFragmentManager();
+                ((FragmentActivity) context).getSupportFragmentManager();
                 Toast.makeText(context, "", Toast.LENGTH_SHORT).show();
                 datePickerFragment.show(((FragmentActivity) context).getFragmentManager(), "datePicker");
             }
         });
-
-
-
-
-        holder.toBeRemediated.setText(myData.getToBeRemediated_before());
+        holder.toBeRemediated.setText(arrayList.get(position).getToBeRemediated_before());
 
         holder.followUpAction = (EditText) view.findViewById(R.id.follow_up_action);
         holder.followUpAction.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -237,32 +222,49 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     String string = holder.followUpAction.getText().toString().trim();
-                    myData.setFollowUpAction(string);
+                    arrayList.get(position).setFollowUpAction(string);
                     update(mPrefs, position);
                     return false;
                 }
                 return false;
             }
         });
-        holder.followUpAction.setText(myData.getFollowUpAction());
+
+        holder.followUpAction.setText(arrayList.get(position).getFollowUpAction());
 
         holder.obs_photo = (ImageView) view.findViewById(R.id.obs_photo);
-        Bitmap bitmap = BitmapFactory.decodeFile(myData.getFile().getAbsolutePath());
+        Bitmap bitmap = BitmapFactory.decodeFile(arrayList.get(position).getFile().getAbsolutePath());
         Bitmap reducedBitmap = getResizedBitmap(bitmap, 200);
         holder.obs_photo.setImageBitmap(reducedBitmap);
 
 
         return view;
     }
-    private void updateLabel() {
 
-        String myFormat = "MM/dd/yy"; //In which you need put here
-        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-        notifyDataSetChanged();
-//        .setText(sdf.format(myCalendar.getTime()));
+    protected void confirmation_deletion(final int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+
+        DialogInterface.OnClickListener dialogClickListener
+                = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        arrayList.remove(position);
+                        update(mPrefs, position);
+                        Log.i(TAG, "onClick2: delete at position: " + position);
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        Toast.makeText(context, "cancel", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        };
+        builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
     }
-
-
 
     protected void update(SharedPreferences preferences, int position) {
         Log.i(TAG, "update shared preference");
@@ -271,7 +273,7 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
         Gson gson1 = new Gson();
         String JsonObject = gson1.toJson(arrayList, listOfObjects); // Here list is your List<CUSTOM_CLASS> object
         prefsEditor.putString("MyList", JsonObject);
-        prefsEditor.commit();
+        prefsEditor.apply();
         notifyDataSetChanged();
     }
 

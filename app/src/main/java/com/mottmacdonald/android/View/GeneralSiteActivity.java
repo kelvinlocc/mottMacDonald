@@ -123,33 +123,6 @@ public class GeneralSiteActivity extends BaseActivity {
     }
 
 
-
-    private void setSignShow_02() {
-        Log.i(TAG, "setSignShow_02: ");
-        if (pm) {
-            pm_layout.setVisibility(View.VISIBLE);
-            pmSign.setVisibility(View.VISIBLE);
-//            outputWidthHeight(pmSign);
-        }
-
-        if (con) {
-            contractor_layout.setVisibility(View.VISIBLE);
-            contractorSign.setVisibility(View.VISIBLE);
-//            outputWidthHeight(contractorSign);
-        }
-        if (et) {
-            et_layout.setVisibility(View.VISIBLE);
-            etSign.setVisibility(View.VISIBLE);
-//            outputWidthHeight(etSign);
-        }
-        if (true) {
-            iec_layout.setVisibility(View.VISIBLE);
-            iecSign.setVisibility(View.VISIBLE);
-//            outputWidthHeight(iecSign);
-        }
-
-    }
-
     private void searchData() {
         String noteText = DeviceUtils.getCurrentDate();
         Log.i(TAG, "searchData");
@@ -398,24 +371,6 @@ public class GeneralSiteActivity extends BaseActivity {
             Confirmation_layout.setVisibility(View.VISIBLE);
         }
     }
-
-    public void postADelayUpdateThread() {
-        Log.i(TAG, "postADelayUpdateThread: ");
-        // test: confirmed bug :
-        // delay
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Log.i(TAG, "run: delay thread");
-                pm_layout.setVisibility(View.INVISIBLE);
-                Log.i(TAG, "pmSign.getWidth(): " + pmSign.getWidth() + " pmSign.getHeight(): " + pmSign.getHeight());
-
-            }
-        }, 5000);
-    }
-
-
 
 
     @Override

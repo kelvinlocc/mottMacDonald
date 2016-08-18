@@ -13,7 +13,9 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -22,6 +24,7 @@ import android.widget.PopupMenu;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -62,13 +65,14 @@ public class ObservationFormActivity extends BaseActivity {
     private EditText followup;
     private static String TAG = "ObservationFormActivity";
     private obs_form_lv_adapter lv_adapter;
-    private ImageButton myButton;
+    private ImageButton myButton,setDelete_btn;
 
     public ArrayList<obs_form_DataModel> arrayList;
     public MySharedPref_App mySharedPref_app;
     public String KEY;
+    public boolean enable_delete_action;
+
     public static Context mContext;
-    // method of list 02:
     Type listOfObjects = new TypeToken<ArrayList<obs_form_DataModel>>() {
     }.getType();
     public static String item_id;
@@ -85,7 +89,7 @@ public class ObservationFormActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_obs_form);
-        ListView form_LV = (ListView) findViewById(R.id.obs_form_lv);
+        final ListView form_LV = (ListView) findViewById(R.id.obs_form_lv);
         arrayList = new ArrayList<>();
         mySharedPref_app = new MySharedPref_App();
 
@@ -93,40 +97,82 @@ public class ObservationFormActivity extends BaseActivity {
 //        Log.i(TAG,"create the unique ID for shared preference: head+ tail "+head+","+tail);
         //ObservationFormActivity: create the unique ID for shared preference: head+ tail P560(R)1760,00
         KEY = head+item_id;
+        enable_delete_action =false;
         Log.i(TAG, "onCreate: KEY =head + item_id: "+KEY);
 
         MySharedPref_App mySharedPref_app = new MySharedPref_App();
         arrayList = mySharedPref_app.getArrayList(KEY,mContext);
-        lv_adapter = new obs_form_lv_adapter(this, arrayList, KEY);
+        lv_adapter = new obs_form_lv_adapter(this, arrayList, KEY,enable_delete_action);
         form_LV.setAdapter(lv_adapter);
         myButton = (ImageButton) findViewById(R.id.addphoto);
+        setDelete_btn = (ImageButton ) findViewById(R.id.setDelete_btn);
+        setDelete_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        ToggleButton toggle_remove = (ToggleButton) findViewById(R.id.toggleButton);
+        toggle_remove.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked ) {
+                    lv_adapter.enable_delete_action =true;
+                    lv_adapter.notifyDataSetChanged();
+                }
+                else {
+                    lv_adapter.enable_delete_action =false;
+                    lv_adapter.notifyDataSetChanged();
+                }
+            }
+        });
+
         initViews();
     }
-
-
 
     private void initViews() {
         mAQuery.id(R.id.back_btn).clicked(clickListener);
         mAQuery.id(R.id.addphoto).clicked(clickListener);
-
     }
+    private View.OnClickListener clickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.back_btn:
+                    saveObsFrom();
+                    finish();
+                    break;
+                case R.id.addphoto:
+                    Log.i(TAG, " add photo button is clicked");
+                    PopupMenu myPopup = new PopupMenu(mContext, myButton);
+                    myPopup.getMenuInflater().inflate(R.menu.popup_menu, myPopup.getMenu());
+                    myPopup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            switch (item.getItemId()) {
+                                case R.id.capture:
+                                    takePhoto();
+                                    return true;
+                                case R.id.album:
+                                    selectFromAlbum();
+                                    return true;
+                                default:
+                                    return false;
+                            }
+
+                        }
+                    });
+                    myPopup.show();
+                    break;
+
+
+            }
+        }
+    };
 
     private void takePhoto() {
-
-
-        /*if (Build.VERSION.SDK_INT <= 19) {
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            File file = new File(FileUtil.getFileRoot(mContext) + "/mottCacheImage.jpg");
-//        File file = new File(FileUtil.getFileRoot(mContext) + "/mott_" + DeviceUtils.getCurrentTime("yyyyMMddHHmmssSSSS") + "jpg");
-            Uri imageUri = Uri.fromFile(file);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-            ((BaseActivity) mContext).startActivityForResult(intent, TAKE_PHOTO);
-
-        } else if (Build.VERSION.SDK_INT > 19) {
-*/
             Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
             startActivityForResult(cameraIntent, TAKE_PHOTO);
-        //}
     }
 
     private void selectFromAlbum(){
@@ -147,9 +193,6 @@ public class ObservationFormActivity extends BaseActivity {
         File file = new File(FileUtil.getFileRoot(mContext) + "/mottCacheImage.png");
 
         try {
-            // make a new bitmap from your file
-
-
             outStream = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
             outStream.flush();
@@ -167,19 +210,13 @@ public class ObservationFormActivity extends BaseActivity {
         obs_form_DataModel newData = new obs_form_DataModel();
         if (resultCode == RESULT_OK) {
             if (requestCode == TAKE_PHOTO) {
-
                 //File file = new File(FileUtil.getFileRoot(mContext) + "/mottCacheImage.jpg");
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
                 File file = savebitmap(photo);
                 File saveFile = new File(FileUtil.getFileRoot(mContext) + "/mott_" + DeviceUtils.getCurrentTime("yyyyMMddHHmmssSSSS") + ".jpg");
                 PhotoReSize photoReSize = new PhotoReSize(mContext);
                 photoReSize.reSize(file, DeviceUtils.getDisplayWidth(), saveFile);
-
-//                Bitmap bitmap = BitmapFactory.decodeFile(saveFile.getAbsolutePath());
-
-
                 mAQuery.id(R.id.obs_image).image(saveFile.getAbsolutePath());
-
                 // add item into data model
                 newData.setItemNo(arrayList.size() + 1);
                 newData.setFile(saveFile);
@@ -187,19 +224,11 @@ public class ObservationFormActivity extends BaseActivity {
 
                 newData.setToBeRemediated_before("N/A");
                 newData.setFollowUpAction("N/A");
-//                Log.i(TAG, "saveFile: " + saveFile);
-//                Log.i(TAG, "saveFile.getAbsolutePath(): " + saveFile.getAbsolutePath());
-
-                // save photo into bitmap:
-//                newData.setBitmap(bitmap);
 
             } else if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
                 Log.i(TAG, "select photo from album");
-
                 Uri uri = data.getData();
-
                 try {
-
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                     Uri selectedImageUri = data.getData();
                     String imagePath = getRealPathFromURI(selectedImageUri);
@@ -215,8 +244,6 @@ public class ObservationFormActivity extends BaseActivity {
                     newData.setRecommedation("N/A");
                     newData.setToBeRemediated_before("N/A");
                     newData.setFollowUpAction("N/A");
-//                    Log.i(TAG,"set ")
-
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -235,7 +262,7 @@ public class ObservationFormActivity extends BaseActivity {
 
             prefsEditor.putString("MyList", JsonObject);
             prefsEditor.putString("myTest", "test");
-            prefsEditor.commit();
+            prefsEditor.apply();
             lv_adapter.notifyDataSetChanged();
         }
 
@@ -254,96 +281,7 @@ public class ObservationFormActivity extends BaseActivity {
     }
 
 
-    private View.OnClickListener clickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.back_btn:
-                    saveObsFrom();
 
-
-//                    public static void saveFormItemObservation(Context context, String formItemId, File image,
-//                    String recommendation, String remediated,
-//                    String followup, ICallback<SaveFormItemObservationModel> callback){
-
-
-//                    SaveFormApi.saveFormWeather(mContext, formInfoId, conditionId, temperatureText, humidityId,
-//                            windId, remarkText, new ICallback<SaveFormWeatherModel>() {
-//                                @Override
-//                                public void onSuccess(SaveFormWeatherModel saveFormWeatherModel, Enum<?> anEnum, AjaxStatus ajaxStatus) {
-//                                    dismissProgress();
-//                                    if (saveFormWeatherModel != null) {
-//                                        saveWeatherLocalData(conditionId, temperatureText, humidityId, windId, remarkText);
-//                                        GeneralSiteActivity.start(mContext, contractName, contractId, formInfoId);
-//                                    } else {
-//                                        showRequestFailToast();
-//                                    }
-//                                }
-//
-//                                @Override
-//                                public void onError(int i, String s) {
-//
-//                                }
-//                            });
-//
-                    finish();
-                    break;
-                case R.id.addphoto:
-                    Log.i(TAG, " add photo button is clicked");
-                    PopupMenu myPopup = new PopupMenu(mContext, myButton);
-                    myPopup.getMenuInflater().inflate(R.menu.popup_menu, myPopup.getMenu());
-                    myPopup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            switch (item.getItemId()) {
-                                case R.id.capture:
-                                    takePhoto();
-                                    return true;
-                                case R.id.album:
-//                                    select from album
-                                    selectFromAlbum();
-
-                                    return true;
-                                default:
-                                    return false;
-                            }
-
-                        }
-                    });
-                    myPopup.show();
-                    break;
-//                case R.id.addphoto:
-//                    PopupMenu popup = new PopupMenu(ObservationFormActivity.this, addphoto);
-//                    //Inflating the Popup using xml file
-//                    popup.getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
-//                    //registering popup with OnMenuItemClickListener
-//                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-//
-//                        @Override
-//                        public boolean onMenuItemClick(MenuItem item) {
-//                            // handle popup choices: capture / choose photo
-//                            switch (item.getItemId()) {
-//                                case R.id.capture:
-//                                    //capture image
-//                                    takePhoto();
-//                                    return true;
-//                                case R.id.album:
-//                                    //select from album
-//                                    Intent album = new Intent(Intent.ACTION_GET_CONTENT);
-//                                    album.addCategory(Intent.CATEGORY_OPENABLE);
-//                                    album.setType("image/*");
-//                                    startActivityForResult(album, 0);
-//                                    return true;
-//                                default:
-//                                    return false;
-//                            }
-//                        }
-//                    });
-//                    popup.show(); //showing popup menu
-//                    break;
-            }
-        }
-    };
 
     private void saveObsFrom() {
 //        final String temperatureText = mAQuery.id(R.id.temperature_text).getText().toString();

@@ -81,7 +81,8 @@
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
 
                 <android.support.v7.widget.AppCompatButton
                     android:id="@+id/back_btn"
@@ -89,8 +90,8 @@
                     app:layout_widthPercent="50%"
                     android:text="Back"
                     android:layout_alignParentBottom="true"
-                    android:layout_marginBottom="@dimen/button_bottom_margin"
-                    android:layout_centerHorizontal="true"/>
+                    android:layout_centerHorizontal="true"
+                    android:gravity="center" />
 
                 <ImageButton
                     android:layout_width="wrap_content"
@@ -102,6 +103,19 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:id="@+id/obs_image" />
+
+                <ToggleButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="New ToggleButton"
+                    android:id="@+id/toggleButton"
+                    android:checked="false" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/setDelete_btn"
+                    android:src="@mipmap/delete" />
             </LinearLayout>
 
         </LinearLayout>
