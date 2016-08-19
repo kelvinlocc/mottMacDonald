@@ -118,6 +118,7 @@ public class GeneralSiteActivity extends BaseActivity {
         mySharedPref_app = new MySharedPref_App();
         initDatas();
         initViews();
+
         pm = con = et = iec = true;
         searchData();
     }
@@ -390,31 +391,39 @@ public class GeneralSiteActivity extends BaseActivity {
     private View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            boolean gate = false;
             if (pmSign.getVisibility() == View.VISIBLE) {
-                if (!pmView.getDrawStatus()) {
-                    showToast("Please signature PM’s Representative first");
-                    return;
+                if (pmView.getDrawStatus()) {
+                    gate=true;
                 }
             }
             if (contractorSign.getVisibility() == View.VISIBLE) {
-                if (!contractorView.getDrawStatus()) {
-                    showToast("Please signature Contractor’s Representative first");
-                    return;
+                if (contractorView.getDrawStatus()) {
+                    gate=true;
                 }
             }
             if (etSign.getVisibility() == View.VISIBLE) {
-                if (!etView.getDrawStatus()) {
-                    showToast("Please signature ET’s Representative first");
-                    return;
+                if (etView.getDrawStatus()) {
+                    gate=true;
                 }
             }
             if (iecSign.getVisibility() == View.VISIBLE) {
-                if (!iecView.getDrawStatus()) {
-                    showToast("Please signature IEC’s Representative first");
-                    return;
+                if (iecView.getDrawStatus()) {
+                    gate=true;
                 }
             }
-            saveFormItem();
+//            if (pmView.getDrawStatus()||contractorView.getDrawStatus()||etView.getDrawStatus()||iecView.getDrawStatus()){
+//                Toast.makeText(GeneralSiteActivity.this, "at least one signed", Toast.LENGTH_SHORT).show();
+//            }
+//            else return;
+            if (gate){
+                saveFormItem();
+            }
+            else {
+                Toast.makeText(GeneralSiteActivity.this, "at least one signature required!", Toast.LENGTH_SHORT).show();
+            }
+
+//            return;
         }
     };
 
@@ -468,14 +477,9 @@ public class GeneralSiteActivity extends BaseActivity {
                 mapList.add(map);
             }
         }
-
-
-//        arrayList = mySharedPref_app.getArrayList(KEY,mContext);
-
-
         //SaveFormApi.saveFormWeather
         for (int i = 0; i < mapList.size(); i++) {
-            Log.i(TAG, "i " + i);
+            Log.i(TAG, "mapList i " + i);
 
             final Map<String, String> map = mapList.get(i);
             SaveFormApi.saveFormItem_OnebyOne(mContext, map, new ICallback<SaveFormItemModel>() {
@@ -499,9 +503,14 @@ public class GeneralSiteActivity extends BaseActivity {
 
                 @Override
                 public void onError(int i, String s) {
-
+                    Log.i(TAG, "onError: i,s "+i+s);
+                    Log.i(TAG, "failed to save and synchronise");
                 }
             });
+        }
+        if (mapList.size() == 0) {
+            Toast.makeText(GeneralSiteActivity.this, "no data", Toast.LENGTH_SHORT).show();
+            dismissProgress();
         }
     }
 

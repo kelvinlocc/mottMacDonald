@@ -16,7 +16,8 @@
         android:text="FOLLOW UP ACTIONS BY CONTRACTOR"
         android:textColor="@color/themeColor"
         android:textSize="@dimen/text_size_large"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:visibility="gone" />
 
     <EditText
         android:id="@+id/followup_text"
@@ -37,7 +38,8 @@
         android:text="OTHER OBSERVATION"
         android:textColor="@color/themeColor"
         android:textSize="@dimen/text_size_large"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:visibility="gone" />
 
     <EditText
         android:id="@+id/other_obs_text"

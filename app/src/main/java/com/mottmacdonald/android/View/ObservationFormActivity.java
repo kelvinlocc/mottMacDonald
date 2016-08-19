@@ -56,16 +56,9 @@ public class ObservationFormActivity extends BaseActivity {
     private final int TAKE_PHOTO = 1;
     private final int PICK_IMAGE_REQUEST = 2;
     private static final String ITEM_DATA = "item_data";
-    private ImageButton addphoto;
-    private TableLayout form;
-    private TextView item_no;
-    private ImageView obs_image;
-    private EditText recommendation;
-    private EditText date;
-    private EditText followup;
     private static String TAG = "ObservationFormActivity";
     private obs_form_lv_adapter lv_adapter;
-    private ImageButton myButton,setDelete_btn;
+    private ImageButton myButton;
 
     public ArrayList<obs_form_DataModel> arrayList;
     public MySharedPref_App mySharedPref_app;
@@ -105,13 +98,7 @@ public class ObservationFormActivity extends BaseActivity {
         lv_adapter = new obs_form_lv_adapter(this, arrayList, KEY,enable_delete_action);
         form_LV.setAdapter(lv_adapter);
         myButton = (ImageButton) findViewById(R.id.addphoto);
-        setDelete_btn = (ImageButton ) findViewById(R.id.setDelete_btn);
-        setDelete_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-            }
-        });
         ToggleButton toggle_remove = (ToggleButton) findViewById(R.id.toggleButton);
         toggle_remove.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -119,10 +106,12 @@ public class ObservationFormActivity extends BaseActivity {
                 if (isChecked ) {
                     lv_adapter.enable_delete_action =true;
                     lv_adapter.notifyDataSetChanged();
+                    Toast.makeText(ObservationFormActivity.this, "enable delete", Toast.LENGTH_SHORT).show();
                 }
                 else {
                     lv_adapter.enable_delete_action =false;
                     lv_adapter.notifyDataSetChanged();
+                    Toast.makeText(ObservationFormActivity.this, "disable delete", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -159,7 +148,6 @@ public class ObservationFormActivity extends BaseActivity {
                                 default:
                                     return false;
                             }
-
                         }
                     });
                     myPopup.show();

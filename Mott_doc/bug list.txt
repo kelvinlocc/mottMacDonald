@@ -24,16 +24,19 @@ not too sure, but i found the record in db which the filename is empty
 App
 4)	Since our company logo has changed, please use the new logo for the app.
 >
-
 5)	For individual item with remark box, the text inputted in the one remark box will repeat in other remark box in other items.
 Please note that there should not be any link in between individual remarks.
 >
-6)	For photo taking function for individual item, please also allow delete photo function.
->fixed
-7)	For the place near the end of the checklist just before the signature place, please add one big text box without heading. 
->
+
 8)	For ¡°save and synchronize¡± button at the end of the form. Please separate ¡°save¡± and ¡°synchronize¡± function separately, in case poor internet connection during the field work.
 >
-9)	For the signature boxes, it is noted that the ¡°save and synchronize¡± function is not allowing with blank signature boxes. (i.e. with pop up ¡°Please signature PM¡¯s/Contractor/ET/IEC representative first¡±. However, in real situations, there may not be all four parties available for signature. Please allow the ¡°save and synchronize¡± function even with some blank signature box.
->
+
 17:46 8/18/2016
+For photo taking function for individual item, please also allow delete photo function.
+>fixed
+19:44 8/18/2016
+For the place near the end of the checklist just before the signature place, please add one big text box without heading. 
+>fixed
+10:10 8/19/2016
+For the signature boxes, it is noted that the ¡°save and synchronize¡± function is not allowing with blank signature boxes. (i.e. with pop up ¡°Please signature PM¡¯s/Contractor/ET/IEC representative first¡±. However, in real situations, there may not be all four parties available for signature. Please allow the ¡°save and synchronize¡± function even with some blank signature box.
+>fixed

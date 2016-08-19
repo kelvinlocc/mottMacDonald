@@ -52,7 +52,7 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
 
     Context context;
     public boolean enable_delete_action;
-
+    DialogInterface.OnClickListener dialogClickListener;
     private static LayoutInflater inflater = null;
 
     private ArrayList<obs_form_DataModel> arrayList;
@@ -245,7 +245,7 @@ public class obs_form_lv_adapter extends BaseAdapter implements AbsListView.OnSc
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
 
-        DialogInterface.OnClickListener dialogClickListener
+        dialogClickListener
                 = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
