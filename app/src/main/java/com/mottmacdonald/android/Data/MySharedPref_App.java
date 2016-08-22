@@ -28,6 +28,80 @@ public class MySharedPref_App extends Application {
     ArrayList<String> arrayList;
     Type listOfObjects = new TypeToken<ArrayList<obs_form_DataModel>>() {
     }.getType();
+    static String submission_status = "submission_status";
+    private String report_submission="report_submission";
+    private String weather_submission="weather_submission";
+    private String general_site_submission = "general_site_submission";
+    private String contract_key = "contract_key";
+    private String contractNumber = "contractNumber";
+    private String currentContractId = "currentContractId";
+
+    public String getContractNumber(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(contract_key,MODE_PRIVATE);
+        return sharedPreferences.getString(contractNumber,"null");
+    }
+
+    public void setContractNumber(String value,Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(contract_key,MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(contractNumber,value);
+        editor.apply();
+    }
+
+    public String getCurrentContractId(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(contract_key,MODE_PRIVATE);
+        return sharedPreferences.getString(currentContractId,"null");
+    }
+
+    public void setCurrentContractId(String value,Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(contract_key,MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(currentContractId,value);
+        editor.apply();
+    }
+
+
+
+
+
+
+    public boolean isReport_submission(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(submission_status,MODE_PRIVATE);
+        return sharedPreferences.getBoolean(report_submission,false);
+    }
+
+    public void setReport_submission(boolean bool, Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(submission_status,MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(report_submission,bool);
+        editor.apply();
+    }
+
+    public boolean isWeather_submission(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(submission_status,MODE_PRIVATE);
+        return sharedPreferences.getBoolean(weather_submission,false);
+    }
+
+    public void setWeather_submission(boolean bool,Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(submission_status,MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(weather_submission,bool);
+        editor.apply();
+    }
+
+    public boolean isGeneral_site_submission(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(submission_status,MODE_PRIVATE);
+        return sharedPreferences.getBoolean(general_site_submission,false);
+    }
+
+    public void setGeneral_site_submission(boolean bool,Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(submission_status,MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(general_site_submission,bool);
+        editor.apply();
+    }
+
+
 
     public void setHead (Context context,String string){
         SharedPreferences sharedPreferences = context.getSharedPreferences("head",MODE_PRIVATE);

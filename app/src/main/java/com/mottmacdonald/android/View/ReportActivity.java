@@ -5,11 +5,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.androidquery.callback.AjaxStatus;
@@ -29,6 +33,7 @@ import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 import com.youxiachai.ajax.ICallback;
 
+import java.security.PrivateKey;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -43,6 +48,9 @@ import de.greenrobot.dao.query.QueryBuilder;
  * 备注：
  */
 public class ReportActivity extends BaseActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener{
+
+    static  String TAG = "ReportActivity";
+
 
     private static final String CONTRACT_ID = "contract_id";
     private static final String CONTRACT_NUMBER = "contract_number";
@@ -59,10 +67,13 @@ public class ReportActivity extends BaseActivity implements DatePickerDialog.OnD
     private String currentContractNumber = "";
     private Cursor cursor;
     private Report reportLocalData;
+    String formId;
+    TextView report,weather,general_site;
 
     public static void start(Context context, String contractId, String contractNumber){
         Intent intent = new Intent(context, ReportActivity.class);
         intent.putExtra(CONTRACT_ID, contractId);
+        Log.i(TAG, "start: contractId "+contractId);
         intent.putExtra(CONTRACT_NUMBER, contractNumber);
         context.startActivity(intent);
     }
@@ -84,20 +95,32 @@ public class ReportActivity extends BaseActivity implements DatePickerDialog.OnD
             currentContractNumber = getIntent().getExtras().getString(CONTRACT_NUMBER);
         }
         templatesDatas = JSON.parseObject(DataShared.getTemplatesData(), AllTemplatesModel.class).data;
+        Log.i(TAG, "initDatas: "+DataShared.getTemplatesData());
 //        AllContractModel contractModel = JSON.parseObject(DataShared.getContractData(), AllContractModel.class);
 //        contractDatas = contractModel.data;
     }
 
     private void initViews(){
-//        spinner = (AppCompatSpinner) findViewById(R.id.contract_spinner);
-//        List<String> list = new ArrayList<String>();
-//        for (ContractData temp:contractDatas) {
-//            list.add(temp.name);
-//        }
-//        setSpinnerData(list);
+        Log.i(TAG, "initViews: ");
         mAQuery.id(R.id.start_btn).clicked(clickListener);
         mAQuery.id(R.id.date_select).clicked(clickListener);
         mAQuery.id(R.id.time_select).clicked(clickListener);
+
+        //update submission status
+        update();
+        
+        report = (TextView) findViewById(R.id.report_status);
+        if (report_submission){
+            report.setText("done");
+        }
+        weather = (TextView)findViewById(R.id.weather_status);
+        if(weather_submission){
+            weather.setText("done");
+        }
+        general_site = (TextView) findViewById(R.id.general_site_status);
+        if (general_site_submission){
+            general_site.setText("done");
+        }
     }
 
     private void setReportDataShow(Report report){
@@ -114,18 +137,9 @@ public class ReportActivity extends BaseActivity implements DatePickerDialog.OnD
         mAQuery.id(R.id.other).text(report.getOthers());
     }
 
-
-    private void setSpinnerData(List<String> list){
-        ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(this, R.layout.item_spinner, list);
-//        spinner.setAdapter(myAdapter);
-//        spinner.setOnItemSelectedListener(itemSelectListener);
-    }
-
     private AdapterView.OnItemSelectedListener itemSelectListener = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//            currentContractId = contractDatas.get(position).contract_id;
-//            contractPosition = position;
         }
 
         @Override
@@ -139,6 +153,11 @@ public class ReportActivity extends BaseActivity implements DatePickerDialog.OnD
         public void onClick(View v) {
             switch (v.getId()){
                 case R.id.start_btn:
+                    if(report_submission){
+                        update();
+                        Toast.makeText(ReportActivity.this, "report has already saved before!", Toast.LENGTH_SHORT).show();
+                        Log.i(TAG, "onClick: already saved");
+                    }
                     saveFormInfo();
                     break;
 
@@ -229,10 +248,10 @@ public class ReportActivity extends BaseActivity implements DatePickerDialog.OnD
         prefsEditor.putString("contractor",contractor);
         prefsEditor.putString("iec",iec);
         prefsEditor.putString("date",sendDate);
-        prefsEditor.commit();
+        prefsEditor.apply();
 
 
-
+        // // TODO: 8/22/2016  
         Report report = new Report();
         report.setInspectionDate(sendDate);
         report.setTime(sendTime);
@@ -247,6 +266,8 @@ public class ReportActivity extends BaseActivity implements DatePickerDialog.OnD
         report.setContractNumber(currentContractNumber);
         report.setDate(new Date());
         report.setSaveDate(DeviceUtils.getCurrentDate());
+        report.setFormId(formId);
+
         getReportDao().insert(report);
 
     }
@@ -257,7 +278,7 @@ public class ReportActivity extends BaseActivity implements DatePickerDialog.OnD
 
     private void searchData() {
         String noteText = DeviceUtils.getCurrentDate();
-
+        Log.i(TAG, "onClick: notetext "+noteText);
         // Query 类代表了一个可以被重复执行的查询
         Query query = getReportDao().queryBuilder()
                 .where(ReportDao.Properties.SaveDate.eq(noteText))
@@ -270,9 +291,42 @@ public class ReportActivity extends BaseActivity implements DatePickerDialog.OnD
             setReportDataShow(reportLocalData);
         }
 
+
         // 在 QueryBuilder 类中内置两个 Flag 用于方便输出执行的 SQL 语句与传递参数的值
         QueryBuilder.LOG_SQL = true;
         QueryBuilder.LOG_VALUES = true;
+
+        setInfo_window();
+    }
+
+    public void setInfo_window (){
+        TextView info_window = (TextView) findViewById(R.id.info);
+        formId="/";
+        Log.i(TAG, "setInfo_window: c c id "+currentContractId);
+        if (templatesDatas.size() == 0) {
+            Toast.makeText(ReportActivity.this, "templatesDatas is empty", Toast.LENGTH_SHORT).show();
+        }
+        for (TemplatesData data : templatesDatas){
+            for (FormsDataModel formData : data.forms){
+                Log.i(TAG, "setInfo_window: contract_id "+formData.contract_id);
+                if (currentContractId.equals(formData.contract_id)){
+
+                    formId = formData.form_id;
+                }
+            }
+        }
+        String string;
+        if (isConnected()){
+            string ="connected";
+        }
+        else
+        {
+            string = "discounted";
+
+        }
+        string = string +" form id: "+formId;
+        info_window.setText(string);
+        Log.i(TAG, "setInfo_window: formid "+formId +"vs "+getFormId());
     }
 
     private void saveFormInfo(){
@@ -301,23 +355,33 @@ public class ReportActivity extends BaseActivity implements DatePickerDialog.OnD
             }
         }
         showProgress();
+        Log.i(TAG, "saveFormInfo: formid: "+formId);
+
+
         SaveFormApi.saveFormInfo(mContext, formId, date, environmentalPermitNo, siteLocation, pm, et,
                 contractor, iec, others, "", "", new ICallback<SaveFormInfoModel>(){
-
             @Override
             public void onSuccess(SaveFormInfoModel saveFormInfoModel, Enum<?> anEnum, AjaxStatus ajaxStatus) {
                 dismissProgress();
                 if (saveFormInfoModel != null){
+                    Log.i(TAG, "onSuccess: ");
+                    Toast.makeText(ReportActivity.this, "saved", Toast.LENGTH_SHORT).show();
                     saveReportDataLocal();
+                    // set report submission status to true!
+                    myPref.setReport_submission(true,mContext);
+                    
                     WeatherActivity.start(mContext, currentContractNumber, currentContractId, saveFormInfoModel);
                 }else {
                     showRequestFailToast();
+                    Log.i(TAG, "save failed" +
+                            "");
                 }
 
             }
 
             @Override
             public void onError(int i, String s) {
+                Toast.makeText(ReportActivity.this, "error", Toast.LENGTH_SHORT).show();
 
             }
         });

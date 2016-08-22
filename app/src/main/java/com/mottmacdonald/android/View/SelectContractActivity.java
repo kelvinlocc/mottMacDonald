@@ -2,6 +2,7 @@ package com.mottmacdonald.android.View;
 
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatSpinner;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -31,15 +32,10 @@ public class SelectContractActivity extends BaseActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        DisplayMetrics dm = new DisplayMetrics();
-//        getWindowManager().getDefaultDisplay().getMetrics(dm);
-//
-//        TuyaView tuyaView;
-//        tuyaView = new TuyaView(this, dm.widthPixels, dm.heightPixels);
-//        setContentView(tuyaView);
         setContentView(R.layout.activity_contract_select);
         initDatas();
         initViews();
+
     }
 
     private void initDatas(){
@@ -71,7 +67,13 @@ public class SelectContractActivity extends BaseActivity{
         public void onClick(View v) {
             switch (v.getId()){
                 case R.id.confirm_btn:
+                    reset_submission_status();
                     ReportActivity.start(mContext, currentContractId, contractNumber);
+                    Log.i(TAG, "onClick: c c:"+currentContractId+","+contractNumber);
+                    myPref.setCurrentContractId(currentContractId,mContext);
+                    myPref.setContractNumber(contractNumber,mContext);
+                    Log.i(TAG, "onClick: c c from p "+myPref.getCurrentContractId(mContext)+","+myPref.getContractNumber(mContext));
+
                     break;
             }
         }

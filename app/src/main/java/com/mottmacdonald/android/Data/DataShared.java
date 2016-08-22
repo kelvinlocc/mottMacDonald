@@ -20,6 +20,11 @@ public class DataShared {
     private static final String IS_CONTRACT_EXIST = "";
     private static final String IS_TEMPLATES_EXIST = "";
     private static final String LAST_SYNCHRONIZE_DATE = "last_synchronize_date";
+    private boolean report_submission=false;
+    private boolean weather_submission=false;
+    private boolean general_site_submission = false;
+
+
 
     public static void saveContractData(String jsonString){
         SharedPreferences.Editor editor = MyApplication.getSharedPreferences().edit();

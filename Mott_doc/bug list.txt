@@ -40,3 +40,4 @@ For the place near the end of the checklist just before the signature place, ple
 10:10 8/19/2016
 For the signature boxes, it is noted that the ¡°save and synchronize¡± function is not allowing with blank signature boxes. (i.e. with pop up ¡°Please signature PM¡¯s/Contractor/ET/IEC representative first¡±. However, in real situations, there may not be all four parties available for signature. Please allow the ¡°save and synchronize¡± function even with some blank signature box.
 >fixed
+10:12 8/19/2016

@@ -20,6 +20,7 @@ public class Report {
     private String contractNumber;
     private String contractId;
     private String saveDate;
+    private String formId;
     private java.util.Date date;
 
     public Report() {
@@ -44,6 +45,14 @@ public class Report {
         this.contractId = contractId;
         this.saveDate = saveDate;
         this.date = date;
+    }
+
+    public String getFormId() {
+        return formId;
+    }
+
+    public void setFormId(String formId) {
+        this.formId = formId;
     }
 
     public Long getId() {

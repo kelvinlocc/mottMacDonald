@@ -99,6 +99,9 @@ public class GeneralSiteActivity extends BaseActivity {
     private EditText PM, ET, Contractor, IEC;
     private static Context mContext;
 
+    TextView info;
+    TextView report, weather, general_site;
+
     public static void start(Context context, String contractName, String contractId, String formInfoId) {
         Intent intent = new Intent(context, GeneralSiteActivity.class);
         intent.putExtra(CONTRACT_NAME, contractName);
@@ -264,6 +267,33 @@ public class GeneralSiteActivity extends BaseActivity {
         et_layout.setVisibility(View.GONE);
         iec_layout.setVisibility(View.GONE);
 
+
+        //submission status:
+        info = (TextView) findViewById(R.id.info);
+        String string;
+        if (isConnected()) {
+            string = "connected";
+        } else {
+            string = "discounted";
+
+        }
+        string = string + " ID: " + getFormId();
+        info.setText(string);
+
+
+        report = (TextView) findViewById(R.id.report_status);
+        if (report_submission) {
+            report.setText("done");
+        }
+        weather = (TextView) findViewById(R.id.weather_status);
+        if (weather_submission) {
+            weather.setText("done");
+        }
+        general_site = (TextView) findViewById(R.id.general_site_status);
+        if (general_site_submission) {
+            general_site.setText("done");
+        }
+
     }
 
     private DrawView getDrawView(int w, int h) {
@@ -297,9 +327,9 @@ public class GeneralSiteActivity extends BaseActivity {
                 @Override
                 public boolean onPreDraw() {
                     Log.i(TAG, "onPreDraw: ");
-                    Log.i(TAG, "onPreDraw: "+pmSign.toString()+": width: "+pmSign.getWidth());
+                    Log.i(TAG, "onPreDraw: " + pmSign.toString() + ": width: " + pmSign.getWidth());
                     pmSign.getViewTreeObserver().removeOnPreDrawListener(this);
-                    pmView = getDrawView(pmSign.getWidth(),pmSign.getHeight());
+                    pmView = getDrawView(pmSign.getWidth(), pmSign.getHeight());
                     pmSign.addView(pmView);
                     return true;
                 }
@@ -317,9 +347,9 @@ public class GeneralSiteActivity extends BaseActivity {
                 @Override
                 public boolean onPreDraw() {
                     Log.i(TAG, "onPreDraw: ");
-                    Log.i(TAG, "onPreDraw: "+contractorSign.toString()+": width: "+contractorSign.getWidth());
+                    Log.i(TAG, "onPreDraw: " + contractorSign.toString() + ": width: " + contractorSign.getWidth());
                     contractorSign.getViewTreeObserver().removeOnPreDrawListener(this);
-                    contractorView = getDrawView(contractorSign.getWidth(),contractorSign.getHeight());
+                    contractorView = getDrawView(contractorSign.getWidth(), contractorSign.getHeight());
                     contractorSign.addView(contractorView);
                     return true;
                 }
@@ -336,9 +366,9 @@ public class GeneralSiteActivity extends BaseActivity {
                 @Override
                 public boolean onPreDraw() {
                     Log.i(TAG, "onPreDraw: ");
-                    Log.i(TAG, "onPreDraw: "+etSign.toString()+": width: "+etSign.getWidth());
+                    Log.i(TAG, "onPreDraw: " + etSign.toString() + ": width: " + etSign.getWidth());
                     etSign.getViewTreeObserver().removeOnPreDrawListener(this);
-                    etView = getDrawView(etSign.getWidth(),etSign.getHeight());
+                    etView = getDrawView(etSign.getWidth(), etSign.getHeight());
                     etSign.addView(etView);
                     return true;
                 }
@@ -356,9 +386,9 @@ public class GeneralSiteActivity extends BaseActivity {
                 @Override
                 public boolean onPreDraw() {
                     Log.i(TAG, "onPreDraw: ");
-                    Log.i(TAG, "onPreDraw: "+iecSign.toString()+": width: "+iecSign.getWidth());
+                    Log.i(TAG, "onPreDraw: " + iecSign.toString() + ": width: " + iecSign.getWidth());
                     iecSign.getViewTreeObserver().removeOnPreDrawListener(this);
-                    iecView = getDrawView(iecSign.getWidth(),iecSign.getHeight());
+                    iecView = getDrawView(iecSign.getWidth(), iecSign.getHeight());
                     iecSign.addView(iecView);
                     return true;
                 }
@@ -394,38 +424,56 @@ public class GeneralSiteActivity extends BaseActivity {
             boolean gate = false;
             if (pmSign.getVisibility() == View.VISIBLE) {
                 if (pmView.getDrawStatus()) {
-                    gate=true;
+                    gate = true;
                 }
             }
             if (contractorSign.getVisibility() == View.VISIBLE) {
                 if (contractorView.getDrawStatus()) {
-                    gate=true;
+                    gate = true;
                 }
             }
             if (etSign.getVisibility() == View.VISIBLE) {
                 if (etView.getDrawStatus()) {
-                    gate=true;
+                    gate = true;
                 }
             }
             if (iecSign.getVisibility() == View.VISIBLE) {
                 if (iecView.getDrawStatus()) {
-                    gate=true;
+                    gate = true;
                 }
             }
-//            if (pmView.getDrawStatus()||contractorView.getDrawStatus()||etView.getDrawStatus()||iecView.getDrawStatus()){
-//                Toast.makeText(GeneralSiteActivity.this, "at least one signed", Toast.LENGTH_SHORT).show();
-//            }
-//            else return;
-            if (gate){
-                saveFormItem();
+            String noteText = DeviceUtils.getCurrentDate();
+            Log.i(TAG, "onClick: notetext "+noteText);
+            Query query = getReportDao().queryBuilder()
+                    .where(ReportDao.Properties.SaveDate.eq(noteText))
+                    .orderAsc(ReportDao.Properties.Date)
+                    .build();
+            // 查询结果以 List 返回
+            List<Report> reports = query.list();
+            if (reports.size() > 0) {
+                reportLocalData = reports.get(0);
             }
-            else {
+            Log.i(TAG, "onClick: "+reportLocalData.getContractId()+reportLocalData.getPm()+reportLocalData.getEt());
+
+            if (gate) {
+                if (isConnected()) {
+                    saveFormItem();
+                    Toast.makeText(GeneralSiteActivity.this, "connected", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Toast.makeText(GeneralSiteActivity.this, "Device is offline, please save to server later", Toast.LENGTH_SHORT).show();
+                }
+            } else {
                 Toast.makeText(GeneralSiteActivity.this, "at least one signature required!", Toast.LENGTH_SHORT).show();
             }
 
-//            return;
         }
     };
+    private Report reportLocalData;
+    private ReportDao getReportDao(){
+        return MyApplication.getInstance().getDaoSession().getReportDao();
+    }
 
     private void saveFormItem() {
 
@@ -473,7 +521,6 @@ public class GeneralSiteActivity extends BaseActivity {
                 Log.i(TAG, "close_out " + map.get("close_out"));
                 Log.i(TAG, "answer_id " + map.get("answer_id"));
                 Log.i(TAG, "remarks " + map.get("remarks"));
-//                checker_save_obs_form(formInfoId,data.item_id);
                 mapList.add(map);
             }
         }
@@ -503,7 +550,7 @@ public class GeneralSiteActivity extends BaseActivity {
 
                 @Override
                 public void onError(int i, String s) {
-                    Log.i(TAG, "onError: i,s "+i+s);
+                    Log.i(TAG, "onError: i,s " + i + s);
                     Log.i(TAG, "failed to save and synchronise");
                 }
             });
@@ -520,52 +567,6 @@ public class GeneralSiteActivity extends BaseActivity {
         for (int j = 0; j < temp.size(); j++) {
             Log.i(TAG, "temp.getRecommedation " + temp.get(j).getRecommedation());
             saveObsFrom(formItem_id, temp.get(j).getFile(), temp.get(j).getRecommedation(), temp.get(j).getToBeRemediated_before(), temp.get(j).getFollowUpAction());
-        }
-
-
-    }
-
-    // pervious method, incorrect!
-    private void saveFormItemObs(String formitem_id) {
-        System.out.println("保存图片表");
-        SharedPreferences mPrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);// use JSOnM format to store the object (obs_form)
-        String json = mPrefs.getString("MyList", "");
-        Gson gson = new Gson();
-        if (!json.isEmpty()) {
-            Toast.makeText(mContext, "json is ! empty", Toast.LENGTH_LONG).show();
-            Log.i("checking", "json " + json.toString());
-            ArrayList<obs_form_DataModel> list = gson.fromJson(json, listOfObjects);
-            obs_form_DataModel dataModel = list.get(0);
-            Log.i(TAG, "dataModel.getItemNo(); " + dataModel.getItemNo());
-            Log.i(TAG, "dataModel.getFile(); " + dataModel.getFile());
-
-        } else {
-            Toast.makeText(mContext, "json is empty", Toast.LENGTH_LONG).show();
-        }
-
-        for (int i = 0; i < save_obs_form_dataModels.size(); i++) {
-
-            Log.i(TAG, "create the unique ID for shared preference: follow up action: " + save_obs_form_dataModels.get(i).getFile());
-        }
-
-        MySharedPref_App mySharedPref_app = new MySharedPref_App();
-        String string = mySharedPref_app.getString(mContext, "uniqueCode", "code_head") + ".txt";
-//        mySharedPref_app.write_StringArrayList(ArrayList,mContext,string);
-//        mySharedPref_app.read_StringArrayList(mContext,string);
-//
-        // get all the obs_form;
-        ArrayList<String> arrayList = mySharedPref_app.read_StringArrayList(mContext, string);
-        // the whole key for getting the obs_form:
-        for (int i = 0; i < arrayList.size(); i++) {
-            Log.i(TAG, "key of obs_form:getting" + arrayList.get(i));
-            //get data from shared preference
-            ArrayList<obs_form_DataModel> temp = mySharedPref_app.getArrayList(arrayList.get(i).toString(), mContext);
-            for (int j = 0; j < temp.size(); j++) {
-                Log.i(TAG, " key of obs_form i,j" + i + j + "," + temp.get(j).getRecommedation());
-                Log.i(TAG, " temp.getRecommedation " + temp.get(j).getRecommedation());
-                saveObsFrom(formitem_id, temp.get(j).getFile(), temp.get(j).getRecommedation(), temp.get(j).getToBeRemediated_before(), temp.get(j).getFollowUpAction());
-            }
-
         }
     }
 

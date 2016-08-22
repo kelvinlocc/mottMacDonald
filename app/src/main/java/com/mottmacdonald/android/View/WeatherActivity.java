@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.androidquery.callback.AjaxStatus;
@@ -59,6 +61,8 @@ public class WeatherActivity extends BaseActivity {
     private Boolean toggleKey;
     public MySharedPref_App mySharedPref_app;
     public static Context mContext;
+    TextView info;
+    TextView report, weather, general_site;
 
     public static void start(Context context, String contractName, String contractId,
                              SaveFormInfoModel saveFormInfoModel) {
@@ -67,7 +71,7 @@ public class WeatherActivity extends BaseActivity {
         intent.putExtra(CONTRACT_ID, contractId);
         intent.putExtra(FORM_INFO_DATA, saveFormInfoModel);
         context.startActivity(intent);
-        mContext= context;
+        mContext = context;
     }
 
     @Override
@@ -77,6 +81,46 @@ public class WeatherActivity extends BaseActivity {
         initViews();
         searchData();
         mySharedPref_app = new MySharedPref_App(); // get instance
+        if (myPref.isReport_submission(mContext)) {
+            Log.i(TAG, "onCreate: foormid" + getFormId());
+        }
+        info = (TextView) findViewById(R.id.info);
+        String string;
+        if (isConnected()) {
+            string = "connected";
+        } else {
+            string = "discounted";
+
+        }
+        string = string + " ID: " + getFormId();
+        info.setText(string);
+
+
+        report = (TextView) findViewById(R.id.report_status);
+        if (report_submission) {
+            report.setText("done");
+        }
+        weather = (TextView) findViewById(R.id.weather_status);
+        if (weather_submission) {
+            weather.setText("done");
+        }
+        general_site = (TextView) findViewById(R.id.general_site_status);
+        if (general_site_submission) {
+            general_site.setText("done");
+        }
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        String currentContractId = mySharedPref_app.getCurrentContractId(mContext);
+        String contractNumber = mySharedPref_app.getContractNumber(mContext);
+        ReportActivity.start(mContext, currentContractId, contractNumber);
+        Log.i(TAG, "onClick: c c from p "+myPref.getCurrentContractId(mContext)+","+myPref.getContractNumber(mContext));
+
+        Toast.makeText(WeatherActivity.this, "back!", Toast.LENGTH_SHORT).show();
+
     }
 
     private void initViews() {
@@ -133,10 +177,6 @@ public class WeatherActivity extends BaseActivity {
             Log.i(TAG, "conditionGroup.getChildAt: " + i + " is unchecked!");
         }
 
-//        conditionGroup.clearCheck();
-//        conditionGroup_02.clearCheck();
-
-
         HumidityOptionsModel humidityModel = JSON.parseObject(DataShared.getHumidityData(),
                 HumidityOptionsModel.class);
         for (int i = 0; i < humidityModel.data.size(); i++) {
@@ -190,7 +230,6 @@ public class WeatherActivity extends BaseActivity {
             }
 
 
-
         }
     };
 
@@ -219,12 +258,6 @@ public class WeatherActivity extends BaseActivity {
     private RadioGroup.OnCheckedChangeListener conditionChangeListener_02 = new RadioGroup.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(RadioGroup group, int checkedId) {
-
-//            if (conditionGroup.getCheckedRadioButtonId() != -1) {
-//
-//                Log.i(TAG,"condition group 1 has checked");
-//                clear_condition_radioGroup("group01");
-//            }
             Log.i(TAG, "checkedID: " + checkedId);
             if (checkedId != -1 &&
                     ((RadioButton) findViewById(checkedId)).isChecked()) {
@@ -233,12 +266,6 @@ public class WeatherActivity extends BaseActivity {
                 RadioButton radioButton = (RadioButton) findViewById(checkedId);
                 conditionId = (String) radioButton.getTag();
             }
-
-//            RadioButton radioButton = (RadioButton) findViewById(checkedId);
-//            conditionId = (String) radioButton.getTag();
-//            conditionGroup_02.clearCheck();
-
-
         }
     };
 
@@ -264,7 +291,13 @@ public class WeatherActivity extends BaseActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.general_btn:
-                    saveWeather();
+                    if (isConnected()) {
+                        Toast.makeText(WeatherActivity.this, "connected", Toast.LENGTH_SHORT).show();
+
+                        saveWeather();
+                    } else {
+                        Toast.makeText(WeatherActivity.this, "disconnected", Toast.LENGTH_SHORT).show();
+                    }
                     break;
             }
         }
@@ -334,18 +367,16 @@ public class WeatherActivity extends BaseActivity {
                         dismissProgress();
                         if (saveFormWeatherModel != null) {
                             saveWeatherLocalData(conditionId, temperatureText, humidityId, windId, remarkText);
-//                            GeneralSiteActivity.start(mContext, contractName, contractId, formInfoId);
+
+
                             GeneralSiteActivity.start(mContext, contractName, contractId, formInfoId);
-                            Log.i(TAG,"create the unique ID for shared preference: contractName, contractId, formInfoId: "+contractName+","+contractId+","+formInfoId);
-                            String head = contractName+contractId+formInfoId;
-                            Log.i(TAG,"head "+head);
+                            Log.i(TAG, "create the unique ID for shared preference: contractName, contractId, formInfoId: " + contractName + "," + contractId + "," + formInfoId);
+                            String head = contractName + contractId + formInfoId;
+                            Log.i(TAG, "head " + head);
                             // // TODO: 8/8/2016
-                            mySharedPref_app.setHead(mContext,head);
+                            mySharedPref_app.setHead(mContext, head);
 
-
-
-//                            Log.i(TAG,"check: "+mySharedPref_app.getHead(mContext));
-
+                            myPref.setWeather_submission(true, mContext);
                         } else {
                             showRequestFailToast();
                         }
