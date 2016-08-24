@@ -30,8 +30,10 @@ import com.mottmacdonald.android.Data.MySharedPref_App;
 import com.mottmacdonald.android.Models.AllTemplatesModel;
 import com.mottmacdonald.android.Models.FormsDataModel;
 import com.mottmacdonald.android.Models.ItemData;
+import com.mottmacdonald.android.Models.SaveFormInfoModel;
 import com.mottmacdonald.android.Models.SaveFormItemModel;
 import com.mottmacdonald.android.Models.SaveFormItemObservationModel;
+import com.mottmacdonald.android.Models.SaveFormWeatherModel;
 import com.mottmacdonald.android.Models.SectionData;
 import com.mottmacdonald.android.Models.SectionsDataModel;
 import com.mottmacdonald.android.Models.TemplatesData;
@@ -44,6 +46,7 @@ import com.mottmacdonald.android.Utils.DeviceUtils;
 import com.mottmacdonald.android.Utils.FileUtil;
 import com.mottmacdonald.android.Utils.PhotoReSize;
 import com.mottmacdonald.android.View.CustomView.DrawView;
+import com.mottmacdonald.android.Weather;
 import com.youxiachai.ajax.ICallback;
 
 import java.io.File;
@@ -128,22 +131,24 @@ public class GeneralSiteActivity extends BaseActivity {
 
 
     private void searchData() {
-        String noteText = DeviceUtils.getCurrentDate();
-        Log.i(TAG, "searchData");
-
-        // Query 类代表了一个可以被重复执行的查询
-        Query query = MyApplication.getInstance().getDaoSession().getReportDao().queryBuilder()
-                .where(ReportDao.Properties.SaveDate.eq(noteText))
-                .orderAsc(ReportDao.Properties.Date)
-                .build();
-        // 查询结果以 List 返回
-        List<Report> reports = query.list();
-        if (reports.size() > 0) {
-            Log.i(TAG, "report.size is >0");
-            setSignShow(reports.get(0));
-        } else {
-            Log.i(TAG, "report.size is !>0");
-        }
+//        String noteText = DeviceUtils.getCurrentDate();
+//        Log.i(TAG, "searchData");
+//
+//        // Query 类代表了一个可以被重复执行的查询
+//        Query query = MyApplication.getInstance().getDaoSession().getReportDao().queryBuilder()
+//                .where(ReportDao.Properties.SaveDate.eq(noteText))
+//                .orderAsc(ReportDao.Properties.Date)
+//                .build();
+//        // 查询结果以 List 返回
+//        List<Report> reports = query.list();
+//        if (reports.size() > 0) {
+//            Log.i(TAG, "report.size is >0");
+//            setSignShow(reports.get(0));
+//
+//        } else {
+//            Log.i(TAG, "report.size is !>0");
+//        }
+        setSignShow(getReport());
 
         // 在 QueryBuilder 类中内置两个 Flag 用于方便输出执行的 SQL 语句与传递参数的值
         QueryBuilder.LOG_SQL = true;
@@ -151,11 +156,16 @@ public class GeneralSiteActivity extends BaseActivity {
     }
 
     private void initDatas() {
-        if (getIntent().getExtras() != null) {
-            contractName = getIntent().getExtras().getString(CONTRACT_NAME);
-            contractId = getIntent().getExtras().getString(CONTRACT_ID);
-            formInfoId = getIntent().getExtras().getString(FORM_INFO_ID);
-        }
+//        if (getIntent().getExtras() != null) {
+//            contractName = getIntent().getExtras().getString(CONTRACT_NAME);
+//            contractId = getIntent().getExtras().getString(CONTRACT_ID);
+//            formInfoId = getIntent().getExtras().getString(FORM_INFO_ID);
+//        }
+        contractName =myPref.getContractNumber(mContext);
+        contractId =myPref.getCurrentContractId(mContext);
+
+
+
         templatesDatas = new ArrayList<>();
         AllTemplatesModel templatesModel = JSON.parseObject(DataShared.getTemplatesData(), AllTemplatesModel.class);
         templatesDatas = templatesModel.data;
@@ -190,8 +200,6 @@ public class GeneralSiteActivity extends BaseActivity {
         mySharedPref_app.write_StringArrayList(ArrayList, mContext, string);
         mySharedPref_app.read_StringArrayList(mContext, string);
         //temp>
-
-//        mySharedPref_app.output_StringArrayList(mContext,string);
     }
 
     LinearLayout sign_layout;
@@ -258,7 +266,6 @@ public class GeneralSiteActivity extends BaseActivity {
         editText_date_03.setText(sharedPreferences.getString("date", ""));
         editText_date_04.setText(sharedPreferences.getString("date", ""));
 
-
         //>>
         listView.addHeaderView(headView);
         listView.addFooterView(footView);
@@ -279,8 +286,6 @@ public class GeneralSiteActivity extends BaseActivity {
         }
         string = string + " ID: " + getFormId();
         info.setText(string);
-
-
         report = (TextView) findViewById(R.id.report_status);
         if (report_submission) {
             report.setText("done");
@@ -297,7 +302,6 @@ public class GeneralSiteActivity extends BaseActivity {
     }
 
     private DrawView getDrawView(int w, int h) {
-//        DrawView drawView = new DrawView(mContext, pmSign.getWidth(), pmSign.getHeight());
         DrawView drawView = new DrawView(mContext, w, h);
         drawView.setOnTouchListener(new View.OnTouchListener() {
 
@@ -317,7 +321,6 @@ public class GeneralSiteActivity extends BaseActivity {
     private void setSignShow(Report report) {
         Log.i(TAG, "setSignShow: ");
         if (!TextUtils.isEmpty(report.getPm())) {
-//        if (true) {
             pm_layout.setVisibility(View.VISIBLE);
             Log.i(TAG, "report.getPm() " + report.getPm());
             pmSign.setVisibility(View.VISIBLE);
@@ -337,7 +340,6 @@ public class GeneralSiteActivity extends BaseActivity {
         }
 
         if (!TextUtils.isEmpty(report.getContractor())) {
-//        if (true) {
             contractor_layout.setVisibility(View.VISIBLE);
             Log.i(TAG, "report.getContractor() " + report.getContractor());
             contractorSign.setVisibility(View.VISIBLE);
@@ -356,7 +358,6 @@ public class GeneralSiteActivity extends BaseActivity {
             });
         }
         if (!TextUtils.isEmpty(report.getEt())) {
-//        if (true) {
             et_layout.setVisibility(View.VISIBLE);
             Log.i(TAG, "report.getEt() " + report.getEt());
             etSign.setVisibility(View.VISIBLE);
@@ -375,8 +376,6 @@ public class GeneralSiteActivity extends BaseActivity {
             });
         }
         if (!TextUtils.isEmpty(report.getIec())) {
-//        if (true) {
-
             iec_layout.setVisibility(View.VISIBLE);
             Log.i(TAG, "report.getIec() " + report.getIec());
             iecSign.setVisibility(View.VISIBLE);
@@ -401,6 +400,11 @@ public class GeneralSiteActivity extends BaseActivity {
             signLeftTitleLayout.setVisibility(View.VISIBLE);
             Confirmation_layout.setVisibility(View.VISIBLE);
         }
+
+        Log.i(TAG, "report.getPm() "+report.getPm());
+
+        Report report2 = getReport();
+        Log.i(TAG, "onClick: report2.getpm "+report2.getPm());
     }
 
 
@@ -442,27 +446,29 @@ public class GeneralSiteActivity extends BaseActivity {
                     gate = true;
                 }
             }
-            String noteText = DeviceUtils.getCurrentDate();
-            Log.i(TAG, "onClick: notetext "+noteText);
-            Query query = getReportDao().queryBuilder()
-                    .where(ReportDao.Properties.SaveDate.eq(noteText))
-                    .orderAsc(ReportDao.Properties.Date)
-                    .build();
-            // 查询结果以 List 返回
-            List<Report> reports = query.list();
-            if (reports.size() > 0) {
-                reportLocalData = reports.get(0);
-            }
-            Log.i(TAG, "onClick: "+reportLocalData.getContractId()+reportLocalData.getPm()+reportLocalData.getEt());
 
             if (gate) {
-                if (isConnected()) {
-                    saveFormItem();
+                if (isConnected())
+                    //// TODO: 8/22/2016  checking
+                {
+
+                    if(report_submission){
+                        if(weather_submission){
+                            saveFormItem();
+                        }
+                        else {
+                            saveWeather();
+                        }
+                    }
+                    else {
+                        saveReport();
+                    }
                     Toast.makeText(GeneralSiteActivity.this, "connected", Toast.LENGTH_SHORT).show();
                 }
                 else
                 {
-                    Toast.makeText(GeneralSiteActivity.this, "Device is offline, please save to server later", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(GeneralSiteActivity.this, "Device is offline, please try later", Toast.LENGTH_SHORT).show();
+
                 }
             } else {
                 Toast.makeText(GeneralSiteActivity.this, "at least one signature required!", Toast.LENGTH_SHORT).show();
@@ -470,15 +476,84 @@ public class GeneralSiteActivity extends BaseActivity {
 
         }
     };
-    private Report reportLocalData;
-    private ReportDao getReportDao(){
-        return MyApplication.getInstance().getDaoSession().getReportDao();
+
+
+    private void saveReport() {
+        showProgress();
+        Log.i(TAG, "saveReport: ");
+        Log.i(TAG, "saveFormInfo: formid: " + getFormId());
+        String formId = getFormId();
+        Report report = getReport();
+        String date = report.getInspectionDate() + " " + report.getTime();
+
+        SaveFormApi.saveFormInfo(mContext, formId, date, report.getEnvironmentalPermitNo(), report.getSiteLocation(), report.getPm(), report.getEt(),
+                report.getContractor(), report.getIec(), report.getOthers(), "", "", new ICallback<SaveFormInfoModel>() {
+                    @Override
+                    public void onSuccess(SaveFormInfoModel saveFormInfoModel, Enum<?> anEnum, AjaxStatus ajaxStatus) {
+                        dismissProgress();
+                        if (saveFormInfoModel != null) {
+                            Log.i(TAG, "onSuccess: ");
+                            // go to save weather
+                            myPref.setFormInfoId(saveFormInfoModel.forminfo_id,mContext);
+
+                            // set report submission status to true!
+                            myPref.setReport_submission(true, mContext);
+                            if (!weather_submission){
+                                saveWeather();
+                            }
+                            if(!general_site_submission){
+                                saveFormItem();
+                            }
+                        } else {
+                            showRequestFailToast();
+                            Log.i(TAG, "save failed" + "");
+                        }
+
+                    }
+                    @Override
+                    public void onError(int i, String s) {
+                        Toast.makeText(GeneralSiteActivity.this, "report save error", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
-    private void saveFormItem() {
+    private void saveWeather() {
+        Log.i(TAG, "saveWeather: formInfoId: "+formInfoId);
+        formInfoId = myPref.getFormInfoId(mContext);
+        Log.i(TAG, "saveWeather: formInfoId: "+formInfoId);
+        Weather weather =getWeather();
+        showProgress();
+        SaveFormApi.saveFormWeather(mContext, formInfoId, weather.getCondition(), weather.getTemperature(),weather.getHumidity(),
+                weather.getWind(), weather.getRemarks(), new ICallback<SaveFormWeatherModel>() {
+                    @Override
+                    public void onSuccess(SaveFormWeatherModel saveFormWeatherModel, Enum<?> anEnum, AjaxStatus ajaxStatus) {
+                        dismissProgress();
+                        if (saveFormWeatherModel != null) {
+//                            GeneralSiteActivity.start(mContext, contractName, contractId, formInfoId);
+//                            Log.i(TAG, "create the unique ID for shared preference: contractName, contractId, formInfoId: " + contractName + "," + contractId + "," + formInfoId);
+//                            String head = contractName + contractId + formInfoId;
+//                            Log.i(TAG, "head " + head);
+//                            mySharedPref_app.setHead(mContext, head);
 
+                            myPref.setWeather_submission(true, mContext);
+                        } else {
+                            showRequestFailToast();
+                        }
+                    }
+
+                    @Override
+                    public void onError(int i, String s) {
+
+                    }
+                });
+    }
+
+
+    private void saveFormItem() {
+        myPref.setGeneral_site_submission(true,mContext);
+        formInfoId = myPref.getFormInfoId(mContext);
         showProgress("Saving");
-        Log.i(TAG, "saveFormItem ; ");
+        Log.i(TAG, "saveFormItem; ");
         SharedPreferences preferences = getSharedPreferences("uniqueCode", MODE_PRIVATE);
         String head = preferences.getString("code_head", "no head");
         String tail = preferences.getString(head, "no tail");
@@ -562,6 +637,7 @@ public class GeneralSiteActivity extends BaseActivity {
     }
 
     public void checker_save_obs_form(String formItem_id, String item_id) {
+        // set head to constant value```
         String KEY = mySharedPref_app.getHead(mContext) + item_id;
         ArrayList<obs_form_DataModel> temp = mySharedPref_app.getArrayList(KEY, mContext);
         for (int j = 0; j < temp.size(); j++) {
@@ -578,6 +654,7 @@ public class GeneralSiteActivity extends BaseActivity {
 //                dismissProgress();
                 Log.i(TAG, "saveFormItemObs successful");
                 showToast("Save Form Complete");
+                myPref.setGeneral_site_submission(true,mContext);
                 MyApplication.getInstance().removeActivityExcept(MainActivity.class);
             }
 

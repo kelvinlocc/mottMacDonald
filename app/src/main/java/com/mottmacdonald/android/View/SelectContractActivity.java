@@ -13,7 +13,9 @@ import com.mottmacdonald.android.Models.AllContractModel;
 import com.mottmacdonald.android.Models.ContractData;
 import com.mottmacdonald.android.R;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -73,7 +75,10 @@ public class SelectContractActivity extends BaseActivity{
                     myPref.setCurrentContractId(currentContractId,mContext);
                     myPref.setContractNumber(contractNumber,mContext);
                     Log.i(TAG, "onClick: c c from p "+myPref.getCurrentContractId(mContext)+","+myPref.getContractNumber(mContext));
-
+                    SimpleDateFormat s = new SimpleDateFormat("ddMMyyyyhhmmss");
+                    String format = s.format(new Date());
+                    Log.i(TAG, "onClick: format"+format);
+                    myPref.setHead(mContext, format);
                     break;
             }
         }

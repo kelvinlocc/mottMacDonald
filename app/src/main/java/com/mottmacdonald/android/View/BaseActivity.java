@@ -9,14 +9,24 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.androidquery.AQuery;
+import com.androidquery.callback.AjaxStatus;
+import com.mottmacdonald.android.Apis.SaveFormApi;
 import com.mottmacdonald.android.Data.DataShared;
 import com.mottmacdonald.android.Data.MySharedPref_App;
+import com.mottmacdonald.android.Models.AllTemplatesModel;
+import com.mottmacdonald.android.Models.FormsDataModel;
+import com.mottmacdonald.android.Models.SaveFormInfoModel;
+import com.mottmacdonald.android.Models.TemplatesData;
 import com.mottmacdonald.android.MyApplication;
 import com.mottmacdonald.android.R;
 import com.mottmacdonald.android.Report;
 import com.mottmacdonald.android.ReportDao;
 import com.mottmacdonald.android.Utils.DeviceUtils;
+import com.mottmacdonald.android.Weather;
+import com.mottmacdonald.android.WeatherDao;
+import com.youxiachai.ajax.ICallback;
 
 import java.util.List;
 
@@ -40,6 +50,7 @@ public class BaseActivity extends AppCompatActivity {
     protected boolean general_site_submission = false;
     MySharedPref_App myPref;
     String formID;
+    private List<TemplatesData> templatesDatas;
 
     private Report reportLocalData;
 
@@ -104,8 +115,23 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     protected String getFormId() {
+        templatesDatas = JSON.parseObject(DataShared.getTemplatesData(), AllTemplatesModel.class).data;
+
+        for (TemplatesData data : templatesDatas) {
+            for (FormsDataModel formData : data.forms) {
+                Log.i(TAG, "setInfo_window: contract_id " + formData.contract_id);
+                if (myPref.getCurrentContractId(this).equals(formData.contract_id)) {
+
+                    return formData.form_id;
+                }
+            }
+        }
+        return "";
+    }
+
+    protected Report getReport (){
         String noteText = DeviceUtils.getCurrentDate();
-        Log.i(TAG, "onClick: notetext "+noteText);
+        Log.i(TAG, "onClick: notetext " + noteText);
         Query query = getReportDao().queryBuilder()
                 .where(ReportDao.Properties.SaveDate.eq(noteText))
                 .orderAsc(ReportDao.Properties.Date)
@@ -115,9 +141,29 @@ public class BaseActivity extends AppCompatActivity {
         if (reports.size() > 0) {
             reportLocalData = reports.get(0);
         }
-        return reportLocalData.getFormId();
+        return reportLocalData;
+    }
 
-}
+    protected Weather getWeather (){
+        String dateText = DeviceUtils.getCurrentDate();
+
+        // Query 类代表了一个可以被重复执行的查询
+        Query query = getWeatherDao().queryBuilder()
+                .where(WeatherDao.Properties.SaveDate.eq(dateText))
+                .orderAsc(WeatherDao.Properties.Date)
+                .build();
+        // 查询结果以 List 返回
+        List<Weather> weathers = query.list();
+        System.out.println("数据长度：" + weathers.size());
+        if (weathers.size() > 0) {
+           return weathers.get(0);
+        }
+        Toast.makeText(BaseActivity.this, "save weather to local error", Toast.LENGTH_SHORT).show();
+        return null;
+    }
+    private WeatherDao getWeatherDao() {
+        return MyApplication.getInstance().getDaoSession().getWeatherDao();
+    }
 
     protected void update() {
         if (myPref.isReport_submission(this)) {
@@ -130,5 +176,10 @@ public class BaseActivity extends AppCompatActivity {
         if (myPref.isGeneral_site_submission(this)) {
             general_site_submission = true;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }

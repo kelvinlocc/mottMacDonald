@@ -25,6 +25,7 @@ import com.mottmacdonald.android.Models.SaveFormWeatherModel;
 import com.mottmacdonald.android.Models.WindOptionsModel;
 import com.mottmacdonald.android.MyApplication;
 import com.mottmacdonald.android.R;
+import com.mottmacdonald.android.Report;
 import com.mottmacdonald.android.Utils.DeviceUtils;
 import com.mottmacdonald.android.Utils.ValueUtil;
 import com.mottmacdonald.android.Weather;
@@ -114,25 +115,32 @@ public class WeatherActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        finish();
         String currentContractId = mySharedPref_app.getCurrentContractId(mContext);
         String contractNumber = mySharedPref_app.getContractNumber(mContext);
+
         ReportActivity.start(mContext, currentContractId, contractNumber);
-        Log.i(TAG, "onClick: c c from p "+myPref.getCurrentContractId(mContext)+","+myPref.getContractNumber(mContext));
+        Log.i(TAG, "onClick: c c from p " + myPref.getCurrentContractId(mContext) + "," + myPref.getContractNumber(mContext));
 
         Toast.makeText(WeatherActivity.this, "back!", Toast.LENGTH_SHORT).show();
 
     }
 
     private void initViews() {
-        if (getIntent().getExtras() != null) {
-            contractName = getIntent().getExtras().getString(CONTRACT_NAME);
-            contractId = getIntent().getExtras().getString(CONTRACT_ID);
-            mAQuery.id(R.id.title_text).text(contractName + "-" + "WEATHER");
-            SaveFormInfoModel formInfoModel = (SaveFormInfoModel) getIntent()
-                    .getExtras().getSerializable(FORM_INFO_DATA);
-            formInfoId = formInfoModel.forminfo_id;
 
-        }
+//        if (getIntent().getExtras() != null) {
+//            contractName = getIntent().getExtras().getString(CONTRACT_NAME);
+//            contractId = getIntent().getExtras().getString(CONTRACT_ID);
+//            mAQuery.id(R.id.title_text).text(contractName + "-" + "WEATHER");
+//            SaveFormInfoModel formInfoModel = (SaveFormInfoModel) getIntent()
+//                    .getExtras().getSerializable(FORM_INFO_DATA);
+//            formInfoId = formInfoModel.forminfo_id;
+//        }
+        contractName = myPref.getContractNumber(mContext);
+        contractId = myPref.getCurrentContractId(mContext);
+        mAQuery.id(R.id.title_text).text(contractName + "-" + "WEATHER");
+
+
         conditionGroup = (RadioGroup) findViewById(R.id.condition_group);
         conditionGroup_02 = (RadioGroup) findViewById(R.id.condition_group_02); //
         humidityGroup = (RadioGroup) findViewById(R.id.humidity_group);
@@ -151,7 +159,7 @@ public class WeatherActivity extends BaseActivity {
             ConditionOptionsModel.ConditionOptionsData data = conditionOptionsModel.data.get(i);
             View itemView = LayoutInflater.from(mContext).inflate(R.layout.item_radiobutton, null);
             RadioButton tempRadio = (RadioButton) itemView.findViewById(R.id.temp_radiobutton);
-            Log.i(TAG, "tempRadio.setText: " + data.name);
+//            Log.i(TAG, "tempRadio.setText: " + data.name);
 
             tempRadio.setText(data.name);
             tempRadio.setTag(data.id);
@@ -164,17 +172,16 @@ public class WeatherActivity extends BaseActivity {
         }
 
         // uncheck all radio:
-
         for (int i = 0; i < conditionGroup.getChildCount(); i++) {
             ((RadioButton) conditionGroup.getChildAt(i)).setChecked(false);
             if (((RadioButton) conditionGroup.getChildAt(i)).isChecked() == false) {
-                Log.i(TAG, "conditionGroup.getChildAt: " + i + " is unchecked!");
+//                Log.i(TAG, "conditionGroup.getChildAt: " + i + " is unchecked!");
             }
         }
 
         for (int i = 0; i < conditionGroup_02.getChildCount(); i++) {
             ((RadioButton) conditionGroup_02.getChildAt(i)).setChecked(false);
-            Log.i(TAG, "conditionGroup.getChildAt: " + i + " is unchecked!");
+//            Log.i(TAG, "conditionGroup.getChildAt: " + i + " is unchecked!");
         }
 
         HumidityOptionsModel humidityModel = JSON.parseObject(DataShared.getHumidityData(),
@@ -219,41 +226,17 @@ public class WeatherActivity extends BaseActivity {
         @Override
         public void onCheckedChanged(RadioGroup group, int checkedId) {
 
-            Log.i(TAG, "checkedID: " + checkedId);
+//            Log.i(TAG, "checkedID: " + checkedId);
 
             if (checkedId != -1 &&
                     ((RadioButton) findViewById(checkedId)).isChecked()) {
                 conditionGroup_02.clearCheck();
-
                 RadioButton radioButton = (RadioButton) findViewById(checkedId);
                 conditionId = (String) radioButton.getTag();
             }
-
-
         }
     };
 
-    private void clear_condition_radioGroup(String key) {
-        Log.i(TAG, "RadioGroup R.id.condition_group: \n" + R.id.condition_group);
-        if (key == "group01") {
-            for (int i = 0; i < conditionGroup.getChildCount(); i++) {
-                ((RadioButton) conditionGroup.getChildAt(i)).setChecked(false);
-                if (((RadioButton) conditionGroup.getChildAt(i)).isChecked() == false) {
-                    Log.i(TAG, "conditionGroup.getChildAt: " + i + " is unchecked!");
-                }
-            }
-
-        } else if (key == "group02") {
-
-            for (int i = 0; i < conditionGroup_02.getChildCount(); i++) {
-                ((RadioButton) conditionGroup_02.getChildAt(i)).setChecked(false);
-                if (((RadioButton) conditionGroup_02.getChildAt(i)).isChecked() == false) {
-                    Log.i(TAG, "conditionGroup.getChildAt: " + i + " is unchecked!");
-                }
-            }
-
-        }
-    }
 
     private RadioGroup.OnCheckedChangeListener conditionChangeListener_02 = new RadioGroup.OnCheckedChangeListener() {
         @Override
@@ -293,15 +276,57 @@ public class WeatherActivity extends BaseActivity {
                 case R.id.general_btn:
                     if (isConnected()) {
                         Toast.makeText(WeatherActivity.this, "connected", Toast.LENGTH_SHORT).show();
-
-                        saveWeather();
+                        if (report_submission) {
+                            formInfoId = mySharedPref_app.getFormInfoId(mContext);
+                            Log.i(TAG, "report is submitted");
+                            saveWeather();
+                        } else {
+                            Log.i(TAG, "report is not submitted");
+                            saveReport();
+                        }
                     } else {
-                        Toast.makeText(WeatherActivity.this, "disconnected", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(WeatherActivity.this, "device is offline, save data to local", Toast.LENGTH_SHORT).show();
+                        GeneralSiteActivity.start(mContext, contractName, contractId, formInfoId);
+                        finish();
                     }
                     break;
             }
         }
     };
+
+    private void saveReport() {
+        showProgress();
+        Log.i(TAG, "saveReport: ");
+        Log.i(TAG, "saveFormInfo: formid: " + getFormId());
+        String formId = getFormId();
+        Report report = getReport();
+        String date = report.getInspectionDate() + " " + report.getTime();
+
+        SaveFormApi.saveFormInfo(mContext, formId, date, report.getEnvironmentalPermitNo(), report.getSiteLocation(), report.getPm(), report.getEt(),
+                report.getContractor(), report.getIec(), report.getOthers(), "", "", new ICallback<SaveFormInfoModel>() {
+                    @Override
+                    public void onSuccess(SaveFormInfoModel saveFormInfoModel, Enum<?> anEnum, AjaxStatus ajaxStatus) {
+                        dismissProgress();
+                        if (saveFormInfoModel != null) {
+                            Log.i(TAG, "onSuccess: ");
+                            Toast.makeText(WeatherActivity.this, "report saved successfully", Toast.LENGTH_SHORT).show();
+                            // go to save weather
+                            myPref.setFormInfoId(saveFormInfoModel.forminfo_id,mContext);
+                            saveWeather();
+                            // set report submission status to true!
+                            myPref.setReport_submission(true, mContext);
+                        } else {
+                            showRequestFailToast();
+                            Log.i(TAG, "save failed" + "");
+                        }
+
+                    }
+                    @Override
+                    public void onError(int i, String s) {
+                        Toast.makeText(WeatherActivity.this, "report save error", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 
     private void saveWeatherLocalData(String conditionId, String temperatureText, String humidityId,
                                       String windId, String remarkText) {
@@ -324,22 +349,8 @@ public class WeatherActivity extends BaseActivity {
     }
 
     private void searchData() {
-        String dateText = DeviceUtils.getCurrentDate();
-
-        // Query 类代表了一个可以被重复执行的查询
-        Query query = getWeatherDao().queryBuilder()
-                .where(WeatherDao.Properties.SaveDate.eq(dateText))
-                .orderAsc(WeatherDao.Properties.Date)
-                .build();
-        // 查询结果以 List 返回
-        List<Weather> weathers = query.list();
-        System.out.println("数据长度：" + weathers.size());
-        if (weathers.size() > 0) {
-            weatherLocalData = weathers.get(0);
-            setWeatherDataShow(weatherLocalData);
-        }
-
-        // 在 QueryBuilder 类中内置两个 Flag 用于方便输出执行的 SQL 语句与传递参数的值
+        weatherLocalData = getWeather();
+        setWeatherDataShow(weatherLocalData);
         QueryBuilder.LOG_SQL = true;
         QueryBuilder.LOG_VALUES = true;
     }
@@ -359,6 +370,9 @@ public class WeatherActivity extends BaseActivity {
             showToast("Please select wind");
             return;
         }
+        Log.i(TAG, "saveWeather: formInfoId: "+formInfoId);
+        formInfoId = myPref.getFormInfoId(mContext);
+        Log.i(TAG, "saveWeather: formInfoId: "+formInfoId);
         showProgress();
         SaveFormApi.saveFormWeather(mContext, formInfoId, conditionId, temperatureText, humidityId,
                 windId, remarkText, new ICallback<SaveFormWeatherModel>() {
@@ -374,7 +388,7 @@ public class WeatherActivity extends BaseActivity {
                             String head = contractName + contractId + formInfoId;
                             Log.i(TAG, "head " + head);
                             // // TODO: 8/8/2016
-                            mySharedPref_app.setHead(mContext, head);
+//                            mySharedPref_app.setHead(mContext, head);
 
                             myPref.setWeather_submission(true, mContext);
                         } else {
@@ -388,4 +402,5 @@ public class WeatherActivity extends BaseActivity {
                     }
                 });
     }
+
 }

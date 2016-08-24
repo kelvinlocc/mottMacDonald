@@ -33,8 +33,26 @@ public class MySharedPref_App extends Application {
     private String weather_submission="weather_submission";
     private String general_site_submission = "general_site_submission";
     private String contract_key = "contract_key";
+    private String FormInfoId = "FormInfoId";
     private String contractNumber = "contractNumber";
     private String currentContractId = "currentContractId";
+
+
+    public String getFormInfoId(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(contract_key,MODE_PRIVATE);
+        return sharedPreferences.getString(FormInfoId,"null");
+    }
+
+    public void setFormInfoId(String value,Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(contract_key,MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(FormInfoId,value);
+        editor.apply();
+    }
+
+
+
+
 
     public String getContractNumber(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(contract_key,MODE_PRIVATE);
